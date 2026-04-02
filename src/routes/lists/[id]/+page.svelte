@@ -1,6 +1,7 @@
 <script lang="ts">
   import { page } from '$app/state'
   import { supabase } from '$lib/supabase.ts'
+  import { FunctionsHttpError } from '@supabase/supabase-js'
   import { goto } from '$app/navigation'
   import { getActiveProfile } from '$lib/stores.svelte.ts'
   import { onMount } from 'svelte'
@@ -36,15 +37,22 @@
     words = data as Word[]
   }
 
+  async function throwFnError(error: unknown): Promise<never> {
+    if (error instanceof FunctionsHttpError) {
+      const body = await error.context.json().catch(() => null)
+      throw new Error(body?.message ?? body?.error ?? (error as Error).message)
+    }
+    throw error
+  }
+
   async function enrichWords(wordIds: string[], characters: string[]) {
     if (!list) return
     enriching = true
     try {
-      const { data: { session } } = await supabase.auth.getSession()
       const res = await supabase.functions.invoke('enrich-words', {
         body: { words: characters, language: list.language }
       })
-      if (res.error) throw res.error
+      if (res.error) await throwFnError(res.error)
       const { enriched } = res.data as { enriched: Array<{
         character: string
         phonetic_annotation: string
@@ -136,7 +144,7 @@
       const res = await supabase.functions.invoke('extract-from-image', {
         body: { base64Image, language: list.language }
       })
-      if (res.error) throw res.error
+      if (res.error) await throwFnError(res.error)
       const { characters } = res.data as { characters: string[] }
       newWordsText = characters.join('\n')
     } catch (e) {
