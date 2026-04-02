@@ -191,14 +191,16 @@
         <li>
           <article class="word-card">
             <div class="word-character">
-              {#each splitCharacters(word.character) as char, i (i)}
-                <button
-                  class="char-btn"
-                  onclick={() => modalChar = { char, note: word.character_note ?? '' }}
-                  aria-label="Details for {char}"
-                  lang={list?.language ?? 'zh'}
-                >{char}</button>
-              {/each}
+              <div class="char-row">
+                {#each splitCharacters(word.character) as char, i (i)}
+                  <button
+                    class="char-btn"
+                    onclick={() => modalChar = { char, note: word.character_note ?? '' }}
+                    aria-label="Details for {char}"
+                    lang={list?.language ?? 'zh'}
+                  >{char}</button>
+                {/each}
+              </div>
               {#if word.phonetic_annotation}
                 <span class="word-phonetic">{word.phonetic_annotation}</span>
               {/if}
@@ -345,6 +347,11 @@
     align-items: center;
     gap: var(--size-1);
     min-width: 3rem;
+  }
+
+  .char-row {
+    display: flex;
+    flex-direction: row;
   }
 
   .char-btn {
