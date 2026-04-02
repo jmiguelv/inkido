@@ -28,6 +28,15 @@ export interface Word {
   created_at: string
 }
 
+export interface Character {
+  character: string
+  language: string        // BCP 47
+  phonetic: string | null
+  translation: string | null
+  note: string | null
+  created_at: string
+}
+
 export interface UserPreferences {
   speechRate: number    // 0.25 – 1.0
 }
