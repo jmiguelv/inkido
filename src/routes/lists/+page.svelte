@@ -6,9 +6,7 @@
   import type { WordList } from '$lib/types.ts'
 
   const LANGUAGES = [
-    { code: 'zh', label: 'Mandarin Chinese' },
-    { code: 'ja', label: 'Japanese' },
-    { code: 'ar', label: 'Arabic' }
+    { code: 'zh', label: 'Mandarin Chinese' }
   ]
 
   let lists = $state<WordList[]>([])
