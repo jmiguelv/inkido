@@ -23,8 +23,8 @@
     }
   }
 
-  function handleBackdropClick(e: MouseEvent) {
-    if (e.target === e.currentTarget) onclose()
+  function openDialog(node: HTMLDialogElement) {
+    node.showModal()
   }
 
   function initWriter(node: HTMLDivElement) {
@@ -43,57 +43,43 @@
   }
 </script>
 
-<div
-  class="backdrop"
-  role="dialog"
-  aria-modal="true"
+<dialog
+  {@attach openDialog}
   aria-label="Character detail: {character}"
-  onclick={handleBackdropClick}
-  onkeydown={(e) => e.key === 'Escape' && onclose()}
-  tabindex="-1"
+  onclick={(e) => { if (e.target === e.currentTarget) onclose() }}
+  oncancel={(e) => { e.preventDefault(); onclose() }}
 >
-  <div class="modal">
-    <header class="modal-header">
-      <span class="modal-char" lang={language}>{character}</span>
-      <button class="close-btn" onclick={onclose} aria-label="Close">✕</button>
-    </header>
+  <header class="modal-header">
+    <span class="modal-char" lang={language}>{character}</span>
+    <button class="close-btn" onclick={onclose} aria-label="Close">✕</button>
+  </header>
 
-    <div class="stroke-area">
-      {#if language === 'zh'}
-        <div {@attach initWriter} class="writer-container" aria-hidden="true"></div>
-        {#if errorMsg}
-          <p class="stroke-error">{errorMsg}</p>
-        {/if}
-      {:else}
-        <p class="stroke-error">Stroke order is only available for Mandarin Chinese.</p>
+  <div class="stroke-area">
+    {#if language === 'zh'}
+      <div {@attach initWriter} class="writer-container" aria-hidden="true"></div>
+      {#if errorMsg}
+        <p class="stroke-error">{errorMsg}</p>
       {/if}
-    </div>
-
-    <div class="modal-actions">
-      <button class="audio-btn" onclick={handleAudio} aria-label="Speak {character}">
-        ♪ Listen
-      </button>
-    </div>
-
-    {#if note}
-      <p class="radical-note">{note}</p>
+    {:else}
+      <p class="stroke-error">Stroke order is only available for Mandarin Chinese.</p>
     {/if}
   </div>
-</div>
+
+  <div class="modal-actions">
+    <button class="audio-btn" onclick={handleAudio} aria-label="Speak {character}">
+      ♪ Listen
+    </button>
+  </div>
+
+  {#if note}
+    <p class="radical-note">{note}</p>
+  {/if}
+</dialog>
 
 <style>
-  .backdrop {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 100;
-  }
-
-  .modal {
+  dialog {
     background: var(--color-bg);
+    border: none;
     border-radius: var(--radius);
     box-shadow: var(--shadow-4);
     padding: var(--size-6);
@@ -101,6 +87,10 @@
     display: flex;
     flex-direction: column;
     gap: var(--size-4);
+  }
+
+  dialog::backdrop {
+    background: rgba(0, 0, 0, 0.5);
   }
 
   .modal-header {
