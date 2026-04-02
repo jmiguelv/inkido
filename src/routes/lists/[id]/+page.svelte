@@ -5,7 +5,8 @@
   import { goto } from '$app/navigation'
   import { getActiveProfile } from '$lib/stores.svelte.ts'
   import { onMount } from 'svelte'
-  import CharacterDisplay from '$lib/components/CharacterDisplay.svelte'
+  import CharacterModal from '$lib/components/CharacterModal.svelte'
+  import { splitCharacters } from '$lib/characters.ts'
   import type { Word, WordList } from '$lib/types.ts'
 
   let list = $state<WordList | null>(null)
@@ -20,6 +21,8 @@
   const activeProfile = $derived(getActiveProfile())
   const listId = $derived(page.params.id)
   const busy = $derived(addingWords || enriching || scanLoading || reenrichingId !== null)
+
+  let modalChar = $state<{ char: string; note: string } | null>(null)
 
   async function loadList() {
     const { data, error } = await supabase.from('word_lists').select('*').eq('id', listId).single()
@@ -188,11 +191,17 @@
         <li>
           <article class="word-card">
             <div class="word-character">
-              <CharacterDisplay
-                character={word.character}
-                phonetic={word.phonetic_annotation}
-                language={list?.language ?? 'zh'}
-              />
+              {#each splitCharacters(word.character) as char (char)}
+                <button
+                  class="char-btn"
+                  onclick={() => modalChar = { char, note: word.character_note ?? '' }}
+                  aria-label="Details for {char}"
+                  lang={list?.language ?? 'zh'}
+                >{char}</button>
+              {/each}
+              {#if word.phonetic_annotation}
+                <span class="word-phonetic">{word.phonetic_annotation}</span>
+              {/if}
             </div>
             <div class="word-details">
               {#if word.translation}
@@ -224,6 +233,15 @@
         </li>
       {/each}
     </ul>
+  {/if}
+
+  {#if modalChar}
+    <CharacterModal
+      character={modalChar.char}
+      language={list?.language ?? 'zh'}
+      note={modalChar.note}
+      onclose={() => modalChar = null}
+    />
   {/if}
 
   <div class="add-section">
@@ -322,8 +340,29 @@
   }
 
   .word-character {
-    font-size: var(--font-size-7);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--size-1);
     min-width: 3rem;
+  }
+
+  .char-btn {
+    font-size: var(--font-size-7);
+    background: none;
+    border: none;
+    padding: var(--size-1);
+    border-radius: var(--radius);
+    cursor: pointer;
+    line-height: 1;
+    transition: background var(--transition-speed);
+  }
+
+  .char-btn:hover { background: var(--color-surface); }
+
+  .word-phonetic {
+    font-size: var(--font-size-0);
+    color: var(--color-text-muted);
     text-align: center;
   }
 
