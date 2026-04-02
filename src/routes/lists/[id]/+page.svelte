@@ -190,32 +190,22 @@
       {#each words as word (word.id)}
         <li>
           <article class="word-card">
-            <div class="word-character">
-              <div class="char-row">
-                {#each splitCharacters(word.character) as char, i (i)}
-                  <button
-                    class="char-btn"
-                    onclick={() => modalChar = { char, note: word.character_note ?? '' }}
-                    aria-label="Details for {char}"
-                    lang={list?.language ?? 'zh'}
-                  >{char}</button>
-                {/each}
-              </div>
-              {#if word.phonetic_annotation}
-                <span class="word-phonetic">{word.phonetic_annotation}</span>
-              {/if}
+            {#if word.phonetic_annotation}
+              <p class="word-phonetic">{word.phonetic_annotation}</p>
+            {/if}
+            <div class="char-row">
+              {#each splitCharacters(word.character) as char, i (i)}
+                <button
+                  class="char-btn"
+                  onclick={() => modalChar = { char, note: word.character_note ?? '' }}
+                  aria-label="Details for {char}"
+                  lang={list?.language ?? 'zh'}
+                >{char}</button>
+              {/each}
             </div>
-            <div class="word-details">
-              {#if word.translation}
-                <p class="translation">{word.translation}</p>
-              {/if}
-              {#if word.example}
-                <p class="example">{@html word.example}</p>
-              {/if}
-              {#if word.character_note}
-                <p class="note">{word.character_note}</p>
-              {/if}
-            </div>
+            {#if word.translation}
+              <p class="translation">{word.translation}</p>
+            {/if}
             <div class="word-actions">
               <button
                 onclick={() => handleReenrich(word)}
@@ -337,16 +327,14 @@
     border-radius: var(--radius);
     padding: var(--size-4);
     display: flex;
-    gap: var(--size-4);
-    align-items: flex-start;
+    flex-direction: column;
+    gap: var(--size-2);
   }
 
-  .word-character {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--size-1);
-    min-width: 3rem;
+  .word-phonetic {
+    font-size: var(--font-size-0);
+    color: var(--color-text-muted);
+    margin: 0;
   }
 
   .char-row {
@@ -365,31 +353,18 @@
     transition: background var(--transition-speed);
   }
 
-  .char-btn:hover { background: var(--color-surface); }
+  .char-btn:hover { background: var(--color-bg); }
 
-  .word-phonetic {
-    font-size: var(--font-size-0);
-    color: var(--color-text-muted);
-    text-align: center;
-  }
-
-  .word-details {
-    flex: 1;
-  }
-
-  .word-details p {
-    margin: 0 0 var(--size-1);
+  .translation {
     font-size: var(--font-size-1);
+    font-weight: var(--font-weight-6);
+    margin: 0;
   }
-
-  .translation { font-weight: var(--font-weight-6); }
-  .example { color: var(--color-text-muted); }
-  .note { color: var(--color-text-muted); font-style: italic; font-size: var(--font-size-0); }
 
   .word-actions {
     display: flex;
-    flex-direction: column;
-    gap: var(--size-1);
+    gap: var(--size-2);
+    margin-top: var(--size-1);
   }
 
   .word-actions button {
