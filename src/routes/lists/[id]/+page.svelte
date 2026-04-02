@@ -191,7 +191,7 @@
         <li>
           <article class="word-card">
             <div class="word-character">
-              {#each splitCharacters(word.character) as char (char)}
+              {#each splitCharacters(word.character) as char, i (i)}
                 <button
                   class="char-btn"
                   onclick={() => modalChar = { char, note: word.character_note ?? '' }}
