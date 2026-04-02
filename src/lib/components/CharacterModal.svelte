@@ -4,11 +4,15 @@
   const {
     character,
     language = 'zh',
+    phonetic = null,
+    translation = null,
     note = '',
     onclose
   }: {
     character: string
     language?: string
+    phonetic?: string | null
+    translation?: string | null
     note?: string
     onclose: () => void
   } = $props()
@@ -71,8 +75,16 @@
     </button>
   </div>
 
+  {#if phonetic}
+    <p class="detail-phonetic">{phonetic}</p>
+  {/if}
+
+  {#if translation}
+    <p class="detail-translation">{translation}</p>
+  {/if}
+
   {#if note}
-    <p class="radical-note">{note}</p>
+    <p class="detail-note">{note}</p>
   {/if}
 </dialog>
 
@@ -152,10 +164,25 @@
     color: var(--color-accent);
   }
 
-  .radical-note {
+  .detail-phonetic {
+    font-size: var(--font-size-2);
+    color: var(--color-text-muted);
+    text-align: center;
+    margin: 0;
+  }
+
+  .detail-translation {
+    font-size: var(--font-size-3);
+    font-weight: var(--font-weight-6);
+    text-align: center;
+    margin: 0;
+  }
+
+  .detail-note {
     font-size: var(--font-size-1);
     color: var(--color-text-muted);
     text-align: center;
+    font-style: italic;
     margin: 0;
   }
 </style>
