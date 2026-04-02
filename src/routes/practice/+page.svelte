@@ -13,6 +13,7 @@
   let currentIndex = $state(0)
   let flipped = $state(false)
   let errorMsg = $state('')
+  let speechRate = $state(0.75)
 
   const activeProfile = $derived(getActiveProfile())
   const listId = $derived(page.url.searchParams.get('listId') ?? '')
@@ -32,6 +33,11 @@
 
     // Mark last_practiced
     await supabase.from('word_lists').update({ last_practiced: new Date().toISOString() }).eq('id', listId)
+
+    const { data: { user } } = await supabase.auth.getUser()
+    if (user?.user_metadata?.speechRate !== undefined) {
+      speechRate = user.user_metadata.speechRate as number
+    }
   }
 
   function handleFlip() {
@@ -42,7 +48,7 @@
   function handleAudio() {
     if (!currentWord || !list) return
     try {
-      speak(currentWord.character, list.language)
+      speak(currentWord.character, list.language, speechRate)
     } catch (e) {
       errorMsg = e instanceof Error ? e.message : 'Audio unavailable'
     }
