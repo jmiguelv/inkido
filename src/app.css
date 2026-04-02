@@ -1,0 +1,46 @@
+@import 'open-props/style';
+@import 'open-props/normalize';
+
+:root {
+  /* Colors */
+  --color-bg:         #F5F5F0;
+  --color-surface:    #FFFFFF;
+  --color-text:       #2B2B2B;
+  --color-text-muted: #6B6B6B;
+  --color-accent:     #4A7FBD;
+  --color-accent-fg:  #FFFFFF;
+  --color-danger:     #C0392B;
+  --color-border:     #D8D8D4;
+
+  /* Shape */
+  --radius:           var(--radius-2);
+  --shadow:           var(--shadow-2);
+  --border-width:     1px;
+
+  /* Typography */
+  --font-body:        'Inter', system-ui, sans-serif;
+
+  /* Transitions */
+  --transition-speed: 200ms;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  margin: 0;
+}
+
+a {
+  color: var(--color-accent);
+}
+
+button {
+  cursor: pointer;
+}
