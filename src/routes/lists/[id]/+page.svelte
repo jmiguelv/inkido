@@ -170,7 +170,7 @@
   {#if list}
     <div class="list-header">
       <h1>{list.name}</h1>
-      <a href="/practice?listId={list.id}" class="practice-link" class:disabled={busy} onclick={(e) => { if (busy) e.preventDefault() }}>Practice</a>
+      <a href="/lists/{list.id}/practice" class="practice-link" class:disabled={busy} onclick={(e) => { if (busy) e.preventDefault() }}>Practice</a>
       <a href="/lists" class:disabled={busy} onclick={(e) => { if (busy) e.preventDefault() }}>← All lists</a>
     </div>
 

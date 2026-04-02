@@ -16,11 +16,10 @@
   let speechRate = $state(0.75)
 
   const activeProfile = $derived(getActiveProfile())
-  const listId = $derived(page.url.searchParams.get('listId') ?? '')
+  const listId = $derived(page.params.id)
   const currentWord = $derived(words[currentIndex] ?? null)
 
   async function loadPractice() {
-    if (!listId) { goto('/lists'); return }
     const { data: listData, error: listError } = await supabase
       .from('word_lists').select('*').eq('id', listId).single()
     if (listError) throw listError
@@ -31,7 +30,6 @@
     if (wordsError) throw wordsError
     words = wordsData as Word[]
 
-    // Mark last_practiced
     await supabase.from('word_lists').update({ last_practiced: new Date().toISOString() }).eq('id', listId)
 
     const { data: { user } } = await supabase.auth.getUser()
