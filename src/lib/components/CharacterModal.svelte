@@ -1,23 +1,26 @@
+<script module lang="ts">
+  type CharData = { phonetic: string | null; translation: string | null; note: string | null }
+  const cache = new Map<string, CharData>()
+</script>
+
 <script lang="ts">
+  import { onMount } from 'svelte'
+  import { supabase } from '$lib/supabase.ts'
   import { speak } from '$lib/audio.ts'
 
   const {
     character,
     language = 'zh',
-    phonetic = null,
-    translation = null,
-    note = '',
     onclose
   }: {
     character: string
     language?: string
-    phonetic?: string | null
-    translation?: string | null
-    note?: string
     onclose: () => void
   } = $props()
 
-  let errorMsg = $state('')
+  let charData = $state<CharData | null>(null)
+  let fetchError = $state(false)
+  let writerError = $state('')
 
   function handleAudio() {
     try {
@@ -42,9 +45,33 @@
         delayBetweenStrokes: 300
       }).animateCharacter()
     }).catch(() => {
-      errorMsg = 'Stroke order unavailable for this character.'
+      writerError = 'Stroke order unavailable for this character.'
     })
   }
+
+  onMount(async () => {
+    const key = `${language}:${character}`
+    if (cache.has(key)) {
+      charData = cache.get(key)!
+      return
+    }
+    try {
+      const res = await supabase.functions.invoke('enrich-words', {
+        body: { words: [character], language }
+      })
+      if (res.error) throw res.error
+      const e = res.data.enriched[0]
+      const data: CharData = {
+        phonetic: e.phonetic_annotation || null,
+        translation: e.translation || null,
+        note: e.character_note || null
+      }
+      cache.set(key, data)
+      charData = data
+    } catch {
+      fetchError = true
+    }
+  })
 </script>
 
 <dialog
@@ -61,11 +88,11 @@
   <div class="stroke-area">
     {#if language === 'zh'}
       <div {@attach initWriter} class="writer-container" aria-hidden="true"></div>
-      {#if errorMsg}
-        <p class="stroke-error">{errorMsg}</p>
+      {#if writerError}
+        <p class="detail-error">{writerError}</p>
       {/if}
     {:else}
-      <p class="stroke-error">Stroke order is only available for Mandarin Chinese.</p>
+      <p class="detail-error">Stroke order is only available for Mandarin Chinese.</p>
     {/if}
   </div>
 
@@ -75,16 +102,20 @@
     </button>
   </div>
 
-  {#if phonetic}
-    <p class="detail-phonetic">{phonetic}</p>
-  {/if}
-
-  {#if translation}
-    <p class="detail-translation">{translation}</p>
-  {/if}
-
-  {#if note}
-    <p class="detail-note">{note}</p>
+  {#if charData}
+    {#if charData.phonetic}
+      <p class="detail-phonetic">{charData.phonetic}</p>
+    {/if}
+    {#if charData.translation}
+      <p class="detail-translation">{charData.translation}</p>
+    {/if}
+    {#if charData.note}
+      <p class="detail-note">{charData.note}</p>
+    {/if}
+  {:else if fetchError}
+    <p class="detail-error">Could not load character details.</p>
+  {:else}
+    <p class="detail-loading" aria-live="polite">Loading…</p>
   {/if}
 </dialog>
 
@@ -138,12 +169,6 @@
     height: 200px;
   }
 
-  .stroke-error {
-    font-size: var(--font-size-1);
-    color: var(--color-text-muted);
-    text-align: center;
-  }
-
   .modal-actions {
     display: flex;
     justify-content: center;
@@ -183,6 +208,20 @@
     color: var(--color-text-muted);
     text-align: center;
     font-style: italic;
+    margin: 0;
+  }
+
+  .detail-error {
+    font-size: var(--font-size-1);
+    color: var(--color-text-muted);
+    text-align: center;
+    margin: 0;
+  }
+
+  .detail-loading {
+    font-size: var(--font-size-1);
+    color: var(--color-text-muted);
+    text-align: center;
     margin: 0;
   }
 </style>

@@ -22,7 +22,7 @@
   const listId = $derived(page.params.id)
   const busy = $derived(addingWords || enriching || scanLoading || reenrichingId !== null)
 
-  let modalChar = $state<{ char: string; phonetic: string | null; translation: string | null; note: string } | null>(null)
+  let modalChar = $state<{ char: string } | null>(null)
 
   async function loadList() {
     const { data, error } = await supabase.from('word_lists').select('*').eq('id', listId).single()
@@ -197,7 +197,7 @@
               {#each splitCharacters(word.character) as char, i (i)}
                 <button
                   class="char-btn"
-                  onclick={() => modalChar = { char, phonetic: word.phonetic_annotation, translation: word.translation, note: word.character_note ?? '' }}
+                  onclick={() => modalChar = { char }}
                   aria-label="Details for {char}"
                   lang={list?.language ?? 'zh'}
                 >{char}</button>
@@ -231,9 +231,6 @@
     <CharacterModal
       character={modalChar.char}
       language={list?.language ?? 'zh'}
-      phonetic={modalChar.phonetic}
-      translation={modalChar.translation}
-      note={modalChar.note}
       onclose={() => modalChar = null}
     />
   {/if}
