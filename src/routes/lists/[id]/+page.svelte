@@ -19,6 +19,7 @@
 
   const activeProfile = $derived(getActiveProfile())
   const listId = $derived(page.params.id)
+  const busy = $derived(addingWords || enriching || scanLoading || reenrichingId !== null)
 
   async function loadList() {
     const { data, error } = await supabase.from('word_lists').select('*').eq('id', listId).single()
@@ -166,8 +167,8 @@
   {#if list}
     <div class="list-header">
       <h1>{list.name}</h1>
-      <a href="/practice?listId={list.id}" class="practice-link">Practice</a>
-      <a href="/lists">← All lists</a>
+      <a href="/practice?listId={list.id}" class="practice-link" class:disabled={busy} onclick={(e) => { if (busy) e.preventDefault() }}>Practice</a>
+      <a href="/lists" class:disabled={busy} onclick={(e) => { if (busy) e.preventDefault() }}>← All lists</a>
     </div>
 
     <div
@@ -207,7 +208,7 @@
             <div class="word-actions">
               <button
                 onclick={() => handleReenrich(word)}
-                disabled={reenrichingId === word.id}
+                disabled={busy}
                 aria-label="Re-enrich {word.character}"
               >
                 {reenrichingId === word.id ? '…' : 'Re-enrich'}
@@ -215,6 +216,7 @@
               <button
                 class="danger"
                 onclick={() => handleDeleteWord(word.id)}
+                disabled={busy}
                 aria-label="Delete {word.character}"
               >Delete</button>
             </div>
@@ -279,6 +281,12 @@
     border-radius: var(--radius);
     text-decoration: none;
     font-weight: var(--font-weight-6);
+  }
+
+  a.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
   }
 
   .enriching-banner {
