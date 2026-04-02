@@ -7,6 +7,7 @@
   import { onMount } from 'svelte'
   import { supabase } from '$lib/supabase.ts'
   import { speak } from '$lib/audio.ts'
+  import type { Character } from '$lib/types.ts'
 
   const {
     character,
@@ -51,10 +52,29 @@
 
   onMount(async () => {
     const key = `${language}:${character}`
+
+    // L1: module cache
     if (cache.has(key)) {
       charData = cache.get(key)!
       return
     }
+
+    // L2: characters table
+    const { data: row } = await supabase
+      .from('characters')
+      .select('phonetic, translation, note')
+      .eq('character', character)
+      .eq('language', language)
+      .maybeSingle()
+
+    if (row) {
+      const data: CharData = { phonetic: (row as Character).phonetic, translation: (row as Character).translation, note: (row as Character).note }
+      cache.set(key, data)
+      charData = data
+      return
+    }
+
+    // L3: Gemini via edge function
     try {
       const res = await supabase.functions.invoke('enrich-words', {
         body: { words: [character], language }
@@ -66,6 +86,13 @@
         translation: e.translation || null,
         note: e.character_note || null
       }
+
+      // persist for future sessions — fire-and-forget
+      supabase.from('characters').upsert(
+        { character, language, phonetic: data.phonetic, translation: data.translation, note: data.note },
+        { onConflict: 'character,language' }
+      )
+
       cache.set(key, data)
       charData = data
     } catch {
