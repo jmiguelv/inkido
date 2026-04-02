@@ -1,73 +1,74 @@
 <script lang="ts">
   import { supabase } from '$lib/supabase.ts'
   import { goto } from '$app/navigation'
-  import { setActiveChild, getActiveChild } from '$lib/stores.svelte.ts'
-  import type { ChildProfile } from '$lib/types.ts'
+  import { setActiveProfile, getActiveProfile } from '$lib/stores.svelte.ts'
+  import { onMount } from 'svelte'
+  import type { Profile } from '$lib/types.ts'
 
-  let children = $state<ChildProfile[]>([])
-  let newChildName = $state('')
+  let profiles = $state<Profile[]>([])
+  let newProfileName = $state('')
   let errorMsg = $state('')
   let loading = $state(false)
 
-  const activeChild = $derived(getActiveChild())
+  const activeProfile = $derived(getActiveProfile())
 
-  async function loadChildren() {
-    const { data, error } = await supabase.from('child_profiles').select('*').order('created_at')
+  async function loadProfiles() {
+    const { data, error } = await supabase.from('profiles').select('*').order('created_at')
     if (error) throw error
-    children = data as ChildProfile[]
+    profiles = data as Profile[]
   }
 
-  async function handleAddChild() {
-    if (!newChildName.trim()) return
+  async function handleAddProfile() {
+    if (!newProfileName.trim()) return
     errorMsg = ''
     loading = true
     try {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('Not authenticated')
-      const { error } = await supabase.from('child_profiles').insert({ name: newChildName.trim(), parent_id: user.id })
+      const { error } = await supabase.from('profiles').insert({ name: newProfileName.trim(), parent_id: user.id })
       if (error) throw error
-      newChildName = ''
-      await loadChildren()
+      newProfileName = ''
+      await loadProfiles()
     } catch (e) {
-      errorMsg = e instanceof Error ? e.message : 'Failed to add child'
+      errorMsg = e instanceof Error ? e.message : 'Failed to add profile'
     } finally {
       loading = false
     }
   }
 
-  async function handleDeleteChild(id: string) {
-    const { error } = await supabase.from('child_profiles').delete().eq('id', id)
+  async function handleDeleteProfile(id: string) {
+    const { error } = await supabase.from('profiles').delete().eq('id', id)
     if (error) throw error
-    if (activeChild?.id === id) setActiveChild(children.find(c => c.id !== id) ?? null as unknown as ChildProfile)
-    await loadChildren()
+    if (activeProfile?.id === id) setActiveProfile(profiles.find(p => p.id !== id) ?? null as unknown as Profile)
+    await loadProfiles()
   }
 
-  function handleSelectChild(child: ChildProfile) {
-    setActiveChild(child)
+  function handleSelectProfile(profile: Profile) {
+    setActiveProfile(profile)
     goto('/lists')
   }
 
-  $effect(() => {
-    loadChildren()
+  onMount(() => {
+    loadProfiles()
   })
 </script>
 
 <section>
   <h1>Dashboard</h1>
 
-  <h2>Children</h2>
+  <h2>Profiles</h2>
 
-  {#if children.length === 0}
-    <p>No children yet. Add one below.</p>
+  {#if profiles.length === 0}
+    <p>No profiles yet. Add one below.</p>
   {:else}
-    <ul class="child-list">
-      {#each children as child (child.id)}
+    <ul class="profile-list">
+      {#each profiles as profile (profile.id)}
         <li>
-          <article class="child-card" class:active={activeChild?.id === child.id}>
-            <span class="child-name">{child.name}</span>
-            <div class="child-actions">
-              <button onclick={() => handleSelectChild(child)}>Select</button>
-              <button class="danger" onclick={() => handleDeleteChild(child.id)} aria-label="Delete {child.name}">Delete</button>
+          <article class="profile-card" class:active={activeProfile?.id === profile.id}>
+            <span class="profile-name">{profile.name}</span>
+            <div class="profile-actions">
+              <button onclick={() => handleSelectProfile(profile)}>Select</button>
+              <button class="danger" onclick={() => handleDeleteProfile(profile.id)} aria-label="Delete {profile.name}">Delete</button>
             </div>
           </article>
         </li>
@@ -75,17 +76,17 @@
     </ul>
   {/if}
 
-  <form onsubmit={(e) => { e.preventDefault(); handleAddChild() }} class="add-child-form">
-    <h3>Add a child</h3>
+  <form onsubmit={(e) => { e.preventDefault(); handleAddProfile() }} class="add-profile-form">
+    <h3>Add a profile</h3>
     <div class="field">
-      <label for="child-name">Name</label>
-      <input id="child-name" type="text" bind:value={newChildName} required placeholder="e.g. Alice" />
+      <label for="profile-name">Name</label>
+      <input id="profile-name" type="text" bind:value={newProfileName} required placeholder="e.g. Alice" />
     </div>
     {#if errorMsg}
       <output role="alert" class="error">{errorMsg}</output>
     {/if}
     <button type="submit" disabled={loading}>
-      {loading ? 'Adding…' : 'Add child'}
+      {loading ? 'Adding…' : 'Add profile'}
     </button>
   </form>
 </section>
@@ -101,7 +102,7 @@
     margin: 0 0 var(--size-4);
   }
 
-  .child-list {
+  .profile-list {
     list-style: none;
     padding: 0;
     margin: 0 0 var(--size-6);
@@ -110,14 +111,14 @@
   }
 
   @media (min-width: 600px) {
-    .child-list { grid-template-columns: repeat(2, 1fr); }
+    .profile-list { grid-template-columns: repeat(2, 1fr); }
   }
 
   @media (min-width: 900px) {
-    .child-list { grid-template-columns: repeat(3, 1fr); }
+    .profile-list { grid-template-columns: repeat(3, 1fr); }
   }
 
-  .child-card {
+  .profile-card {
     background: var(--color-surface);
     border: var(--border-width) solid var(--color-border);
     border-radius: var(--radius);
@@ -129,21 +130,21 @@
     transition: border-color var(--transition-speed);
   }
 
-  .child-card.active {
+  .profile-card.active {
     border-color: var(--color-accent);
   }
 
-  .child-name {
+  .profile-name {
     font-weight: var(--font-weight-6);
     font-size: var(--font-size-3);
   }
 
-  .child-actions {
+  .profile-actions {
     display: flex;
     gap: var(--size-2);
   }
 
-  .child-actions button {
+  .profile-actions button {
     padding: var(--size-1) var(--size-3);
     border-radius: var(--radius);
     font-size: var(--font-size-1);
@@ -153,17 +154,17 @@
     transition: all var(--transition-speed);
   }
 
-  .child-actions button:hover {
+  .profile-actions button:hover {
     border-color: var(--color-accent);
     color: var(--color-accent);
   }
 
-  .child-actions button.danger:hover {
+  .profile-actions button.danger:hover {
     border-color: var(--color-danger);
     color: var(--color-danger);
   }
 
-  .add-child-form {
+  .add-profile-form {
     background: var(--color-surface);
     border: var(--border-width) solid var(--color-border);
     border-radius: var(--radius);

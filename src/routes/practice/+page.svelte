@@ -2,8 +2,9 @@
   import { page } from '$app/state'
   import { supabase } from '$lib/supabase.ts'
   import { goto } from '$app/navigation'
-  import { getActiveChild } from '$lib/stores.svelte.ts'
+  import { getActiveProfile } from '$lib/stores.svelte.ts'
   import { speak, unlockAudio } from '$lib/audio.ts'
+  import { onMount } from 'svelte'
   import CharacterDisplay from '$lib/components/CharacterDisplay.svelte'
   import type { Word, WordList } from '$lib/types.ts'
 
@@ -13,7 +14,7 @@
   let flipped = $state(false)
   let errorMsg = $state('')
 
-  const activeChild = $derived(getActiveChild())
+  const activeProfile = $derived(getActiveProfile())
   const listId = $derived(page.url.searchParams.get('listId') ?? '')
   const currentWord = $derived(words[currentIndex] ?? null)
 
@@ -61,8 +62,8 @@
     }
   }
 
-  $effect(() => {
-    if (!activeChild) { goto('/'); return }
+  onMount(() => {
+    if (!activeProfile) { goto('/'); return }
     loadPractice()
   })
 </script>

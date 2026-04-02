@@ -13,43 +13,42 @@ const sessionStorageMock = (() => {
 
 vi.stubGlobal('sessionStorage', sessionStorageMock)
 
-const { getActiveChild, setActiveChild, clearActiveChild, initActiveChild } =
+const { getActiveProfile, setActiveProfile, clearActiveProfile, initActiveProfile } =
   await import('../../src/lib/stores.svelte.ts')
 
-describe('activeChild', () => {
+describe('activeProfile', () => {
   beforeEach(() => {
     sessionStorageMock.clear()
-    clearActiveChild()
+    clearActiveProfile()
   })
 
-  it('activeChild_initialState_isNull', () => {
-    expect(getActiveChild()).toBeNull()
+  it('activeProfile_initialState_isNull', () => {
+    expect(getActiveProfile()).toBeNull()
   })
 
-  it('activeChild_setAndGet_persistsToSessionStorage', () => {
-    const child = { id: '1', parent_id: 'p1', name: 'Alice', created_at: '2024-01-01' }
-    setActiveChild(child)
+  it('activeProfile_setAndGet_persistsToSessionStorage', () => {
+    const profile = { id: '1', parent_id: 'p1', name: 'Alice', created_at: '2024-01-01' }
+    setActiveProfile(profile)
 
-    expect(getActiveChild()).toEqual(child)
-    expect(JSON.parse(sessionStorageMock.getItem('inkido:activeChild') ?? 'null')).toEqual(child)
+    expect(getActiveProfile()).toEqual(profile)
+    expect(JSON.parse(sessionStorageMock.getItem('inkido:activeProfile') ?? 'null')).toEqual(profile)
   })
 
-  it('activeChild_logout_clearsSessionStorage', () => {
-    const child = { id: '1', parent_id: 'p1', name: 'Alice', created_at: '2024-01-01' }
-    setActiveChild(child)
-    clearActiveChild()
+  it('activeProfile_logout_clearsSessionStorage', () => {
+    const profile = { id: '1', parent_id: 'p1', name: 'Alice', created_at: '2024-01-01' }
+    setActiveProfile(profile)
+    clearActiveProfile()
 
-    expect(getActiveChild()).toBeNull()
-    expect(sessionStorageMock.getItem('inkido:activeChild')).toBeNull()
+    expect(getActiveProfile()).toBeNull()
+    expect(sessionStorageMock.getItem('inkido:activeProfile')).toBeNull()
   })
 
-  it('activeChild_persistsAcrossPageRefresh_loadsFromSessionStorage', () => {
-    const child = { id: '2', parent_id: 'p1', name: 'Bob', created_at: '2024-01-01' }
-    sessionStorageMock.setItem('inkido:activeChild', JSON.stringify(child))
+  it('activeProfile_persistsAcrossPageRefresh_loadsFromSessionStorage', () => {
+    const profile = { id: '2', parent_id: 'p1', name: 'Bob', created_at: '2024-01-01' }
+    sessionStorageMock.setItem('inkido:activeProfile', JSON.stringify(profile))
 
-    // Simulate page refresh: re-run the init that reads from sessionStorage
-    initActiveChild()
+    initActiveProfile()
 
-    expect(getActiveChild()).toEqual(child)
+    expect(getActiveProfile()).toEqual(profile)
   })
 })

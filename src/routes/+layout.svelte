@@ -3,7 +3,7 @@
   import { supabase } from '$lib/supabase.ts'
   import { goto } from '$app/navigation'
   import { page } from '$app/state'
-  import { initActiveChild, getActiveChild, clearActiveChild } from '$lib/stores.svelte.ts'
+  import { initActiveProfile, getActiveProfile, clearActiveProfile } from '$lib/stores.svelte.ts'
   import { onMount } from 'svelte'
 
   const PUBLIC_ROUTES = ['/auth/login', '/auth/signup', '/auth/confirm', '/auth/callback', '/auth/reset']
@@ -13,7 +13,7 @@
   let session = $state<Awaited<ReturnType<typeof supabase.auth.getSession>>['data']['session']>(null)
 
   onMount(() => {
-    initActiveChild()
+    initActiveProfile()
 
     supabase.auth.getSession().then(({ data }) => {
       session = data.session
@@ -33,12 +33,12 @@
   })
 
   async function handleLogout() {
-    clearActiveChild()
+    clearActiveProfile()
     await supabase.auth.signOut()
     goto('/auth/login')
   }
 
-  const activeChild = $derived(getActiveChild())
+  const activeProfile = $derived(getActiveProfile())
   const isPublicRoute = $derived(PUBLIC_ROUTES.includes(page.url.pathname))
 </script>
 
@@ -49,8 +49,8 @@
     <nav>
       <a href="/" class="brand">Inkido</a>
       <div class="nav-right">
-        {#if activeChild}
-          <span class="active-child">{activeChild.name}</span>
+        {#if activeProfile}
+          <span class="active-profile">{activeProfile.name}</span>
         {/if}
         <a href="/lists">Lists</a>
         <a href="/settings">Settings</a>
@@ -92,7 +92,7 @@
     gap: var(--size-4);
   }
 
-  .active-child {
+  .active-profile {
     font-weight: var(--font-weight-6);
     color: var(--color-text-muted);
     font-size: var(--font-size-1);

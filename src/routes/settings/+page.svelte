@@ -1,6 +1,7 @@
 <script lang="ts">
   import { supabase } from '$lib/supabase.ts'
   import { goto } from '$app/navigation'
+  import { onMount } from 'svelte'
   import type { UserPreferences } from '$lib/types.ts'
 
   let speechRate = $state(0.75)
@@ -42,7 +43,7 @@
     goto('/auth/login')
   }
 
-  $effect(() => {
+  onMount(() => {
     loadPreferences()
   })
 </script>

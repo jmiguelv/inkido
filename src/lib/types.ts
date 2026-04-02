@@ -1,4 +1,4 @@
-export interface ChildProfile {
+export interface Profile {
   id: string
   parent_id: string
   name: string
@@ -7,7 +7,7 @@ export interface ChildProfile {
 
 export interface WordList {
   id: string
-  child_id: string
+  profile_id: string
   name: string
   language: string        // BCP 47
   last_practiced: string | null

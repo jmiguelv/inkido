@@ -1,24 +1,24 @@
-import type { ChildProfile } from './types.ts'
+import type { Profile } from './types.ts'
 
-const STORAGE_KEY = 'inkido:activeChild'
+const STORAGE_KEY = 'inkido:activeProfile'
 
-let activeChild = $state<ChildProfile | null>(null)
+let activeProfile = $state<Profile | null>(null)
 
-export function initActiveChild(): void {
+export function initActiveProfile(): void {
   const stored = sessionStorage.getItem(STORAGE_KEY)
-  activeChild = stored ? (JSON.parse(stored) as ChildProfile) : null
+  activeProfile = stored ? (JSON.parse(stored) as Profile) : null
 }
 
-export function getActiveChild(): ChildProfile | null {
-  return activeChild
+export function getActiveProfile(): Profile | null {
+  return activeProfile
 }
 
-export function setActiveChild(child: ChildProfile): void {
-  activeChild = child
-  sessionStorage.setItem(STORAGE_KEY, JSON.stringify(child))
+export function setActiveProfile(profile: Profile): void {
+  activeProfile = profile
+  sessionStorage.setItem(STORAGE_KEY, JSON.stringify(profile))
 }
 
-export function clearActiveChild(): void {
-  activeChild = null
+export function clearActiveProfile(): void {
+  activeProfile = null
   sessionStorage.removeItem(STORAGE_KEY)
 }

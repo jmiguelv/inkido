@@ -2,7 +2,8 @@
   import { page } from '$app/state'
   import { supabase } from '$lib/supabase.ts'
   import { goto } from '$app/navigation'
-  import { getActiveChild } from '$lib/stores.svelte.ts'
+  import { getActiveProfile } from '$lib/stores.svelte.ts'
+  import { onMount } from 'svelte'
   import CharacterDisplay from '$lib/components/CharacterDisplay.svelte'
   import type { Word, WordList } from '$lib/types.ts'
 
@@ -15,7 +16,7 @@
   let scanLoading = $state(false)
   let reenrichingId = $state<string | null>(null)
 
-  const activeChild = $derived(getActiveChild())
+  const activeProfile = $derived(getActiveProfile())
   const listId = $derived(page.params.id)
 
   async function loadList() {
@@ -146,8 +147,8 @@
     }
   }
 
-  $effect(() => {
-    if (!activeChild) { goto('/'); return }
+  onMount(() => {
+    if (!activeProfile) { goto('/'); return }
     loadList()
     loadWords()
   })

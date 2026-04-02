@@ -1,7 +1,8 @@
 <script lang="ts">
   import { supabase } from '$lib/supabase.ts'
   import { goto } from '$app/navigation'
-  import { getActiveChild } from '$lib/stores.svelte.ts'
+  import { getActiveProfile } from '$lib/stores.svelte.ts'
+  import { onMount } from 'svelte'
   import type { WordList } from '$lib/types.ts'
 
   const LANGUAGES = [
@@ -18,26 +19,26 @@
   let renamingId = $state<string | null>(null)
   let renameValue = $state('')
 
-  const activeChild = $derived(getActiveChild())
+  const activeProfile = $derived(getActiveProfile())
 
   async function loadLists() {
-    if (!activeChild) return
+    if (!activeProfile) return
     const { data, error } = await supabase
       .from('word_lists')
       .select('*')
-      .eq('child_id', activeChild.id)
+      .eq('profile_id', activeProfile.id)
       .order('created_at')
     if (error) throw error
     lists = data as WordList[]
   }
 
   async function handleCreateList() {
-    if (!newListName.trim() || !activeChild) return
+    if (!newListName.trim() || !activeProfile) return
     errorMsg = ''
     loading = true
     try {
       const { error } = await supabase.from('word_lists').insert({
-        child_id: activeChild.id,
+        profile_id: activeProfile.id,
         name: newListName.trim(),
         language: newListLanguage
       })
@@ -70,8 +71,8 @@
     await loadLists()
   }
 
-  $effect(() => {
-    if (!activeChild) {
+  onMount(() => {
+    if (!activeProfile) {
       goto('/')
       return
     }
@@ -80,7 +81,7 @@
 </script>
 
 <section>
-  <h1>{activeChild?.name ?? ''}'s Lists</h1>
+  <h1>{activeProfile?.name ?? ''}'s Lists</h1>
 
   {#if lists.length === 0}
     <p>No lists yet. Create one below.</p>

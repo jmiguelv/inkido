@@ -1,42 +1,107 @@
-# sv
+# Inkido
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+A web app that helps children practise spelling tests for character-based scripts (Mandarin Chinese, Japanese, Arabic, and more).
 
-## Creating a project
+## Tech Stack
 
-If you're seeing this, you've probably already done this step. Congrats!
+- **Frontend**: SvelteKit 2 + Svelte 5 (runes) + TypeScript
+- **Backend / Auth**: Supabase (Postgres + Auth + Edge Functions)
+- **AI**: Gemini 2.5 Flash (via Supabase Edge Functions)
+- **CSS**: OpenProps design tokens
+- **Deployment**: Vercel (static adapter)
 
-```sh
-# create a new project
-npx sv create my-app
-```
+## Prerequisites
 
-To recreate this project with the same configuration:
+- [pnpm](https://pnpm.io) v10+
+- [Docker](https://www.docker.com) (for local Supabase)
+- A [Supabase](https://supabase.com) project
+- A [Gemini API key](https://aistudio.google.com)
 
-```sh
-# recreate this project
-pnpm dlx sv@0.13.1 create --template minimal --types ts --add vitest="usages:unit" playwright sveltekit-adapter="adapter:static" --no-download-check --install pnpm .
-```
+## Getting started
 
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```sh
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
+### 1. Install dependencies
 
 ```sh
-npm run build
+pnpm install
 ```
 
-You can preview the production build with `npm run preview`.
+### 2. Set environment variables
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+Copy `.env.example` to `.env` and fill in your values:
+
+```sh
+cp .env.example .env
+```
+
+```sh
+# .env
+PUBLIC_SUPABASE_URL=https://<your-project-ref>.supabase.co
+PUBLIC_SUPABASE_PUBLISHABLE_KEY=<your-publishable-key>
+```
+
+### 3. Apply the database migration
+
+Link to your Supabase project and push the migration:
+
+```sh
+pnpm supabase login
+pnpm supabase link --project-ref <your-project-ref>
+pnpm supabase db push
+```
+
+### 4. Set the Gemini API key as a Supabase secret
+
+```sh
+pnpm supabase secrets set GEMINI_API_KEY=<your-key>
+```
+
+### 5. Deploy Edge Functions
+
+```sh
+pnpm supabase functions deploy enrich-words
+pnpm supabase functions deploy extract-from-image
+```
+
+### 6. Start the dev server
+
+```sh
+pnpm dev
+```
+
+## Local Supabase (optional)
+
+To run Supabase locally instead of against the remote project:
+
+```sh
+# Start local Supabase stack (requires Docker)
+pnpm supabase start
+
+# Apply migrations locally
+pnpm supabase db reset
+
+# Set secrets locally
+pnpm supabase secrets set GEMINI_API_KEY=<your-key>
+
+# Serve Edge Functions locally
+pnpm supabase functions serve
+```
+
+## Scripts
+
+| Command | Description |
+|---|---|
+| `pnpm dev` | Start dev server |
+| `pnpm build` | Build for production |
+| `pnpm preview` | Preview production build |
+| `pnpm test:unit` | Run unit tests (Vitest) |
+| `pnpm test:e2e` | Run E2E tests (Playwright) |
+| `pnpm test` | Run all tests |
+| `pnpm check` | Type-check with svelte-check |
+| `pnpm supabase` | Run Supabase CLI commands |
+
+## Auth configuration
+
+This app uses **passwordless magic link** authentication via Supabase. In your Supabase dashboard:
+
+1. **Authentication → Providers → Email**: enable "Email OTP / Magic Link"
+2. **Authentication → URL Configuration**: set your site URL and add `/auth/callback` to the redirect allow list
