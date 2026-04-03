@@ -8,6 +8,8 @@
 @import 'open-props/normalize';
 
 :root {
+  color-scheme: light only;
+
   /* Palette */
   --color-bg:           #FFFBF0;
   --color-surface:      #FFFFFF;
