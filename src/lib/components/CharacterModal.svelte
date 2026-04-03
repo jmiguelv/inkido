@@ -114,14 +114,15 @@
 
   <div class="stroke-area">
     {#if language === 'zh'}
-      {#key viewChar}
-        <div {@attach initWriter} class="writer-container" aria-hidden="true"></div>
-      {/key}
       {#if writerError}
-        <p class="detail-error">{writerError}</p>
+        <div class="char-fallback" lang={language}>{viewChar}</div>
+      {:else}
+        {#key viewChar}
+          <div {@attach initWriter} class="writer-container" aria-hidden="true"></div>
+        {/key}
       {/if}
     {:else}
-      <p class="detail-error">Stroke order is only available for Mandarin Chinese.</p>
+      <div class="char-fallback" lang={language}>{viewChar}</div>
     {/if}
   </div>
 
@@ -261,6 +262,18 @@
   .writer-container {
     width: 200px;
     height: 200px;
+  }
+
+  .char-fallback {
+    width: 200px;
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 7rem;
+    line-height: 1;
+    border: var(--border);
+    background: var(--color-bg);
   }
 
   .modal-actions {
