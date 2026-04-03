@@ -15,11 +15,11 @@
   --color-text-muted:   #5A5A5A;
   --color-border:       #0A0A0A;
 
-  /* Pastel family */
-  --color-mint:         #A8EDBB;
-  --color-rose:         #FFB3C1;
-  --color-sky:          #B8D4FF;
-  --color-lavender:     #E8C4FF;
+  /* Pastel family — all light enough for --color-text-muted (#5A5A5A) text at ≥4.5:1 */
+  --color-mint:         #C4F2D1;
+  --color-rose:         #FFD8DF;
+  --color-sky:          #CCE4FF;
+  --color-lavender:     #F0D9FF;
   --color-lemon:        #FBFF4A;
 
   /* Semantic aliases */
