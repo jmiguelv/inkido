@@ -121,6 +121,8 @@ async function importChars(): Promise<void> {
     if (!line.trim()) continue
     const entry = JSON.parse(line)
 
+    if (!entry.char) continue
+
     batch.push({
       char: entry.char,
       gloss: entry.gloss ?? null,
