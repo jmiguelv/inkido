@@ -7,8 +7,8 @@
   --color-surface:    var(--gray-0);                  /* #f8f9fa */
   --color-text:       var(--gray-9);                  /* #212529 */
   --color-text-muted: var(--gray-6);                  /* #868e96 */
-  --color-accent:     var(--yellow-3);                /* #ffe066 — primary actions */
-  --color-accent-fg:  var(--gray-9);                  /* dark text on yellow */
+  --color-accent:     var(--gray-9);                  /* #212529 — dark bg for primary actions */
+  --color-accent-fg:  var(--yellow-3);                /* #ffe066 — yellow text on dark */
   --color-accent-2:   var(--blue-3);                  /* #74c0fc — info/highlights */
   --color-accent-3:   var(--red-5);                   /* #ff6b6b — coral */
   --color-danger:     var(--red-9);                   /* #c92a2a */
