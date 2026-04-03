@@ -120,22 +120,23 @@
 
   .profile-card {
     background: var(--color-surface);
-    border: var(--border-width) solid var(--color-border);
-    border-radius: var(--radius);
+    border: var(--border);
+    border-radius: 0;
     padding: var(--size-4);
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: var(--size-3);
-    transition: border-color var(--transition-speed);
+    box-shadow: var(--shadow-sm);
   }
 
   .profile-card.active {
-    border-color: var(--color-accent);
+    background: var(--color-lemon);
+    box-shadow: var(--shadow);
   }
 
   .profile-name {
-    font-weight: var(--font-weight-6);
+    font-weight: 700;
     font-size: var(--font-size-3);
   }
 
@@ -146,30 +147,39 @@
 
   .profile-actions button {
     padding: var(--size-1) var(--size-3);
-    border-radius: var(--radius);
+    border-radius: 0;
     font-size: var(--font-size-1);
-    border: var(--border-width) solid var(--color-border);
+    font-weight: 700;
+    border: var(--border);
     background: var(--color-surface);
     color: var(--color-text);
-    transition: all var(--transition-speed);
+    box-shadow: var(--shadow-sm);
   }
 
-  .profile-actions button:hover {
-    border-color: var(--color-accent);
-    color: var(--color-accent);
+  .profile-actions button:hover:not(:disabled) {
+    transform: translate(-2px, -2px);
+    box-shadow: 2px 2px 0 var(--color-border);
+  }
+
+  .profile-actions button:active:not(:disabled) {
+    transform: translate(0, 0);
+    box-shadow: none;
   }
 
   .profile-actions button.danger:hover {
-    border-color: var(--color-danger);
-    color: var(--color-danger);
+    background: var(--color-danger);
+    color: var(--color-danger-fg);
+    transform: translate(-2px, -2px);
+    box-shadow: 2px 2px 0 var(--color-border);
   }
 
   .add-profile-form {
     background: var(--color-surface);
-    border: var(--border-width) solid var(--color-border);
-    border-radius: var(--radius);
+    border: var(--border);
+    border-radius: 0;
     padding: var(--size-6);
     max-width: 400px;
+    box-shadow: var(--shadow);
   }
 
   h3 {
@@ -186,41 +196,26 @@
 
   label {
     font-size: var(--font-size-1);
-    font-weight: var(--font-weight-6);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
   }
 
   input {
     padding: var(--size-2) var(--size-3);
-    border: var(--border-width) solid var(--color-border);
-    border-radius: var(--radius);
     font-size: var(--font-size-2);
-  }
-
-  input:focus {
-    outline: 2px solid var(--color-accent);
-    outline-offset: 1px;
-    border-color: var(--color-accent);
   }
 
   .error {
     display: block;
     color: var(--color-danger);
     font-size: var(--font-size-1);
+    font-weight: 700;
     margin-bottom: var(--size-3);
   }
 
   button[type="submit"] {
     padding: var(--size-2) var(--size-5);
-    background: var(--color-accent);
-    color: var(--color-accent-fg);
-    border: none;
-    border-radius: var(--radius);
     font-size: var(--font-size-2);
-    font-weight: var(--font-weight-6);
-  }
-
-  button[type="submit"]:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
   }
 </style>

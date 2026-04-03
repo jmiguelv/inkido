@@ -178,17 +178,8 @@
     width: 100%;
     max-width: 480px;
     padding: var(--size-2) var(--size-4);
-    border: var(--border-width) solid var(--color-border);
-    border-radius: var(--radius);
+    border-radius: 0;
     font-size: var(--font-size-2);
-    background: var(--color-surface);
-    color: var(--color-text);
-  }
-
-  input[type="search"]:focus {
-    outline: 2px solid var(--color-accent);
-    outline-offset: 1px;
-    border-color: var(--color-accent);
   }
 
   .state-msg {
@@ -205,20 +196,21 @@
   thead th {
     text-align: left;
     padding: var(--size-2) var(--size-3);
-    border-bottom: var(--border-width) solid var(--color-border);
+    border-bottom: var(--border);
     font-size: var(--font-size-0);
-    font-weight: var(--font-weight-7);
-    color: var(--color-text-muted);
+    font-weight: 800;
+    font-family: var(--font-display);
+    color: var(--color-text);
     text-transform: uppercase;
     letter-spacing: 0.05em;
   }
 
   tbody tr {
-    border-bottom: 1px solid var(--color-border);
+    border-bottom: var(--border);
     transition: background var(--transition-speed);
   }
 
-  tbody tr:hover { background: var(--color-surface); }
+  tbody tr:hover { background: var(--color-sky); }
 
   tbody td {
     padding: var(--size-2) var(--size-3);

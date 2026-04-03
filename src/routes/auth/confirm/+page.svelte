@@ -17,10 +17,10 @@
   }
 
   .auth-card {
-    background: var(--color-surface);
-    border: var(--border-width) solid var(--color-border);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
+    background: var(--color-mint);
+    border: var(--border);
+    border-radius: 0;
+    box-shadow: var(--shadow-lg);
     padding: var(--size-8);
     width: 100%;
     max-width: 400px;
@@ -30,6 +30,7 @@
   h1 {
     margin: 0 0 var(--size-4);
     font-size: var(--font-size-6);
+    text-transform: uppercase;
   }
 
   p {

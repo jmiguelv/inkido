@@ -162,10 +162,10 @@
 
 <style>
   dialog {
-    background: var(--color-bg);
-    border: none;
-    border-radius: var(--radius);
-    box-shadow: var(--shadow-4);
+    background: var(--color-surface);
+    border: var(--border);
+    border-radius: 0;
+    box-shadow: var(--shadow-lg);
     padding: var(--size-6);
     width: min(320px, 90vw);
     display: flex;
@@ -174,7 +174,7 @@
   }
 
   dialog::backdrop {
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(10, 10, 10, 0.65);
   }
 
   .modal-header {
@@ -191,32 +191,57 @@
 
   .modal-char {
     font-size: var(--font-size-fluid-2);
-    font-weight: var(--font-weight-7);
+    font-family: var(--font-display);
+    font-weight: 800;
   }
 
   .back-btn {
-    background: none;
-    border: none;
+    background: var(--color-surface);
+    border: var(--border);
+    border-radius: 0;
     font-size: var(--font-size-3);
-    color: var(--color-text-muted);
+    color: var(--color-text);
     cursor: pointer;
-    padding: var(--size-1);
+    padding: var(--size-1) var(--size-2);
     line-height: 1;
+    font-weight: 700;
+    box-shadow: var(--shadow-sm);
   }
 
-  .back-btn:hover { color: var(--color-text); }
+  .back-btn:hover:not(:disabled) {
+    transform: translate(-2px, -2px);
+    box-shadow: 2px 2px 0 var(--color-border);
+  }
+
+  .back-btn:active:not(:disabled) {
+    transform: translate(0, 0);
+    box-shadow: none;
+  }
 
   .close-btn {
-    background: none;
-    border: none;
+    background: var(--color-surface);
+    border: var(--border);
+    border-radius: 0;
     font-size: var(--font-size-3);
-    color: var(--color-text-muted);
+    color: var(--color-text);
     cursor: pointer;
-    padding: var(--size-1);
+    padding: var(--size-1) var(--size-2);
     line-height: 1;
+    font-weight: 700;
+    box-shadow: var(--shadow-sm);
   }
 
-  .close-btn:hover { color: var(--color-text); }
+  .close-btn:hover:not(:disabled) {
+    background: var(--color-danger);
+    color: var(--color-danger-fg);
+    transform: translate(-2px, -2px);
+    box-shadow: 2px 2px 0 var(--color-border);
+  }
+
+  .close-btn:active:not(:disabled) {
+    transform: translate(0, 0);
+    box-shadow: none;
+  }
 
   .detail-trad {
     font-size: var(--font-size-1);
@@ -242,17 +267,25 @@
 
   .audio-btn {
     padding: var(--size-2) var(--size-5);
-    border: var(--border-width) solid var(--color-border);
-    border-radius: var(--radius);
+    border: var(--border);
+    border-radius: 0;
     font-size: var(--font-size-2);
-    background: var(--color-surface);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    background: var(--color-sky);
     color: var(--color-text);
-    transition: all var(--transition-speed);
+    box-shadow: var(--shadow-sm);
   }
 
-  .audio-btn:hover {
-    border-color: var(--color-accent);
-    color: var(--color-accent);
+  .audio-btn:hover:not(:disabled) {
+    transform: translate(-2px, -2px);
+    box-shadow: 2px 2px 0 var(--color-border);
+  }
+
+  .audio-btn:active:not(:disabled) {
+    transform: translate(0, 0);
+    box-shadow: none;
   }
 
   .detail-phonetic {
@@ -264,7 +297,8 @@
 
   .detail-translation {
     font-size: var(--font-size-3);
-    font-weight: var(--font-weight-6);
+    font-weight: 700;
+    font-family: var(--font-display);
     text-align: center;
     margin: 0;
   }
@@ -279,40 +313,50 @@
 
   .components-label {
     font-size: var(--font-size-0);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
     color: var(--color-text-muted);
   }
 
   .components-sep {
     font-size: var(--font-size-1);
+    font-weight: 700;
     color: var(--color-text-muted);
   }
 
   .component-btn {
     font-size: var(--font-size-5);
     background: var(--color-surface);
-    border: var(--border-width) solid var(--color-border);
-    border-radius: var(--radius);
+    border: var(--border);
+    border-radius: 0;
     padding: var(--size-1) var(--size-3);
     cursor: pointer;
     line-height: 1;
-    transition: all var(--transition-speed);
+    box-shadow: var(--shadow-sm);
   }
 
-  .component-btn:hover {
-    border-color: var(--color-accent);
-    color: var(--color-accent);
+  .component-btn:hover:not(:disabled) {
+    background: var(--color-lemon);
+    transform: translate(-2px, -2px);
+    box-shadow: 2px 2px 0 var(--color-border);
+  }
+
+  .component-btn:active:not(:disabled) {
+    transform: translate(0, 0);
+    box-shadow: none;
   }
 
   .detail-hint {
     font-size: var(--font-size-1);
     color: var(--color-text);
-    text-align: center;
+    text-align: left;
     font-style: italic;
     margin: 0;
     padding: var(--size-2) var(--size-3);
-    background: var(--color-surface);
-    border-radius: var(--radius);
-    border-left: 3px solid var(--color-accent);
+    background: var(--color-mint);
+    border-radius: 0;
+    border-left: 4px solid var(--color-border);
   }
 
   .detail-note {

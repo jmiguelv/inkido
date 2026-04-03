@@ -5,7 +5,8 @@
   import { getActiveProfile } from '$lib/stores.svelte.ts'
   import { speak, unlockAudio } from '$lib/audio.ts'
   import { onMount } from 'svelte'
-  import CharacterDisplay from '$lib/components/CharacterDisplay.svelte'
+  import { splitCharacters } from '$lib/characters.ts'
+  import CharacterModal from '$lib/components/CharacterModal.svelte'
   import type { Word, WordList } from '$lib/types.ts'
 
   let list = $state<WordList | null>(null)
@@ -14,6 +15,7 @@
   let flipped = $state(false)
   let errorMsg = $state('')
   let speechRate = $state(0.75)
+  let modalChar = $state<string | null>(null)
 
   const activeProfile = $derived(getActiveProfile())
   const listId = $derived(page.params.id)
@@ -95,11 +97,18 @@
       >
         <div class="card-front">
           <div class="card-character">
-            <CharacterDisplay
-              character={currentWord.character}
-              phonetic={flipped ? currentWord.phonetic_annotation : null}
-              language={list.language}
-            />
+            <div class="char-row" lang={list.language}>
+              {#each splitCharacters(currentWord.character) as char, i (i)}
+                <button
+                  class="char-btn"
+                  onclick={(e) => { e.stopPropagation(); modalChar = char }}
+                  aria-label="Details for {char}"
+                >{char}</button>
+              {/each}
+            </div>
+            {#if flipped && currentWord.phonetic_annotation}
+              <p class="phonetic">{currentWord.phonetic_annotation}</p>
+            {/if}
           </div>
           <button
             class="audio-btn"
@@ -144,6 +153,14 @@
   {/if}
 </section>
 
+{#if modalChar && list}
+  <CharacterModal
+    character={modalChar}
+    language={list.language}
+    onclose={() => modalChar = null}
+  />
+{/if}
+
 <style>
   .practice {
     max-width: 600px;
@@ -159,6 +176,8 @@
 
   .progress {
     font-size: var(--font-size-1);
+    font-weight: 700;
+    font-family: var(--font-display);
     color: var(--color-text-muted);
   }
 
@@ -175,9 +194,9 @@
 
   .flashcard {
     background: var(--color-surface);
-    border: var(--border-width) solid var(--color-border);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
+    border: var(--border);
+    border-radius: 0;
+    box-shadow: var(--shadow-lg);
     padding: var(--size-8);
     min-height: 300px;
     display: flex;
@@ -189,8 +208,9 @@
     position: relative;
   }
 
-  .flashcard:hover { box-shadow: var(--shadow-4); }
-  .flashcard:focus { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+  .flashcard:hover { box-shadow: var(--shadow); }
+  .flashcard.flipped { background: var(--color-lavender); }
+  .flashcard:focus { outline: 3px solid var(--color-lemon); outline-offset: 0; }
 
   .card-front {
     display: flex;
@@ -200,23 +220,57 @@
   }
 
   .card-character {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--size-2);
+  }
+
+  .char-row {
+    display: flex;
+    gap: var(--size-2);
+  }
+
+  .char-btn {
     font-size: var(--font-size-fluid-3);
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    line-height: 1;
+    transition: color var(--transition-speed);
+  }
+
+  .char-btn:hover { color: var(--color-accent-2); }
+
+  .phonetic {
+    font-size: var(--font-size-2);
+    color: var(--color-text-muted);
+    margin: 0;
   }
 
   .audio-btn {
-    background: var(--color-bg);
-    border: var(--border-width) solid var(--color-border);
-    border-radius: 50%;
+    background: var(--color-sky);
+    border: var(--border);
+    border-radius: 0;
     width: 3rem;
     height: 3rem;
     font-size: var(--font-size-4);
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all var(--transition-speed);
+    box-shadow: var(--shadow-sm);
   }
 
-  .audio-btn:hover { border-color: var(--color-accent); color: var(--color-accent); }
+  .audio-btn:hover:not(:disabled) {
+    transform: translate(-2px, -2px);
+    box-shadow: 2px 2px 0 var(--color-border);
+  }
+
+  .audio-btn:active:not(:disabled) {
+    transform: translate(0, 0);
+    box-shadow: none;
+  }
 
   .card-back {
     width: 100%;
@@ -241,22 +295,24 @@
   .nav-controls button {
     flex: 1;
     padding: var(--size-3);
-    border: var(--border-width) solid var(--color-border);
-    border-radius: var(--radius);
+    border: var(--border);
+    border-radius: 0;
     font-size: var(--font-size-2);
-    font-weight: var(--font-weight-6);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
     background: var(--color-surface);
     color: var(--color-text);
-    transition: all var(--transition-speed);
+    box-shadow: var(--shadow-sm);
   }
 
   .nav-controls button:hover:not(:disabled) {
-    border-color: var(--color-accent);
-    color: var(--color-accent);
+    transform: translate(-2px, -2px);
+    box-shadow: 2px 2px 0 var(--color-border);
   }
 
-  .nav-controls button:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
+  .nav-controls button:active:not(:disabled) {
+    transform: translate(0, 0);
+    box-shadow: none;
   }
 </style>

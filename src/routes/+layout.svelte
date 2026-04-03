@@ -84,9 +84,9 @@
 
 <style>
     header {
-        background-color: var(--color-surface);
-        border-bottom: var(--border-width) solid var(--color-border);
-        box-shadow: var(--shadow);
+        background-color: var(--color-lemon);
+        border-bottom: var(--border);
+        box-shadow: 0 3px 0 var(--color-border);
     }
 
     nav {
@@ -99,10 +99,13 @@
     }
 
     .brand {
-        font-weight: var(--font-weight-7);
-        font-size: var(--font-size-4);
+        font-family: var(--font-display);
+        font-weight: 800;
+        font-size: var(--font-size-5);
         text-decoration: none;
-        color: var(--color-accent);
+        color: var(--color-text);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
     }
 
     .nav-right {
@@ -112,42 +115,56 @@
     }
 
     .active-profile {
-        font-weight: var(--font-weight-6);
-        color: var(--color-text-muted);
+        font-weight: 700;
+        color: var(--color-text);
         font-size: var(--font-size-1);
-        background: var(--color-bg);
+        background: var(--color-surface);
         padding: var(--size-1) var(--size-2);
-        border-radius: var(--radius);
+        border: var(--border);
+        border-radius: 0;
     }
 
     nav a {
         text-decoration: none;
         color: var(--color-text);
         font-size: var(--font-size-1);
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
     }
 
     nav a:hover {
-        color: var(--color-accent);
+        text-decoration: underline;
+        text-underline-offset: 3px;
+        text-decoration-thickness: 3px;
     }
 
     nav button {
-        background: none;
-        border: var(--border-width) solid var(--color-border);
-        border-radius: var(--radius);
+        background: var(--color-surface);
+        border: var(--border);
+        border-radius: 0;
         padding: var(--size-1) var(--size-3);
         font-size: var(--font-size-1);
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
         color: var(--color-text);
-        transition: border-color var(--transition-speed);
+        box-shadow: var(--shadow-sm);
     }
 
-    nav button:hover {
-        border-color: var(--color-accent);
-        color: var(--color-accent);
+    nav button:hover:not(:disabled) {
+        transform: translate(-2px, -2px);
+        box-shadow: 2px 2px 0 var(--color-border);
+    }
+
+    nav button:active:not(:disabled) {
+        transform: translate(0, 0);
+        box-shadow: none;
     }
 
     main {
         max-width: 1200px;
         margin: 0 auto;
-        padding: var(--size-6) var(--size-4);
+        padding: var(--size-8) var(--size-4);
     }
 </style>

@@ -270,9 +270,25 @@
     background: var(--color-accent);
     color: var(--color-accent-fg);
     padding: var(--size-2) var(--size-4);
-    border-radius: var(--radius);
+    border: var(--border);
+    border-radius: 0;
     text-decoration: none;
-    font-weight: var(--font-weight-6);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+  }
+
+  .practice-link:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 2px 2px 0 var(--color-border);
+    text-decoration: none;
+  }
+
+  .practice-link:active {
+    transform: translate(0, 0);
+    box-shadow: none;
   }
 
   a.disabled {
@@ -283,13 +299,13 @@
 
   .enriching-banner {
     display: none;
-    background: var(--color-bg);
-    border: var(--border-width) solid var(--color-accent);
-    color: var(--color-accent);
-    border-radius: var(--radius);
+    background: var(--color-lemon);
+    border: var(--border);
+    border-radius: 0;
     padding: var(--size-2) var(--size-4);
     margin-bottom: var(--size-4);
     font-size: var(--font-size-1);
+    font-weight: 700;
   }
 
   .enriching-banner.visible { display: block; }
@@ -305,12 +321,13 @@
 
   .word-card {
     background: var(--color-surface);
-    border: var(--border-width) solid var(--color-border);
-    border-radius: var(--radius);
+    border: var(--border);
+    border-radius: 0;
     padding: var(--size-4);
     display: flex;
     flex-direction: column;
     gap: var(--size-2);
+    box-shadow: var(--shadow-sm);
   }
 
   .word-phonetic {
@@ -329,17 +346,17 @@
     background: none;
     border: none;
     padding: var(--size-1);
-    border-radius: var(--radius);
+    border-radius: 0;
     cursor: pointer;
     line-height: 1;
-    transition: background var(--transition-speed);
+    transition: color var(--transition-speed);
   }
 
-  .char-btn:hover { background: var(--color-bg); }
+  .char-btn:hover { color: var(--color-accent-2); }
 
   .translation {
     font-size: var(--font-size-1);
-    font-weight: var(--font-weight-6);
+    font-weight: 700;
     margin: 0;
   }
 
@@ -351,24 +368,39 @@
 
   .word-actions button {
     padding: var(--size-1) var(--size-2);
-    border-radius: var(--radius);
+    border-radius: 0;
     font-size: var(--font-size-0);
-    border: var(--border-width) solid var(--color-border);
+    font-weight: 700;
+    border: var(--border);
     background: var(--color-surface);
     color: var(--color-text);
     white-space: nowrap;
+    box-shadow: 2px 2px 0 var(--color-border);
   }
 
-  .word-actions button:hover { border-color: var(--color-accent); color: var(--color-accent); }
-  .word-actions button.danger:hover { border-color: var(--color-danger); color: var(--color-danger); }
+  .word-actions button:hover:not(:disabled) {
+    transform: translate(-2px, -2px);
+    box-shadow: 1px 1px 0 var(--color-border);
+  }
+
+  .word-actions button:active:not(:disabled) {
+    transform: translate(0, 0);
+    box-shadow: none;
+  }
+
+  .word-actions button.danger:hover {
+    background: var(--color-danger);
+    color: var(--color-danger-fg);
+  }
 
   .add-section { max-width: 500px; }
 
   .add-form {
     background: var(--color-surface);
-    border: var(--border-width) solid var(--color-border);
-    border-radius: var(--radius);
+    border: var(--border);
+    border-radius: 0;
     padding: var(--size-6);
+    box-shadow: var(--shadow);
   }
 
   h2 { font-size: var(--font-size-4); margin: 0 0 var(--size-4); }
@@ -380,27 +412,24 @@
     margin-bottom: var(--size-4);
   }
 
-  label { font-size: var(--font-size-1); font-weight: var(--font-weight-6); }
+  label {
+    font-size: var(--font-size-1);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
 
   textarea {
     padding: var(--size-2) var(--size-3);
-    border: var(--border-width) solid var(--color-border);
-    border-radius: var(--radius);
     font-size: var(--font-size-2);
     resize: vertical;
-    font-family: var(--font-body);
-  }
-
-  textarea:focus {
-    outline: 2px solid var(--color-accent);
-    outline-offset: 1px;
-    border-color: var(--color-accent);
   }
 
   .error {
     display: block;
     color: var(--color-danger);
     font-size: var(--font-size-1);
+    font-weight: 700;
     margin-bottom: var(--size-3);
   }
 
@@ -413,26 +442,31 @@
 
   button[type="submit"] {
     padding: var(--size-2) var(--size-5);
-    background: var(--color-accent);
-    color: var(--color-accent-fg);
-    border: none;
-    border-radius: var(--radius);
     font-size: var(--font-size-2);
-    font-weight: var(--font-weight-6);
   }
-
-  button[type="submit"]:disabled { opacity: 0.6; cursor: not-allowed; }
 
   .scan-label {
     padding: var(--size-2) var(--size-4);
-    border: var(--border-width) solid var(--color-border);
-    border-radius: var(--radius);
+    border: var(--border);
+    border-radius: 0;
     font-size: var(--font-size-2);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
     cursor: pointer;
-    transition: border-color var(--transition-speed);
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
   }
 
-  .scan-label:hover { border-color: var(--color-accent); color: var(--color-accent); }
+  .scan-label:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 2px 2px 0 var(--color-border);
+  }
+
+  .scan-label:active {
+    transform: translate(0, 0);
+    box-shadow: none;
+  }
 
   .visually-hidden {
     position: absolute;

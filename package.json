@@ -28,6 +28,8 @@
 		"vitest": "^4.1.0"
 	},
 	"dependencies": {
+		"@fontsource/space-grotesk": "^5.2.10",
+		"@fontsource/syne": "^5.2.7",
 		"@supabase/supabase-js": "^2.101.1",
 		"hanzi-writer": "^3.7.3",
 		"open-props": "^1.7.23"

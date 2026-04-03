@@ -60,9 +60,9 @@
 
   .auth-card {
     background: var(--color-surface);
-    border: var(--border-width) solid var(--color-border);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
+    border: var(--border);
+    border-radius: 0;
+    box-shadow: var(--shadow-lg);
     padding: var(--size-8);
     width: 100%;
     max-width: 400px;
@@ -71,6 +71,7 @@
   h1 {
     margin: 0 0 var(--size-2);
     font-size: var(--font-size-6);
+    text-transform: uppercase;
   }
 
   .subtitle {
@@ -88,48 +89,29 @@
 
   label {
     font-size: var(--font-size-1);
-    font-weight: var(--font-weight-6);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
     color: var(--color-text);
   }
 
   input {
     padding: var(--size-2) var(--size-3);
-    border: var(--border-width) solid var(--color-border);
-    border-radius: var(--radius);
     font-size: var(--font-size-2);
-    color: var(--color-text);
-    background: var(--color-surface);
-    transition: border-color var(--transition-speed);
-  }
-
-  input:focus {
-    outline: 2px solid var(--color-accent);
-    outline-offset: 1px;
-    border-color: var(--color-accent);
   }
 
   .error {
     display: block;
     color: var(--color-danger);
     font-size: var(--font-size-1);
+    font-weight: 700;
     margin-bottom: var(--size-3);
   }
 
   button[type="submit"] {
     width: 100%;
     padding: var(--size-3);
-    background: var(--color-accent);
-    color: var(--color-accent-fg);
-    border: none;
-    border-radius: var(--radius);
     font-size: var(--font-size-2);
-    font-weight: var(--font-weight-6);
-    transition: opacity var(--transition-speed);
-  }
-
-  button[type="submit"]:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
   }
 
   .links {
