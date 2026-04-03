@@ -16,11 +16,9 @@
   let enriching = $state(false)
   let addingWords = $state(false)
   let scanLoading = $state(false)
-  let reenrichingId = $state<string | null>(null)
-
   const activeProfile = $derived(getActiveProfile())
   const listId = $derived(page.params.id)
-  const busy = $derived(addingWords || enriching || scanLoading || reenrichingId !== null)
+  const busy = $derived(addingWords || enriching || scanLoading)
 
   let modalChar = $state<{ char: string } | null>(null)
 
@@ -50,31 +48,32 @@
   }
 
   async function enrichWords(wordIds: string[], characters: string[]) {
-    if (!list) return
     enriching = true
     try {
-      const res = await supabase.functions.invoke('enrich-words', {
-        body: { words: characters, language: list.language }
-      })
-      if (res.error) await throwFnError(res.error)
-      const { enriched } = res.data as { enriched: Array<{
-        character: string
-        phonetic_annotation: string
-        translation: string
-        example: string
-        example_phonetic: string
-        example_translation: string
-        character_note: string
-      }> }
+      const { data: wordRows } = await supabase
+        .from('zh_words')
+        .select('word, pinyin, translation')
+        .in('word', characters)
+
+      const wordMap = new Map(wordRows?.map(r => [r.word, r]) ?? [])
+
+      const singleChars = characters.filter(c => [...c].length === 1)
+      const { data: charRows } = singleChars.length
+        ? await supabase.from('zh_chars').select('char, gloss').in('char', singleChars)
+        : { data: [] }
+      const charMap = new Map(charRows?.map(r => [r.char, r]) ?? [])
+
       for (let i = 0; i < wordIds.length; i++) {
-        const e = enriched[i]
+        const ch = characters[i]
+        const w = wordMap.get(ch)
+        const c = charMap.get(ch)
         const { error } = await supabase.from('words').update({
-          phonetic_annotation: e.phonetic_annotation,
-          translation: e.translation,
-          example: e.example,
-          example_phonetic: e.example_phonetic,
-          example_translation: e.example_translation,
-          character_note: e.character_note
+          phonetic_annotation: w?.pinyin ?? null,
+          translation: w?.translation ?? null,
+          character_note: c?.gloss ?? null,
+          example: null,
+          example_phonetic: null,
+          example_translation: null
         }).eq('id', wordIds[i])
         if (error) throw error
       }
@@ -120,15 +119,6 @@
     const { error } = await supabase.from('words').delete().eq('id', id)
     if (error) throw error
     await loadWords()
-  }
-
-  async function handleReenrich(word: Word) {
-    reenrichingId = word.id
-    try {
-      await enrichWords([word.id], [word.character])
-    } finally {
-      reenrichingId = null
-    }
   }
 
   async function handlePhotoScan(event: Event) {
@@ -179,7 +169,7 @@
       aria-live="polite"
       class:visible={enriching}
     >
-      Enriching words with AI…
+      Looking up words…
     </div>
   {/if}
 
@@ -207,13 +197,6 @@
               <p class="translation">{word.translation}</p>
             {/if}
             <div class="word-actions">
-              <button
-                onclick={() => handleReenrich(word)}
-                disabled={busy}
-                aria-label="Re-enrich {word.character}"
-              >
-                {reenrichingId === word.id ? '…' : 'Re-enrich'}
-              </button>
               <button
                 class="danger"
                 onclick={() => handleDeleteWord(word.id)}

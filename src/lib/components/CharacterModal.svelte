@@ -7,7 +7,6 @@
   import { onMount } from 'svelte'
   import { supabase } from '$lib/supabase.ts'
   import { speak } from '$lib/audio.ts'
-  import type { Character } from '$lib/types.ts'
 
   const {
     character,
@@ -20,7 +19,6 @@
   } = $props()
 
   let charData = $state<CharData | null>(null)
-  let fetchError = $state(false)
   let writerError = $state('')
 
   function handleAudio() {
@@ -59,45 +57,19 @@
       return
     }
 
-    // L2: characters table
-    const { data: row } = await supabase
-      .from('characters')
-      .select('phonetic, translation, note')
-      .eq('character', character)
-      .eq('language', language)
-      .maybeSingle()
+    // L2: dictionary tables
+    const [{ data: w }, { data: c }] = await Promise.all([
+      supabase.from('zh_words').select('pinyin, translation').eq('word', character).maybeSingle(),
+      supabase.from('zh_chars').select('gloss').eq('char', character).maybeSingle()
+    ])
 
-    if (row) {
-      const data: CharData = { phonetic: (row as Character).phonetic, translation: (row as Character).translation, note: (row as Character).note }
-      cache.set(key, data)
-      charData = data
-      return
+    const data: CharData = {
+      phonetic: w?.pinyin ?? null,
+      translation: w?.translation ?? null,
+      note: c?.gloss ?? null
     }
-
-    // L3: Gemini via edge function
-    try {
-      const res = await supabase.functions.invoke('enrich-words', {
-        body: { words: [character], language }
-      })
-      if (res.error) throw res.error
-      const e = res.data.enriched[0]
-      const data: CharData = {
-        phonetic: e.phonetic_annotation || null,
-        translation: e.translation || null,
-        note: e.character_note || null
-      }
-
-      // persist for future sessions — fire-and-forget
-      supabase.from('characters').upsert(
-        { character, language, phonetic: data.phonetic, translation: data.translation, note: data.note },
-        { onConflict: 'character,language' }
-      )
-
-      cache.set(key, data)
-      charData = data
-    } catch {
-      fetchError = true
-    }
+    cache.set(key, data)
+    charData = data
   })
 </script>
 
@@ -139,8 +111,6 @@
     {#if charData.note}
       <p class="detail-note">{charData.note}</p>
     {/if}
-  {:else if fetchError}
-    <p class="detail-error">Could not load character details.</p>
   {:else}
     <p class="detail-loading" aria-live="polite">Loading…</p>
   {/if}
