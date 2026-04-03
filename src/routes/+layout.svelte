@@ -71,6 +71,7 @@
                 {/if}
                 <a href="/lists">Lists</a>
                 <a href="/words">Dictionary</a>
+                <a href="/characters">Characters</a>
                 <a href="/settings">Settings</a>
                 <button onclick={handleLogout}>Log out</button>
             </div>
