@@ -66,7 +66,11 @@
 
       const allChars = new Set([...charMap.keys(), ...pinyinMap.keys()])
 
-      results = [...allChars].sort().slice(0, 60).map(char => ({
+      // Exclude CJK Extension B and above (codepoints ≥ U+20000) — no common
+      // font renders them and they never appear in modern Chinese text.
+      results = [...allChars]
+        .filter(char => (char.codePointAt(0) ?? 0) < 0x20000)
+        .sort().slice(0, 60).map(char => ({
         char,
         pinyin: pinyinMap.get(char) ?? null,
         gloss: charMap.get(char)?.gloss ?? null,
