@@ -29,6 +29,7 @@
 		"vitest": "^4.1.0"
 	},
 	"dependencies": {
+		"@sveltejs/adapter-vercel": "^6.3.3",
 		"@fontsource/bricolage-grotesque": "^5.2.10",
 		"@fontsource/noto-sans": "^5.2.10",
 		"@supabase/supabase-js": "^2.101.1",
