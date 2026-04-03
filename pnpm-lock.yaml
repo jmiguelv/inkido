@@ -8,12 +8,12 @@ importers:
 
   .:
     dependencies:
+      '@fontsource/bricolage-grotesque':
+        specifier: ^5.2.10
+        version: 5.2.10
       '@fontsource/space-grotesk':
         specifier: ^5.2.10
         version: 5.2.10
-      '@fontsource/syne':
-        specifier: ^5.2.7
-        version: 5.2.7
       '@supabase/supabase-js':
         specifier: ^2.101.1
         version: 2.101.1
@@ -213,11 +213,11 @@ packages:
     cpu: [x64]
     os: [win32]
 
+  '@fontsource/bricolage-grotesque@5.2.10':
+    resolution: {integrity: sha512-V2xS+1P7C8IrSypXLUx/bLtX/LsTlYtV2k2CsU+S/0t8qepZ2hvKSlyJIx7Ub/iY8Bbnj+IjAuUF9nvFz+BbIg==}
+
   '@fontsource/space-grotesk@5.2.10':
     resolution: {integrity: sha512-XNXEbT74OIITPqw2H6HXwPDp85fy43uxfBwFR5PU+9sLnjuLj12KlhVM9nZVN6q6dlKjkuN8JisW/OBxwxgUew==}
-
-  '@fontsource/syne@5.2.7':
-    resolution: {integrity: sha512-OgWgLPSbieiSfdFXgMs0l/rspIFzVoDZxw8wKj15n39epRqO5+Uv36c0MXNDcw2GuK/TIBgpC9G8VAgs+bVm7A==}
 
   '@isaacs/fs-minipass@4.0.1':
     resolution: {integrity: sha512-wgm9Ehl2jpeqP3zw/7mo3kRHFp5MEDhqAdwy1fTGkHAwnkGOVsgpvQhL8B5n1qlb01jV3n/bI0ZfZp5lWA1k4w==}
@@ -1012,9 +1012,9 @@ snapshots:
   '@esbuild/win32-x64@0.27.5':
     optional: true
 
-  '@fontsource/space-grotesk@5.2.10': {}
+  '@fontsource/bricolage-grotesque@5.2.10': {}
 
-  '@fontsource/syne@5.2.7': {}
+  '@fontsource/space-grotesk@5.2.10': {}
 
   '@isaacs/fs-minipass@4.0.1':
     dependencies:
