@@ -9,6 +9,8 @@
   let newProfileName = $state('')
   let errorMsg = $state('')
   let loading = $state(false)
+  let renamingId = $state<string | null>(null)
+  let renameValue = $state('')
 
   const activeProfile = $derived(getActiveProfile())
 
@@ -48,6 +50,20 @@
     goto('/lists')
   }
 
+  function startRename(profile: Profile) {
+    renamingId = profile.id
+    renameValue = profile.name
+  }
+
+  async function handleRename(id: string) {
+    if (!renameValue.trim()) return
+    const { error } = await supabase.from('profiles').update({ name: renameValue.trim() }).eq('id', id)
+    if (error) throw error
+    if (activeProfile?.id === id) setActiveProfile({ ...activeProfile, name: renameValue.trim() })
+    renamingId = null
+    await loadProfiles()
+  }
+
   onMount(() => {
     loadProfiles()
   })
@@ -62,21 +78,42 @@
     <ul class="profile-list">
       {#each profiles as profile (profile.id)}
         <li class="profile-item">
-          <button
-            class="profile-card"
-            class:active={activeProfile?.id === profile.id}
-            onclick={() => handleSelectProfile(profile)}
-          >
-            <span class="profile-name">{profile.name}</span>
-            {#if activeProfile?.id === profile.id}
-              <span class="active-badge">Active</span>
-            {/if}
-          </button>
-          <button
-            class="delete-btn"
-            onclick={() => handleDeleteProfile(profile.id)}
-            aria-label="Delete {profile.name}"
-          >×</button>
+          {#if renamingId === profile.id}
+            <form
+              class="rename-form"
+              onsubmit={(e) => { e.preventDefault(); handleRename(profile.id) }}
+            >
+              <input
+                type="text"
+                bind:value={renameValue}
+                required
+                aria-label="New name for {profile.name}"
+              />
+              <button type="submit">Save</button>
+              <button type="button" onclick={() => { renamingId = null }}>Cancel</button>
+            </form>
+          {:else}
+            <button
+              class="profile-card"
+              class:active={activeProfile?.id === profile.id}
+              onclick={() => handleSelectProfile(profile)}
+            >
+              <span class="profile-name">{profile.name}</span>
+              {#if activeProfile?.id === profile.id}
+                <span class="active-badge">Active</span>
+              {/if}
+            </button>
+            <button
+              class="rename-btn"
+              onclick={() => startRename(profile)}
+              aria-label="Rename {profile.name}"
+            >✎</button>
+            <button
+              class="delete-btn"
+              onclick={() => handleDeleteProfile(profile.id)}
+              aria-label="Delete {profile.name}"
+            >×</button>
+          {/if}
         </li>
       {/each}
     </ul>
@@ -180,14 +217,13 @@
     opacity: 0.6;
   }
 
+  .rename-btn,
   .delete-btn {
     position: absolute;
-    top: var(--size-2);
-    right: var(--size-2);
     background: none;
     border: none;
     box-shadow: none;
-    font-size: var(--font-size-4);
+    font-size: var(--font-size-3);
     line-height: 1;
     padding: var(--size-1);
     color: var(--color-text);
@@ -195,9 +231,69 @@
     cursor: pointer;
   }
 
+  .rename-btn {
+    top: var(--size-2);
+    right: calc(var(--size-2) + var(--size-6));
+  }
+
+  .delete-btn {
+    top: var(--size-2);
+    right: var(--size-2);
+  }
+
+  .rename-btn:hover {
+    opacity: 1;
+    color: var(--color-text);
+  }
+
   .delete-btn:hover {
     opacity: 1;
     color: var(--color-danger);
+  }
+
+  .rename-form {
+    display: flex;
+    gap: var(--size-2);
+    align-items: center;
+    border: var(--border);
+    padding: var(--size-3) var(--size-4);
+    background: var(--color-surface);
+    box-shadow: var(--shadow);
+  }
+
+  .rename-form input {
+    flex: 1;
+    padding: var(--size-1) var(--size-2);
+    font-size: var(--font-size-2);
+    font-family: var(--font-display);
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    min-width: 0;
+  }
+
+  .rename-form button {
+    padding: var(--size-1) var(--size-3);
+    border: var(--border);
+    background: var(--color-surface);
+    font-size: var(--font-size-1);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-text);
+    box-shadow: var(--shadow-sm);
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .rename-form button:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 5px 5px 0 var(--color-border);
+  }
+
+  .rename-form button:active {
+    transform: translate(0, 0);
+    box-shadow: none;
   }
 
   .add-profile-form {
