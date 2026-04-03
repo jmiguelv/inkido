@@ -1,8 +1,9 @@
 /**
- * One-time script to import Chinese dictionary data into Supabase.
+ * Import Chinese dictionary data into Supabase.
+ * Safe to run multiple times — uses upsert so changed rows are updated.
  *
  * Usage:
- *   SUPABASE_URL=https://... SUPABASE_SERVICE_ROLE_KEY=... npx tsx scripts/import-dict.ts
+ *   SUPABASE_URL=https://... SUPABASE_SERVICE_ROLE_KEY=... npx tsx scripts/import-data.ts
  *
  * Or set SUPABASE_URL in the script and pass only SUPABASE_SERVICE_ROLE_KEY.
  */
