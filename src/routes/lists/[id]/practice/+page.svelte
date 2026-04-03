@@ -68,16 +68,24 @@
     }
   }
 
+  function handleKeydown(e: KeyboardEvent) {
+    if (e.key === 'ArrowLeft') handlePrev()
+    else if (e.key === 'ArrowRight') handleNext()
+    else if (e.key === ' ' || e.key === 'Enter') handleFlip()
+  }
+
   onMount(() => {
     if (!activeProfile) { goto('/'); return }
     loadPractice()
+    window.addEventListener('keydown', handleKeydown)
+    return () => window.removeEventListener('keydown', handleKeydown)
   })
 </script>
 
 <section class="practice">
   {#if list && currentWord}
     <div class="practice-header">
-      <a href="/lists/{list.id}">← {list.name}</a>
+      <a href="/lists/{list.id}" class="back-link">← {list.name}</a>
       <span class="progress">{currentIndex + 1} / {words.length}</span>
     </div>
 
@@ -117,6 +125,9 @@
           >
             ♪
           </button>
+          {#if !flipped}
+            <p class="flip-hint">Tap to reveal</p>
+          {/if}
         </div>
 
         {#if flipped}
@@ -125,7 +136,7 @@
               <p class="translation">{currentWord.translation}</p>
             {/if}
             {#if currentWord.example}
-              <p class="example">{@html currentWord.example}</p>
+              <p class="example">{currentWord.example}</p>
             {/if}
             {#if currentWord.example_translation}
               <p class="example-translation">{currentWord.example_translation}</p>
@@ -174,11 +185,31 @@
     margin-bottom: var(--size-6);
   }
 
+  .back-link {
+    font-size: var(--font-size-1);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    text-decoration: none;
+    color: var(--color-text-muted);
+  }
+
+  .back-link:hover { color: var(--color-text); }
+
   .progress {
     font-size: var(--font-size-1);
     font-weight: 700;
     font-family: var(--font-display);
     color: var(--color-text-muted);
+  }
+
+  .flip-hint {
+    font-size: var(--font-size-0);
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: var(--size-2) 0 0;
+    opacity: 0.6;
   }
 
   .error {
@@ -275,7 +306,7 @@
   .card-back {
     width: 100%;
     margin-top: var(--size-6);
-    border-top: var(--border-width) solid var(--color-border);
+    border-top: var(--border);
     padding-top: var(--size-4);
     text-align: center;
   }

@@ -54,30 +54,36 @@
 </script>
 
 <section>
-  <h1>Dashboard</h1>
-
-  <h2>Profiles</h2>
+  <h1>Who's learning today?</h1>
 
   {#if profiles.length === 0}
-    <p>No profiles yet. Add one below.</p>
+    <p class="empty-state">No profiles yet. Add one below to get started.</p>
   {:else}
     <ul class="profile-list">
       {#each profiles as profile (profile.id)}
-        <li>
-          <article class="profile-card" class:active={activeProfile?.id === profile.id}>
+        <li class="profile-item">
+          <button
+            class="profile-card"
+            class:active={activeProfile?.id === profile.id}
+            onclick={() => handleSelectProfile(profile)}
+          >
             <span class="profile-name">{profile.name}</span>
-            <div class="profile-actions">
-              <button onclick={() => handleSelectProfile(profile)}>Select</button>
-              <button class="danger" onclick={() => handleDeleteProfile(profile.id)} aria-label="Delete {profile.name}">Delete</button>
-            </div>
-          </article>
+            {#if activeProfile?.id === profile.id}
+              <span class="active-badge">Active</span>
+            {/if}
+          </button>
+          <button
+            class="delete-btn"
+            onclick={() => handleDeleteProfile(profile.id)}
+            aria-label="Delete {profile.name}"
+          >×</button>
         </li>
       {/each}
     </ul>
   {/if}
 
   <form onsubmit={(e) => { e.preventDefault(); handleAddProfile() }} class="add-profile-form">
-    <h3>Add a profile</h3>
+    <h2>Add a profile</h2>
     <div class="field">
       <label for="profile-name">Name</label>
       <input id="profile-name" type="text" bind:value={newProfileName} required placeholder="e.g. Alice" />
@@ -98,93 +104,108 @@
   }
 
   h2 {
-    font-size: var(--font-size-5);
+    font-size: var(--font-size-4);
     margin: 0 0 var(--size-4);
+  }
+
+  .empty-state {
+    color: var(--color-text-muted);
+    font-size: var(--font-size-2);
+    margin: 0 0 var(--size-6);
   }
 
   .profile-list {
     list-style: none;
     padding: 0;
-    margin: 0 0 var(--size-6);
+    margin: 0 0 var(--size-8);
     display: grid;
     gap: var(--size-3);
   }
 
-  @media (min-width: 600px) {
+  @media (min-width: 480px) {
     .profile-list { grid-template-columns: repeat(2, 1fr); }
   }
 
-  @media (min-width: 900px) {
+  @media (min-width: 720px) {
     .profile-list { grid-template-columns: repeat(3, 1fr); }
   }
 
+  .profile-item {
+    position: relative;
+  }
+
   .profile-card {
+    width: 100%;
     background: var(--color-surface);
     border: var(--border);
-    border-radius: 0;
-    padding: var(--size-4);
+    padding: var(--size-5) var(--size-4);
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--size-3);
-    box-shadow: var(--shadow-sm);
-  }
-
-  .profile-card.active {
-    background: var(--color-lemon);
-    box-shadow: var(--shadow);
-  }
-
-  .profile-name {
-    font-weight: 700;
-    font-size: var(--font-size-3);
-  }
-
-  .profile-actions {
-    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
     gap: var(--size-2);
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    text-align: left;
+    transition: transform var(--transition-speed), box-shadow var(--transition-speed);
   }
 
-  .profile-actions button {
-    padding: var(--size-1) var(--size-3);
-    border-radius: 0;
-    font-size: var(--font-size-1);
-    font-weight: 700;
-    border: var(--border);
-    background: var(--color-surface);
-    color: var(--color-text);
-    box-shadow: var(--shadow-sm);
+  .profile-card:hover {
+    transform: translate(-3px, -3px);
+    box-shadow: 8px 8px 0 var(--color-border);
   }
 
-  .profile-actions button:hover:not(:disabled) {
-    transform: translate(-2px, -2px);
-    box-shadow: 2px 2px 0 var(--color-border);
-  }
-
-  .profile-actions button:active:not(:disabled) {
+  .profile-card:active {
     transform: translate(0, 0);
     box-shadow: none;
   }
 
-  .profile-actions button.danger:hover {
-    background: var(--color-danger);
-    color: var(--color-danger-fg);
-    transform: translate(-2px, -2px);
-    box-shadow: 2px 2px 0 var(--color-border);
+  .profile-card.active {
+    background: var(--color-lemon);
+  }
+
+  .profile-name {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: var(--font-size-5);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    line-height: 1;
+  }
+
+  .active-badge {
+    font-size: var(--font-size-0);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    opacity: 0.6;
+  }
+
+  .delete-btn {
+    position: absolute;
+    top: var(--size-2);
+    right: var(--size-2);
+    background: none;
+    border: none;
+    box-shadow: none;
+    font-size: var(--font-size-4);
+    line-height: 1;
+    padding: var(--size-1);
+    color: var(--color-text);
+    opacity: 0.25;
+    cursor: pointer;
+  }
+
+  .delete-btn:hover {
+    opacity: 1;
+    color: var(--color-danger);
   }
 
   .add-profile-form {
     background: var(--color-surface);
     border: var(--border);
-    border-radius: 0;
     padding: var(--size-6);
     max-width: 400px;
     box-shadow: var(--shadow);
-  }
-
-  h3 {
-    margin: 0 0 var(--size-4);
-    font-size: var(--font-size-4);
   }
 
   .field {

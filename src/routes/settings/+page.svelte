@@ -182,11 +182,16 @@
   button.danger {
     background: var(--color-danger);
     color: var(--color-danger-fg);
-    border: 2px solid var(--color-danger);
+    border: var(--border);
+  }
+
+  button.danger:hover:not(:disabled) {
+    transform: translate(-2px, -2px);
+    box-shadow: 5px 5px 0 var(--color-border);
   }
 
   .danger-zone {
     border-color: var(--color-danger);
-    background: #FFF0F0;
+    background: var(--color-rose);
   }
 </style>

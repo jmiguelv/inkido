@@ -1,6 +1,7 @@
 <script lang="ts">
   import { supabase } from '$lib/supabase.ts'
   import CharacterModal from '$lib/components/CharacterModal.svelte'
+  import { SvelteMap } from 'svelte/reactivity'
 
   type CharEntry = {
     char: string
@@ -45,8 +46,8 @@
           .limit(50)
       ])
 
-      const charMap = new Map(charRows?.map(r => [r.char, r]) ?? [])
-      const pinyinMap = new Map(wordRows?.map(r => [r.word, r.pinyin]) ?? [])
+      const charMap = new SvelteMap(charRows?.map(r => [r.char, r]) ?? [])
+      const pinyinMap = new SvelteMap(wordRows?.map(r => [r.word, r.pinyin]) ?? [])
 
       // Chars found via zh_words but missing zh_chars data
       const extraChars = wordRows?.map(r => r.word).filter(w => !charMap.has(w)) ?? []
@@ -90,7 +91,7 @@
 
 <section>
   <div class="page-header">
-    <h1>Characters</h1>
+    <h1>Explore</h1>
     {#if searched && !searching}
       <span class="result-count">
         {results.length}{results.length === 60 ? '+' : ''} result{results.length === 1 ? '' : 's'}

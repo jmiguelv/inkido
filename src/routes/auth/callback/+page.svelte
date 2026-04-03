@@ -39,6 +39,7 @@
 </script>
 
 <div class="auth-page">
+  <div class="auth-brand">InkiDo</div>
   <article class="auth-card">
     {#if errorMsg}
       <output role="alert" class="error">{errorMsg}</output>
@@ -53,16 +54,30 @@
   .auth-page {
     min-height: 100vh;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     background-color: var(--color-bg);
     padding: var(--size-4);
+    gap: var(--size-4);
+  }
+
+  .auth-brand {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: var(--font-size-8);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-text);
+    background: var(--color-lemon);
+    border: var(--border);
+    box-shadow: var(--shadow);
+    padding: var(--size-2) var(--size-5);
   }
 
   .auth-card {
     background: var(--color-surface);
-    border: var(--border-width) solid var(--color-border);
-    border-radius: var(--radius);
+    border: var(--border);
     box-shadow: var(--shadow);
     padding: var(--size-8);
     width: 100%;

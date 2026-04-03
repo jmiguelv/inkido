@@ -159,9 +159,12 @@
 <section>
   {#if list}
     <div class="list-header">
-      <h1>{list.name}</h1>
-      <a href="/lists/{list.id}/practice" class="practice-link" class:disabled={busy} onclick={(e) => { if (busy) e.preventDefault() }}>Practice</a>
-      <a href="/lists" class:disabled={busy} onclick={(e) => { if (busy) e.preventDefault() }}>← All lists</a>
+      <div class="list-title">
+        <a href="/lists" class="back-link" class:disabled={busy} onclick={(e) => { if (busy) e.preventDefault() }}>← Lists</a>
+        <h1>{list.name}</h1>
+        <span class="list-lang">{list.language.toUpperCase()}</span>
+      </div>
+      <a href="/lists/{list.id}/practice" class="practice-link" class:disabled={busy} onclick={(e) => { if (busy) e.preventDefault() }}>Practice →</a>
     </div>
 
     <div
@@ -196,14 +199,12 @@
             {#if word.translation}
               <p class="translation">{word.translation}</p>
             {/if}
-            <div class="word-actions">
-              <button
-                class="danger"
-                onclick={() => handleDeleteWord(word.id)}
-                disabled={busy}
-                aria-label="Delete {word.character}"
-              >Delete</button>
-            </div>
+            <button
+              class="delete-btn"
+              onclick={() => handleDeleteWord(word.id)}
+              disabled={busy}
+              aria-label="Delete {word.character}"
+            >×</button>
           </article>
         </li>
       {/each}
@@ -255,15 +256,41 @@
 <style>
   .list-header {
     display: flex;
-    align-items: baseline;
+    align-items: flex-start;
+    justify-content: space-between;
     gap: var(--size-4);
     margin-bottom: var(--size-6);
     flex-wrap: wrap;
   }
 
+  .list-title {
+    display: flex;
+    flex-direction: column;
+    gap: var(--size-1);
+  }
+
+  .back-link {
+    font-size: var(--font-size-1);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    text-decoration: none;
+    color: var(--color-text-muted);
+  }
+
+  .back-link:hover { color: var(--color-text); }
+
   h1 {
     font-size: var(--font-size-8);
     margin: 0;
+    line-height: 1;
+  }
+
+  .list-lang {
+    font-size: var(--font-size-0);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--color-text-muted);
   }
 
   .practice-link {
@@ -271,18 +298,19 @@
     color: var(--color-accent-fg);
     padding: var(--size-2) var(--size-4);
     border: var(--border);
-    border-radius: 0;
     text-decoration: none;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.06em;
     box-shadow: var(--shadow-sm);
     transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+    white-space: nowrap;
+    align-self: flex-start;
   }
 
   .practice-link:hover {
     transform: translate(-2px, -2px);
-    box-shadow: 2px 2px 0 var(--color-border);
+    box-shadow: 5px 5px 0 var(--color-border);
     text-decoration: none;
   }
 
@@ -314,21 +342,26 @@
     list-style: none;
     padding: 0;
     margin: 0 0 var(--size-6);
-    display: flex;
-    flex-direction: column;
+    display: grid;
     gap: var(--size-3);
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   }
 
   .word-card {
-    background: var(--color-surface);
     border: var(--border);
-    border-radius: 0;
     padding: var(--size-4);
     display: flex;
     flex-direction: column;
     gap: var(--size-2);
     box-shadow: var(--shadow-sm);
+    position: relative;
   }
+
+  .word-list li:nth-child(5n+1) .word-card { background: var(--color-mint); }
+  .word-list li:nth-child(5n+2) .word-card { background: var(--color-rose); }
+  .word-list li:nth-child(5n+3) .word-card { background: var(--color-sky); }
+  .word-list li:nth-child(5n+4) .word-card { background: var(--color-lavender); }
+  .word-list li:nth-child(5n+5) .word-card { background: var(--color-lemon); }
 
   .word-phonetic {
     font-size: var(--font-size-0);
@@ -360,37 +393,30 @@
     margin: 0;
   }
 
-  .word-actions {
-    display: flex;
-    gap: var(--size-2);
-    margin-top: var(--size-1);
-  }
-
-  .word-actions button {
-    padding: var(--size-1) var(--size-2);
-    border-radius: 0;
-    font-size: var(--font-size-0);
-    font-weight: 700;
-    border: var(--border);
-    background: var(--color-surface);
+  .delete-btn {
+    position: absolute;
+    top: var(--size-1);
+    right: var(--size-1);
+    background: none;
+    border: none;
+    box-shadow: none;
+    font-size: var(--font-size-3);
+    line-height: 1;
+    padding: var(--size-1);
     color: var(--color-text);
-    white-space: nowrap;
-    box-shadow: 2px 2px 0 var(--color-border);
+    opacity: 0.2;
+    cursor: pointer;
   }
 
-  .word-actions button:hover:not(:disabled) {
-    transform: translate(-2px, -2px);
-    box-shadow: 1px 1px 0 var(--color-border);
-  }
-
-  .word-actions button:active:not(:disabled) {
-    transform: translate(0, 0);
+  .delete-btn:hover:not(:disabled) {
+    opacity: 1;
+    color: var(--color-danger);
+    transform: none;
     box-shadow: none;
   }
 
-  .word-actions button.danger:hover {
-    background: var(--color-danger);
-    color: var(--color-danger-fg);
+  .delete-btn:disabled {
+    cursor: not-allowed;
   }
 
   .add-section { max-width: 500px; }

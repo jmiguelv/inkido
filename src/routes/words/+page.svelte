@@ -74,7 +74,7 @@
 
 <section>
   <div class="page-header">
-    <h1>Dictionary</h1>
+    <h1>My Words</h1>
     {#if !loading}
       <span class="word-count">
         {filtered.length}{query.trim() ? ` of ${words.length}` : ''} word{words.length === 1 ? '' : 's'}

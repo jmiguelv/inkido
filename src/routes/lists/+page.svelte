@@ -107,9 +107,12 @@
                   &middot; practised {new Date(list.last_practiced).toLocaleDateString()}
                 {/if}
               </span>
-              <div class="list-actions">
-                <button onclick={() => startRename(list)}>Rename</button>
-                <button class="danger" onclick={() => handleDeleteList(list.id)} aria-label="Delete {list.name}">Delete</button>
+              <div class="list-footer">
+                <a href="/lists/{list.id}/practice" class="practice-link">Practice →</a>
+                <div class="list-actions">
+                  <button onclick={() => startRename(list)} aria-label="Rename {list.name}">Rename</button>
+                  <button class="danger" onclick={() => handleDeleteList(list.id)} aria-label="Delete {list.name}">×</button>
+                </div>
               </div>
             {/if}
           </article>
@@ -127,7 +130,7 @@
     <div class="field">
       <label for="list-language">Language</label>
       <select id="list-language" bind:value={newListLanguage}>
-        {#each LANGUAGES as lang}
+        {#each LANGUAGES as lang (lang.code)}
           <option value={lang.code}>{lang.label}</option>
         {/each}
       </select>
@@ -196,16 +199,49 @@
   .list-meta {
     font-size: var(--font-size-0);
     color: var(--color-text-muted);
+    flex: 1;
+  }
+
+  .list-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--size-2);
+    margin-top: var(--size-3);
+  }
+
+  .practice-link {
+    font-size: var(--font-size-1);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    text-decoration: none;
+    color: var(--color-text);
+    background: var(--color-text);
+    color: var(--color-lemon);
+    padding: var(--size-1) var(--size-3);
+    border: var(--border);
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+  }
+
+  .practice-link:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 5px 5px 0 var(--color-border);
+  }
+
+  .practice-link:active {
+    transform: translate(0, 0);
+    box-shadow: none;
   }
 
   .list-actions {
     display: flex;
-    gap: var(--size-2);
-    margin-top: var(--size-2);
+    gap: var(--size-1);
   }
 
   .list-actions button, .rename-form button {
-    padding: var(--size-1) var(--size-3);
+    padding: var(--size-1) var(--size-2);
     border-radius: 0;
     font-size: var(--font-size-1);
     font-weight: 700;

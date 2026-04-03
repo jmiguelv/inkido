@@ -27,6 +27,7 @@
 </script>
 
 <div class="auth-page">
+  <div class="auth-brand">InkiDo</div>
   <article class="auth-card">
     <h1>Sign up</h1>
     <p class="subtitle">We'll send a magic link to your inbox to get you started.</p>
@@ -52,10 +53,25 @@
   .auth-page {
     min-height: 100vh;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     background-color: var(--color-bg);
     padding: var(--size-4);
+    gap: var(--size-4);
+  }
+
+  .auth-brand {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: var(--font-size-8);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-text);
+    background: var(--color-lemon);
+    border: var(--border);
+    box-shadow: var(--shadow);
+    padding: var(--size-2) var(--size-5);
   }
 
   .auth-card {
