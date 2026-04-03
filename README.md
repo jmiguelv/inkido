@@ -6,7 +6,7 @@ A web app that helps children practise spelling tests for character-based script
 
 - **Frontend**: SvelteKit 2 + Svelte 5 (runes) + TypeScript
 - **Backend / Auth**: Supabase (Postgres + Auth + Edge Functions)
-- **AI**: Gemini 2.5 Flash (photo scanning only, via Supabase Edge Functions)
+- **AI**: OpenRouter (photo scanning only, via Supabase Edge Functions — defaults to `google/gemini-2.0-flash-exp:free`)
 - **Dictionary**: CC-CEDICT / Unicode open-source data (~145k words, ~94k characters)
 - **CSS**: OpenProps design tokens
 - **Deployment**: Vercel (static adapter)
@@ -16,7 +16,7 @@ A web app that helps children practise spelling tests for character-based script
 - [pnpm](https://pnpm.io) v10+
 - [Docker](https://www.docker.com) (for local Supabase)
 - A [Supabase](https://supabase.com) project
-- A [Gemini API key](https://aistudio.google.com)
+- An [OpenRouter API key](https://openrouter.ai/keys)
 
 ## Getting started
 
@@ -60,13 +60,21 @@ SUPABASE_SERVICE_ROLE_KEY=<your-service-role-key> npx tsx scripts/import-data.ts
 
 The script reads `PUBLIC_SUPABASE_URL` from `.env.local` automatically. This populates the `zh_words` (~145k rows) and `zh_chars` (~94k rows) tables including stroke count, mnemonic hints, component decomposition, and traditional variants. Safe to re-run when the source data files change.
 
-### 5. Set the Gemini API key as a Supabase secret
+### 5. Set the OpenRouter API key as a Supabase secret
 
 Required for photo scanning (worksheet OCR):
 
 ```sh
-pnpm supabase secrets set GEMINI_API_KEY=<your-key>
+pnpm supabase secrets set OPENROUTER_API_KEY=<your-key>
 ```
+
+Optionally override the default model (`google/gemini-2.0-flash-exp:free`):
+
+```sh
+pnpm supabase secrets set OPENROUTER_MODEL=anthropic/claude-3.5-haiku
+```
+
+Any OpenRouter model that supports vision can be used. Free-tier models are available at [openrouter.ai/models](https://openrouter.ai/models?order=pricing-asc).
 
 ### 6. Deploy Edge Functions
 
@@ -95,7 +103,7 @@ pnpm supabase db reset
 SUPABASE_URL=http://127.0.0.1:54321 SUPABASE_SERVICE_ROLE_KEY=<local-service-role-key> npx tsx scripts/import-data.ts
 
 # Set secrets locally
-pnpm supabase secrets set GEMINI_API_KEY=<your-key>
+pnpm supabase secrets set OPENROUTER_API_KEY=<your-key>
 
 # Serve Edge Functions locally
 pnpm supabase functions serve

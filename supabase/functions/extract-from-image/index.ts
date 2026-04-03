@@ -10,18 +10,15 @@ Deno.serve(async (req) => {
 
   const { base64Image, language }: { base64Image: string; language: string } = await req.json()
 
-  const geminiApiKey = Deno.env.get('GEMINI_API_KEY')
-  if (!geminiApiKey) {
-    return new Response(JSON.stringify({ error: 'GEMINI_API_KEY not configured' }), {
+  const apiKey = Deno.env.get('OPENROUTER_API_KEY')
+  if (!apiKey) {
+    return new Response(JSON.stringify({ error: 'OPENROUTER_API_KEY not configured' }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     })
   }
 
-  // Strip data URL prefix to get raw base64
-  const base64Data = base64Image.replace(/^data:image\/[a-z]+;base64,/, '')
-  const mimeMatch = base64Image.match(/^data:(image\/[a-z]+);base64,/)
-  const mimeType = mimeMatch ? mimeMatch[1] : 'image/jpeg'
+  const model = Deno.env.get('OPENROUTER_MODEL') ?? 'google/gemini-2.0-flash-exp:free'
 
   const prompt = `This is a children's spelling practice worksheet written in language "${language}".
 
@@ -37,41 +34,45 @@ Return a JSON array of strings, one item per word/character. Example: ["你好",
 
 Return only the JSON array, no markdown, no explanation.`
 
-  const geminiRes = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiApiKey}`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{
-          parts: [
-            { text: prompt },
-            { inlineData: { mimeType, data: base64Data } }
-          ]
-        }],
-        generationConfig: { responseMimeType: 'application/json' }
-      })
-    }
-  )
+  const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${apiKey}`,
+      'HTTP-Referer': 'https://inkido.app',
+      'X-Title': 'InkiDo'
+    },
+    body: JSON.stringify({
+      model,
+      messages: [{
+        role: 'user',
+        content: [
+          { type: 'text', text: prompt },
+          { type: 'image_url', image_url: { url: base64Image } }
+        ]
+      }]
+    })
+  })
 
-  if (!geminiRes.ok) {
-    const errText = await geminiRes.text()
-    return new Response(JSON.stringify({ error: `Gemini error: ${errText}` }), {
+  if (!res.ok) {
+    const errText = await res.text()
+    return new Response(JSON.stringify({ error: `OpenRouter error: ${errText}` }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     })
   }
 
-  const geminiData = await geminiRes.json()
-  const raw = geminiData.candidates?.[0]?.content?.parts?.[0]?.text
+  const data = await res.json()
+  const raw = data.choices?.[0]?.message?.content
   if (!raw) {
-    return new Response(JSON.stringify({ error: 'Gemini returned no content' }), {
+    return new Response(JSON.stringify({ error: 'No content returned' }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     })
   }
 
-  const characters = JSON.parse(raw)
+  const cleaned = raw.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '').trim()
+  const characters = JSON.parse(cleaned)
 
   return new Response(JSON.stringify({ characters }), {
     headers: { ...corsHeaders, 'Content-Type': 'application/json' }
