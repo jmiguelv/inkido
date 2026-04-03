@@ -1,23 +1,70 @@
-You are able to use the Svelte MCP server, where you have access to comprehensive Svelte 5 and SvelteKit documentation. Here's how to use the available tools effectively:
+# Inkido — CLAUDE.md
 
-## Available MCP Tools:
+## Project
+
+Children's spelling practice app for character-based scripts (Mandarin Chinese, Japanese, etc.).
+Parents create word lists, children practise spelling them. Built with SvelteKit 2 + Svelte 5 runes + Supabase.
+
+## Key commands
+
+```sh
+pnpm dev              # dev server
+pnpm test:unit        # Vitest unit tests (must pass before committing)
+pnpm test:e2e         # Playwright E2E tests
+pnpm check            # svelte-check type checking
+pnpm supabase db push # deploy pending migrations to remote DB
+
+# One-time / re-run when dictionary files change
+SUPABASE_SERVICE_ROLE_KEY=<key> npx tsx scripts/import-data.ts
+```
+
+## Database
+
+Migrations live in `supabase/migrations/` — named `00N_description.sql`.
+**Always run `pnpm supabase db push` after creating a migration.**
+
+### Schema summary
+
+| Table | Purpose |
+|---|---|
+| `profiles` | Child learner profiles, owned by a parent (`auth.users`) |
+| `word_lists` | Lists of words to practise, scoped to a profile + language (BCP 47) |
+| `words` | Individual words in a list; stores denormalized enrichment (phonetic, translation) |
+| `zh_words` | Dictionary: 145k Chinese words — `word`, `pinyin`, `translation`, `hsk_level` |
+| `zh_chars` | Dictionary: 94k Chinese characters — `char`, `gloss`, `stroke_count`, `hint`, `components` (JSONB), `trad_variant` |
+
+All user tables have RLS. Dictionary tables (`zh_words`, `zh_chars`) are authenticated read-only.
+Enrichment data in `words` is a point-in-time snapshot — deliberately denormalized.
+
+## Workflow rules
+
+1. **After every Svelte component edit** — run the autofixer (see MCP tools below) until no issues remain.
+2. **After every schema change** — create a migration and run `pnpm supabase db push`.
+3. **After every major change** — update `README.md` in the same commit.
+4. **Before committing** — `pnpm test:unit` must pass.
+
+## Svelte MCP tools
+
+This project uses the Svelte MCP server. Use these tools for all Svelte/SvelteKit work:
 
 ### 1. list-sections
-
-Use this FIRST to discover all available documentation sections. Returns a structured list with titles, use_cases, and paths.
-When asked about Svelte or SvelteKit topics, ALWAYS use this tool at the start of the chat to find relevant sections.
+Use FIRST to discover available documentation sections.
+Always use when starting work on a Svelte or SvelteKit topic.
 
 ### 2. get-documentation
-
-Retrieves full documentation content for specific sections. Accepts single or multiple sections.
-After calling the list-sections tool, you MUST analyze the returned documentation sections (especially the use_cases field) and then use the get-documentation tool to fetch ALL documentation sections that are relevant for the user's task.
+Fetch full docs for relevant sections found via `list-sections`.
+After `list-sections`, fetch ALL sections relevant to the task.
 
 ### 3. svelte-autofixer
-
-Analyzes Svelte code and returns issues and suggestions.
-You MUST use this tool whenever writing Svelte code before sending it to the user. Keep calling it until no issues or suggestions are returned.
+Analyzes a Svelte component and returns issues/suggestions.
+**Must be called after every component edit. Keep calling until no issues are returned.**
 
 ### 4. playground-link
+Generates a Svelte Playground link. Only call after explicit user confirmation, and never when code has been written to project files.
 
-Generates a Svelte Playground link with the provided code.
-After completing the code, ask the user if they want a playground link. Only call this tool after user confirmation and NEVER if code was written to files in their project.
+## Supabase MCP tools
+
+Use the Supabase plugin (`mcp__plugin_postgres-best-practices_supabase__search_docs`) when:
+- Designing or reviewing schema, RLS policies, or migrations
+- Writing Supabase queries or edge functions
+- Debugging Supabase-specific behaviour
