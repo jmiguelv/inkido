@@ -31,6 +31,7 @@
 
     let profiles = $state<Profile[]>([]);
     let dropdownOpen = $state(false);
+    let menuOpen = $state(false);
 
     async function loadProfiles() {
         const { data } = await supabase
@@ -92,6 +93,13 @@
         if (e.key === "Escape") dropdownOpen = false;
     }
 
+    $effect(() => {
+        // Close both menus whenever the route changes
+        void page.url.pathname;
+        menuOpen = false;
+        dropdownOpen = false;
+    });
+
     const activeProfile = $derived(getActiveProfile());
     const isPublicRoute = $derived(PUBLIC_ROUTES.includes(page.url.pathname));
     const activeSection = $derived(
@@ -115,7 +123,13 @@
             <a href="/" class="brand">
                 <span class="brand-name">Inkido</span>
             </a>
-            <div class="nav-right">
+            <button
+                class="menu-toggle"
+                onclick={() => (menuOpen = !menuOpen)}
+                aria-label="Toggle menu"
+                aria-expanded={menuOpen}
+            >{menuOpen ? '✕' : '☰'}</button>
+            <div class="nav-right" class:open={menuOpen}>
                 <a href="/lists" class:active={activeSection === "lists"}>Lists</a>
                 <a href="/words" class:active={activeSection === "words"}>My Words</a>
                 <a href="/characters" class:active={activeSection === "characters"}>Explore</a>
@@ -174,15 +188,18 @@
         background-color: var(--color-lemon);
         border-bottom: var(--border);
         box-shadow: 0 3px 0 var(--color-border);
+        position: relative;
     }
 
     nav {
         display: flex;
         align-items: center;
         justify-content: space-between;
+        flex-wrap: wrap;
         padding: var(--size-3) var(--size-4);
         max-width: 1200px;
         margin: 0 auto;
+        gap: 0;
     }
 
     .brand {
@@ -199,10 +216,61 @@
         line-height: 1;
     }
 
-    .nav-right {
+    /* Hamburger — visible on mobile, hidden on desktop */
+    .menu-toggle {
         display: flex;
         align-items: center;
-        gap: var(--size-4);
+        justify-content: center;
+        background: none;
+        border: var(--border);
+        box-shadow: none;
+        padding: var(--size-1) var(--size-3);
+        font-size: var(--font-size-4);
+        line-height: 1;
+        color: var(--color-text);
+        cursor: pointer;
+    }
+
+    .menu-toggle:hover:not(:disabled) {
+        transform: translate(-2px, -2px);
+        box-shadow: 3px 3px 0 var(--color-border);
+    }
+
+    .menu-toggle:active:not(:disabled) {
+        transform: translate(0, 0);
+        box-shadow: none;
+    }
+
+    /* Mobile nav — hidden until open */
+    .nav-right {
+        display: none;
+        width: 100%;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--size-1);
+        padding: var(--size-3) 0 var(--size-2);
+        border-top: var(--border);
+        margin-top: var(--size-3);
+    }
+
+    .nav-right.open {
+        display: flex;
+    }
+
+    /* Desktop nav */
+    @media (min-width: 680px) {
+        .menu-toggle { display: none; }
+
+        .nav-right {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            width: auto;
+            gap: var(--size-4);
+            padding: 0;
+            border-top: none;
+            margin-top: 0;
+        }
     }
 
     nav a {
@@ -255,10 +323,21 @@
     /* Profile dropdown */
     .profile-dropdown {
         position: relative;
+        width: 100%;
+    }
+
+    @media (min-width: 680px) {
+        .profile-dropdown { width: auto; }
     }
 
     .profile-trigger {
         white-space: nowrap;
+        width: 100%;
+        text-align: left;
+    }
+
+    @media (min-width: 680px) {
+        .profile-trigger { width: auto; }
     }
 
     .profile-menu {
@@ -312,6 +391,6 @@
     main {
         max-width: 1200px;
         margin: 0 auto;
-        padding: var(--size-8) var(--size-4);
+        padding: var(--size-6) var(--size-4);
     }
 </style>
