@@ -18,7 +18,7 @@ export async function handler(req: Request): Promise<Response> {
     })
   }
 
-  const model = Deno.env.get('OPENROUTER_MODEL') ?? 'google/gemini-2.0-flash-exp:free'
+  const model = Deno.env.get('OPENROUTER_MODEL') ?? 'google/gemma-3-27b-it:free'
 
   const prompt = `This is a children's spelling practice worksheet written in language "${language}".
 

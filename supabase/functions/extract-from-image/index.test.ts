@@ -116,5 +116,5 @@ Deno.test('defaults to gemini free model when OPENROUTER_MODEL unset', async () 
   })
 
   await handler(makeRequest())
-  assertEquals(sentBody.model, 'google/gemini-2.0-flash-exp:free')
+  assertEquals(sentBody.model, 'google/gemma-3-27b-it:free')
 })

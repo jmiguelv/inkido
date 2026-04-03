@@ -6,7 +6,7 @@ A web app that helps children practise spelling tests for character-based script
 
 - **Frontend**: SvelteKit 2 + Svelte 5 (runes) + TypeScript
 - **Backend / Auth**: Supabase (Postgres + Auth + Edge Functions)
-- **AI**: OpenRouter (photo scanning only, via Supabase Edge Functions — defaults to `google/gemini-2.0-flash-exp:free`)
+- **AI**: OpenRouter (photo scanning only, via Supabase Edge Functions — defaults to `google/gemma-3-27b-it:free`)
 - **Dictionary**: CC-CEDICT / Unicode open-source data (~145k words, ~94k characters)
 - **CSS**: OpenProps design tokens
 - **Deployment**: Vercel (static adapter)
@@ -68,7 +68,7 @@ Required for photo scanning (worksheet OCR):
 pnpm supabase secrets set OPENROUTER_API_KEY=<your-key>
 ```
 
-Optionally override the default model (`google/gemini-2.0-flash-exp:free`):
+Optionally override the default model (`google/gemma-3-27b-it:free`):
 
 ```sh
 pnpm supabase secrets set OPENROUTER_MODEL=anthropic/claude-3.5-haiku
