@@ -11,7 +11,7 @@ importers:
       '@fontsource/bricolage-grotesque':
         specifier: ^5.2.10
         version: 5.2.10
-      '@fontsource/space-grotesk':
+      '@fontsource/noto-sans':
         specifier: ^5.2.10
         version: 5.2.10
       '@supabase/supabase-js':
@@ -216,8 +216,8 @@ packages:
   '@fontsource/bricolage-grotesque@5.2.10':
     resolution: {integrity: sha512-V2xS+1P7C8IrSypXLUx/bLtX/LsTlYtV2k2CsU+S/0t8qepZ2hvKSlyJIx7Ub/iY8Bbnj+IjAuUF9nvFz+BbIg==}
 
-  '@fontsource/space-grotesk@5.2.10':
-    resolution: {integrity: sha512-XNXEbT74OIITPqw2H6HXwPDp85fy43uxfBwFR5PU+9sLnjuLj12KlhVM9nZVN6q6dlKjkuN8JisW/OBxwxgUew==}
+  '@fontsource/noto-sans@5.2.10':
+    resolution: {integrity: sha512-J58RVfS/C0Z2VBF+PoU260Tx8cdRGYuS+e3yQe4hYaIYDl0sEVn5CzlLo5zVRvQD0HaIUTV8AZMfqR7rtdEpqQ==}
 
   '@isaacs/fs-minipass@4.0.1':
     resolution: {integrity: sha512-wgm9Ehl2jpeqP3zw/7mo3kRHFp5MEDhqAdwy1fTGkHAwnkGOVsgpvQhL8B5n1qlb01jV3n/bI0ZfZp5lWA1k4w==}
@@ -1014,7 +1014,7 @@ snapshots:
 
   '@fontsource/bricolage-grotesque@5.2.10': {}
 
-  '@fontsource/space-grotesk@5.2.10': {}
+  '@fontsource/noto-sans@5.2.10': {}
 
   '@isaacs/fs-minipass@4.0.1':
     dependencies:
