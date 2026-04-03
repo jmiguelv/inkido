@@ -58,7 +58,7 @@ Get your **service role key** from Supabase dashboard → Project Settings → A
 SUPABASE_SERVICE_ROLE_KEY=<your-service-role-key> npx tsx scripts/import-data.ts
 ```
 
-This populates the `zh_words` and `zh_chars` tables (~240k rows total). Safe to re-run when the source data files change.
+The script reads `PUBLIC_SUPABASE_URL` from `.env.local` automatically. This populates the `zh_words` and `zh_chars` tables (~240k rows total). Safe to re-run when the source data files change.
 
 ### 5. Set the Gemini API key as a Supabase secret
 
@@ -91,7 +91,7 @@ pnpm supabase start
 # Apply migrations locally
 pnpm supabase db reset
 
-# Import dictionary data into local DB
+# Import dictionary data into local DB (override URL since .env.local points to remote)
 SUPABASE_URL=http://127.0.0.1:54321 SUPABASE_SERVICE_ROLE_KEY=<local-service-role-key> npx tsx scripts/import-data.ts
 
 # Set secrets locally

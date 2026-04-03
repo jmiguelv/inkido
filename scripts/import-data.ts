@@ -3,13 +3,14 @@
  * Safe to run multiple times — uses upsert so changed rows are updated.
  *
  * Usage:
- *   SUPABASE_URL=https://... SUPABASE_SERVICE_ROLE_KEY=... npx tsx scripts/import-data.ts
+ *   SUPABASE_SERVICE_ROLE_KEY=<key> npx tsx scripts/import-data.ts
  *
- * Or set SUPABASE_URL in the script and pass only SUPABASE_SERVICE_ROLE_KEY.
+ * Reads PUBLIC_SUPABASE_URL from .env.local automatically.
+ * Override with SUPABASE_URL env var if needed.
  */
 
 import { createClient } from '@supabase/supabase-js'
-import { createReadStream } from 'fs'
+import { createReadStream, readFileSync } from 'fs'
 import { createInterface } from 'readline'
 import { resolve } from 'path'
 import { fileURLToPath } from 'url'
@@ -19,8 +20,28 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 const ROOT = resolve(__dirname, '..')
 
-const SUPABASE_URL = process.env.SUPABASE_URL ?? 'https://qxwhisbhgluxglopdwat.supabase.co'
-const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY
+// Load .env.local if present
+function loadEnvFile(path: string): Record<string, string> {
+  try {
+    return Object.fromEntries(
+      readFileSync(path, 'utf8')
+        .split('\n')
+        .filter(l => l.trim() && !l.startsWith('#'))
+        .map(l => l.split('=').map(s => s.trim()) as [string, string])
+    )
+  } catch {
+    return {}
+  }
+}
+
+const env = loadEnvFile(resolve(ROOT, '.env.local'))
+
+const SUPABASE_URL =
+  process.env.SUPABASE_URL ??
+  env['PUBLIC_SUPABASE_URL'] ??
+  (() => { console.error('Error: PUBLIC_SUPABASE_URL not found in .env.local'); process.exit(1) })()
+
+const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY ?? env['SUPABASE_SERVICE_ROLE_KEY']
 
 if (!SERVICE_ROLE_KEY) {
   console.error('Error: SUPABASE_SERVICE_ROLE_KEY env var is required')
