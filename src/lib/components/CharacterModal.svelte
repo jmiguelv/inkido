@@ -51,7 +51,10 @@
         padding: 10,
         showOutline: true,
         strokeAnimationSpeed: 1,
-        delayBetweenStrokes: 300
+        delayBetweenStrokes: 300,
+        onLoadCharDataError: () => {
+          writerError = 'Stroke order unavailable for this character.'
+        }
       }).animateCharacter()
     }).catch(() => {
       writerError = 'Stroke order unavailable for this character.'
