@@ -5,6 +5,7 @@
   import { goto } from '$app/navigation'
   import { getActiveProfile } from '$lib/stores.svelte.ts'
   import { onMount } from 'svelte'
+  import { SvelteMap } from 'svelte/reactivity'
   import CharacterModal from '$lib/components/CharacterModal.svelte'
   import { splitCharacters } from '$lib/characters.ts'
   import type { Word, WordList } from '$lib/types.ts'
@@ -16,11 +17,33 @@
   let enriching = $state(false)
   let addingWords = $state(false)
   let scanLoading = $state(false)
+  let strokeMap = new SvelteMap<string, number>()
   const activeProfile = $derived(getActiveProfile())
   const listId = $derived(page.params.id)
   const busy = $derived(addingWords || enriching || scanLoading)
 
   let modalChar = $state<{ char: string } | null>(null)
+
+  async function loadStrokeCounts(wordList: Word[]) {
+    const allChars = [...new Set(wordList.flatMap(w => splitCharacters(w.character)))]
+    if (!allChars.length) return
+    const { data } = await supabase
+      .from('zh_chars')
+      .select('char, stroke_count')
+      .in('char', allChars)
+    data?.forEach(r => { if (r.stroke_count != null) strokeMap.set(r.char, r.stroke_count) })
+  }
+
+  function strokeClass(character: string): string {
+    const chars = splitCharacters(character)
+    const known = chars.filter(c => strokeMap.has(c))
+    if (known.length === 0) return 'stroke-lemon'
+    const avg = known.reduce((sum, c) => sum + strokeMap.get(c)!, 0) / known.length
+    if (avg <= 7)  return 'stroke-mint'
+    if (avg <= 11) return 'stroke-sky'
+    if (avg <= 16) return 'stroke-lavender'
+    return 'stroke-rose'
+  }
 
   async function loadList() {
     const { data, error } = await supabase.from('word_lists').select('*').eq('id', listId).single()
@@ -37,6 +60,7 @@
       .order('created_at')
     if (error) throw error
     words = data as Word[]
+    await loadStrokeCounts(words)
   }
 
   async function throwFnError(error: unknown): Promise<never> {
@@ -182,7 +206,7 @@
     <ul class="word-list">
       {#each words as word (word.id)}
         <li>
-          <article class="word-card">
+          <article class="word-card {strokeClass(word.character)}">
             {#if word.phonetic_annotation}
               <p class="word-phonetic">{word.phonetic_annotation}</p>
             {/if}
@@ -355,30 +379,34 @@
     gap: var(--size-2);
     box-shadow: var(--shadow-sm);
     position: relative;
+    min-width: 0;
   }
 
-  .word-list li:nth-child(5n+1) .word-card { background: var(--color-mint); }
-  .word-list li:nth-child(5n+2) .word-card { background: var(--color-rose); }
-  .word-list li:nth-child(5n+3) .word-card { background: var(--color-sky); }
-  .word-list li:nth-child(5n+4) .word-card { background: var(--color-lavender); }
-  .word-list li:nth-child(5n+5) .word-card { background: var(--color-lemon); }
+  .word-card.stroke-mint     { background: var(--color-mint); }
+  .word-card.stroke-sky      { background: var(--color-sky); }
+  .word-card.stroke-lavender { background: var(--color-lavender); }
+  .word-card.stroke-rose     { background: var(--color-rose); }
+  .word-card.stroke-lemon    { background: var(--color-lemon); }
 
   .word-phonetic {
     font-size: var(--font-size-0);
     color: var(--color-text-muted);
     margin: 0;
+    overflow-wrap: break-word;
   }
 
   .char-row {
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0;
   }
 
   .char-btn {
-    font-size: var(--font-size-7);
+    font-size: var(--font-size-6);
     background: none;
     border: none;
-    padding: var(--size-1);
+    padding: var(--size-1) 0;
     border-radius: 0;
     cursor: pointer;
     line-height: 1;
@@ -391,6 +419,7 @@
     font-size: var(--font-size-1);
     font-weight: 700;
     margin: 0;
+    overflow-wrap: break-word;
   }
 
   .delete-btn {
