@@ -3,25 +3,27 @@
 
 :root {
   /* Colors */
-  --color-bg:         #F5F5F0;
-  --color-surface:    #FFFFFF;
-  --color-text:       #2B2B2B;
-  --color-text-muted: #6B6B6B;
-  --color-accent:     #4A7FBD;
-  --color-accent-fg:  #FFFFFF;
-  --color-danger:     #C0392B;
-  --color-border:     #D8D8D4;
+  --color-bg:         #F4EFEA;                        /* warm off-white — no OpenProps match */
+  --color-surface:    var(--gray-0);                  /* #f8f9fa */
+  --color-text:       var(--gray-9);                  /* #212529 */
+  --color-text-muted: var(--gray-6);                  /* #868e96 */
+  --color-accent:     var(--yellow-3);                /* #ffe066 — primary actions */
+  --color-accent-fg:  var(--gray-9);                  /* dark text on yellow */
+  --color-accent-2:   var(--blue-3);                  /* #74c0fc — info/highlights */
+  --color-accent-3:   var(--red-5);                   /* #ff6b6b — coral */
+  --color-danger:     var(--red-9);                   /* #c92a2a */
+  --color-border:     var(--gray-3);                  /* #dee2e6 */
 
   /* Shape */
-  --radius:           var(--radius-2);
-  --shadow:           var(--shadow-2);
-  --border-width:     1px;
+  --radius:           var(--radius-1);                /* 2px */
+  --shadow:           4px 4px 0 var(--color-text);   /* hard offset, no blur */
+  --border-width:     2px;
 
   /* Typography */
   --font-body:        'Inter', system-ui, sans-serif;
 
   /* Transitions */
-  --transition-speed: 200ms;
+  --transition-speed: 150ms;
 }
 
 *,
