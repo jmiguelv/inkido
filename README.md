@@ -6,7 +6,8 @@ A web app that helps children practise spelling tests for character-based script
 
 - **Frontend**: SvelteKit 2 + Svelte 5 (runes) + TypeScript
 - **Backend / Auth**: Supabase (Postgres + Auth + Edge Functions)
-- **AI**: Gemini 2.5 Flash (via Supabase Edge Functions)
+- **AI**: Gemini 2.5 Flash (photo scanning only, via Supabase Edge Functions)
+- **Dictionary**: CC-CEDICT / Unicode open-source data (~145k words, ~94k characters)
 - **CSS**: OpenProps design tokens
 - **Deployment**: Vercel (static adapter)
 
@@ -49,20 +50,31 @@ pnpm supabase link --project-ref <your-project-ref>
 pnpm supabase db push
 ```
 
-### 4. Set the Gemini API key as a Supabase secret
+### 4. Import dictionary data
+
+Get your **service role key** from Supabase dashboard → Project Settings → API, then run:
+
+```sh
+SUPABASE_SERVICE_ROLE_KEY=<your-service-role-key> npx tsx scripts/import-data.ts
+```
+
+This populates the `zh_words` and `zh_chars` tables (~240k rows total). Safe to re-run when the source data files change.
+
+### 5. Set the Gemini API key as a Supabase secret
+
+Required for photo scanning (worksheet OCR):
 
 ```sh
 pnpm supabase secrets set GEMINI_API_KEY=<your-key>
 ```
 
-### 5. Deploy Edge Functions
+### 6. Deploy Edge Functions
 
 ```sh
-pnpm supabase functions deploy enrich-words
 pnpm supabase functions deploy extract-from-image
 ```
 
-### 6. Start the dev server
+### 7. Start the dev server
 
 ```sh
 pnpm dev
@@ -78,6 +90,9 @@ pnpm supabase start
 
 # Apply migrations locally
 pnpm supabase db reset
+
+# Import dictionary data into local DB
+SUPABASE_URL=http://127.0.0.1:54321 SUPABASE_SERVICE_ROLE_KEY=<local-service-role-key> npx tsx scripts/import-data.ts
 
 # Set secrets locally
 pnpm supabase secrets set GEMINI_API_KEY=<your-key>
@@ -98,6 +113,7 @@ pnpm supabase functions serve
 | `pnpm test` | Run all tests |
 | `pnpm check` | Type-check with svelte-check |
 | `pnpm supabase` | Run Supabase CLI commands |
+| `npx tsx scripts/import-data.ts` | Import/refresh dictionary data into Supabase |
 
 ## Auth configuration
 
