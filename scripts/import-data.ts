@@ -53,8 +53,12 @@ const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY)
 const BATCH_SIZE = 1000
 const LOG_INTERVAL = 10_000
 
-async function upsertBatch(table: string, rows: object[]): Promise<void> {
-  const { error } = await supabase.from(table).upsert(rows)
+async function upsertBatch(table: string, key: string, rows: Record<string, unknown>[]): Promise<void> {
+  // Deduplicate within the batch — Postgres rejects ON CONFLICT DO UPDATE if the
+  // same key appears twice in a single statement. Last entry wins.
+  const seen = new Map<unknown, Record<string, unknown>>()
+  for (const row of rows) seen.set(row[key], row)
+  const { error } = await supabase.from(table).upsert([...seen.values()])
   if (error) throw new Error(`Upsert error on ${table}: ${error.message}`)
 }
 
@@ -69,7 +73,7 @@ async function importWords(): Promise<void> {
 
   const rl = createInterface({ input: createReadStream(filePath), crlfDelay: Infinity })
 
-  let batch: object[] = []
+  let batch: Record<string, unknown>[] = []
   let total = 0
 
   for await (const line of rl) {
@@ -89,7 +93,7 @@ async function importWords(): Promise<void> {
     })
 
     if (batch.length >= BATCH_SIZE) {
-      await upsertBatch('zh_words', batch)
+      await upsertBatch('zh_words', 'word', batch)
       total += batch.length
       batch = []
       if (total % LOG_INTERVAL === 0) console.log(`  zh_words: ${total} rows`)
@@ -97,7 +101,7 @@ async function importWords(): Promise<void> {
   }
 
   if (batch.length > 0) {
-    await upsertBatch('zh_words', batch)
+    await upsertBatch('zh_words', 'word', batch)
     total += batch.length
   }
 
@@ -110,7 +114,7 @@ async function importChars(): Promise<void> {
 
   const rl = createInterface({ input: createReadStream(filePath), crlfDelay: Infinity })
 
-  let batch: object[] = []
+  let batch: Record<string, unknown>[] = []
   let total = 0
 
   for await (const line of rl) {
@@ -124,7 +128,7 @@ async function importChars(): Promise<void> {
     })
 
     if (batch.length >= BATCH_SIZE) {
-      await upsertBatch('zh_chars', batch)
+      await upsertBatch('zh_chars', 'char', batch)
       total += batch.length
       batch = []
       if (total % LOG_INTERVAL === 0) console.log(`  zh_chars: ${total} rows`)
@@ -132,7 +136,7 @@ async function importChars(): Promise<void> {
   }
 
   if (batch.length > 0) {
-    await upsertBatch('zh_chars', batch)
+    await upsertBatch('zh_chars', 'char', batch)
     total += batch.length
   }
 
