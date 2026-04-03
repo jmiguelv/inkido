@@ -1,2 +1,1 @@
-export const prerender = true
-export const ssr = false
+// adapter-vercel handles SSR and routing natively; no overrides needed

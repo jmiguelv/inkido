@@ -1,4 +1,4 @@
-import adapter from '@sveltejs/adapter-static';
+import adapter from '@sveltejs/adapter-vercel';
 import { relative, sep } from 'node:path';
 
 /** @type {import('@sveltejs/kit').Config} */
@@ -14,8 +14,7 @@ const config = {
 		}
 	},
 	kit: {
-		adapter: adapter({ fallback: 'index.html' }),
-		prerender: { handleUnseenRoutes: 'ignore' }
+		adapter: adapter()
 	}
 };
 
