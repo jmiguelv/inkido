@@ -126,7 +126,15 @@ async function importChars(): Promise<void> {
     batch.push({
       char: entry.char,
       gloss: entry.gloss ?? null,
-      stroke_count: entry.strokeCount ?? null
+      stroke_count: entry.strokeCount ?? null,
+      hint: entry.hint ?? null,
+      components: entry.components?.length
+        ? entry.components.map((c: { character: string; type?: string[] }) => ({
+            character: c.character,
+            type: c.type ?? []
+          }))
+        : null,
+      trad_variant: entry.tradVariants?.[0] ?? null
     })
 
     if (batch.length >= BATCH_SIZE) {
