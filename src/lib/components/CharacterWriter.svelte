@@ -13,6 +13,7 @@
 
   function initWriter(node: HTMLDivElement) {
     let destroyed = false
+    let animating = false
 
     import('hanzi-writer').then(({ default: HanziWriter }) => {
       if (destroyed) return
@@ -25,10 +26,15 @@
         delayBetweenStrokes: 300,
         onLoadCharDataError: () => { if (!destroyed) writerError = true }
       })
-      function loop() {
-        if (!destroyed) writer.animateCharacter({ onComplete: loop })
+
+      function play() {
+        if (destroyed || animating) return
+        animating = true
+        writer.animateCharacter().then(() => { animating = false })
       }
-      loop()
+
+      play()
+      node.addEventListener('click', play)
     }).catch(() => { if (!destroyed) writerError = true })
 
     return {
@@ -50,7 +56,9 @@
       use:initWriter
       class="writer-box"
       style="width: {size}px; height: {size}px;"
-      aria-hidden="true"
+      role="button"
+      tabindex="0"
+      aria-label="Replay stroke order for {char}"
     ></div>
   {/key}
 {/if}
@@ -58,6 +66,7 @@
 <style>
   .writer-box {
     flex-shrink: 0;
+    cursor: pointer;
   }
 
   .fallback {
