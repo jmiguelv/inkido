@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { splitCharacters } from '../../src/lib/characters.ts'
+import { splitCharacters, stripDiacritics } from '../../src/lib/characters'
 
 describe('splitCharacters', () => {
   it('splitCharacters_singleChar_returnsOneElement', () => {
@@ -21,5 +21,28 @@ describe('splitCharacters', () => {
   it('splitCharacters_surrogatePair_treatsAsOneCharacter', () => {
     // '𠀋' is a supplementary CJK character (U+2000B, two UTF-16 code units)
     expect(splitCharacters('𠀋')).toEqual(['𠀋'])
+  })
+})
+
+describe('stripDiacritics', () => {
+  it('strips all four Mandarin tones', () => {
+    expect(stripDiacritics('mā má mǎ mà')).toBe('ma ma ma ma')
+  })
+
+  it('handles lowercase conversion', () => {
+    expect(stripDiacritics('Kāi')).toBe('kai')
+  })
+
+  it('handles ü (umlaut)', () => {
+    // nǚ should become nu
+    expect(stripDiacritics('nǚ')).toBe('nu')
+  })
+
+  it('handles regular text without diacritics', () => {
+    expect(stripDiacritics('hello')).toBe('hello')
+  })
+
+  it('strips other common diacritics', () => {
+    expect(stripDiacritics('é à î ö')).toBe('e a i o')
   })
 })
