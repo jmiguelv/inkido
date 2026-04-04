@@ -95,7 +95,9 @@
   {/if}
 
   <div class="stroke-area">
-    <CharacterWriter char={viewChar} {language} size={200} />
+    {#key viewChar}
+      <CharacterWriter char={viewChar} {language} size={200} />
+    {/key}
   </div>
 
   <div class="modal-actions">

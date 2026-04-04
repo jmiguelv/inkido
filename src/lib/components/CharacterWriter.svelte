@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { onMount } from 'svelte'
+
   let {
     char,
     language = 'zh',
@@ -9,38 +11,22 @@
     size?: number
   } = $props()
 
-  let el = $state<HTMLDivElement | undefined>()
+  let el: HTMLDivElement
   let writerError = $state(false)
 
-  $effect(() => {
-    if (!el || language !== 'zh') return
-
-    const node = el
-    const currentChar = char
-    const currentSize = size
-    let cancelled = false
-
-    node.innerHTML = ''
-    writerError = false
-
+  onMount(() => {
+    if (language !== 'zh') return
     import('hanzi-writer').then(({ default: HanziWriter }) => {
-      if (cancelled || !node.isConnected) return
-      HanziWriter.create(node, currentChar, {
-        width: currentSize,
-        height: currentSize,
-        padding: Math.round(currentSize * 0.05),
+      HanziWriter.create(el, char, {
+        width: size,
+        height: size,
+        padding: Math.round(size * 0.05),
         showOutline: true,
         strokeAnimationSpeed: 1,
         delayBetweenStrokes: 300,
-        onLoadCharDataError: () => {
-          if (!cancelled) writerError = true
-        }
+        onLoadCharDataError: () => { writerError = true }
       }).loopCharacter()
-    }).catch(() => {
-      if (!cancelled) writerError = true
-    })
-
-    return () => { cancelled = true }
+    }).catch(() => { writerError = true })
   })
 </script>
 
