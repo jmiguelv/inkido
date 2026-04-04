@@ -12,14 +12,14 @@
 </script>
 
 <svelte:head>
-  <title>Inkido — Spelling practice for character-based scripts</title>
+  <title>Inkido — Mandarin Chinese spelling practice</title>
 </svelte:head>
 
 <div class="landing">
   <section class="hero">
     <h1 class="logo">Inkido</h1>
-    <p class="tagline">Spelling practice for character-based scripts</p>
-    <p class="sub">Build vocabulary in Mandarin Chinese, Japanese, and more. Create word lists, practise spelling with stroke-by-stroke animation, and track progress across profiles.</p>
+    <p class="tagline">Mandarin Chinese spelling practice</p>
+    <p class="sub">Build vocabulary in Mandarin Chinese. Create word lists, practise spelling with stroke-by-stroke animation, and track progress across profiles.</p>
     {#if loggedIn}
       <a href="/lists" class="cta cta-primary">Go to app →</a>
     {:else}

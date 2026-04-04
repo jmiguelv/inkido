@@ -1,6 +1,6 @@
 # Inkido
 
-A web app that helps children practise spelling tests for character-based scripts (Mandarin Chinese, Japanese, Arabic, and more).
+A web app that helps children practise spelling tests in Mandarin Chinese.
 
 ## Tech Stack
 
