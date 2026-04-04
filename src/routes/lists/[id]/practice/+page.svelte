@@ -1,13 +1,13 @@
 <script lang="ts">
   import { page } from '$app/state'
-  import { supabase } from '$lib/supabase.ts'
+  import { supabase } from '$lib/supabase'
   import { goto } from '$app/navigation'
-  import { getActiveProfile } from '$lib/stores.svelte.ts'
-  import { speak, unlockAudio } from '$lib/audio.ts'
+  import { getActiveProfile } from '$lib/stores.svelte'
+  import { speak, unlockAudio } from '$lib/audio'
   import { onMount } from 'svelte'
-  import { splitCharacters } from '$lib/characters.ts'
+  import { splitCharacters } from '$lib/characters'
   import CharacterModal from '$lib/components/CharacterModal.svelte'
-  import type { Word, WordList } from '$lib/types.ts'
+  import type { Word, WordList } from '$lib/types'
 
   let list = $state<WordList | null>(null)
   let words = $state<Word[]>([])

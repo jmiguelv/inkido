@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { supabase } from '$lib/supabase.ts'
+  import { supabase } from '$lib/supabase'
   import { goto } from '$app/navigation'
   import { onMount } from 'svelte'
-  import type { UserPreferences } from '$lib/types.ts'
+  import type { UserPreferences } from '$lib/types'
 
   let speechRate = $state(0.75)
   let newEmail = $state('')

@@ -12,8 +12,8 @@
 </script>
 
 <script lang="ts">
-  import { supabase } from '$lib/supabase.ts'
-  import { speak } from '$lib/audio.ts'
+  import { supabase } from '$lib/supabase'
+  import { speak } from '$lib/audio'
   import CharacterWriter from '$lib/components/CharacterWriter.svelte'
 
   const {

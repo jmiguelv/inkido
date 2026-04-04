@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { supabase } from '$lib/supabase.ts'
+  import { supabase } from '$lib/supabase'
   import CharacterModal from '$lib/components/CharacterModal.svelte'
   import { SvelteMap } from 'svelte/reactivity'
 

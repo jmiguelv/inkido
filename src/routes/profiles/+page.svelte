@@ -1,9 +1,9 @@
 <script lang="ts">
-  import { supabase } from '$lib/supabase.ts'
+  import { supabase } from '$lib/supabase'
   import { goto } from '$app/navigation'
-  import { setActiveProfile, getActiveProfile } from '$lib/stores.svelte.ts'
+  import { setActiveProfile, getActiveProfile } from '$lib/stores.svelte'
   import { onMount } from 'svelte'
-  import type { Profile } from '$lib/types.ts'
+  import type { Profile } from '$lib/types'
 
   let profiles = $state<Profile[]>([])
   let newProfileName = $state('')

@@ -1,9 +1,9 @@
 <script lang="ts">
-  import { supabase } from '$lib/supabase.ts'
+  import { supabase } from '$lib/supabase'
   import { goto } from '$app/navigation'
-  import { getActiveProfile } from '$lib/stores.svelte.ts'
+  import { getActiveProfile } from '$lib/stores.svelte'
   import { onMount } from 'svelte'
-  import type { WordList } from '$lib/types.ts'
+  import type { WordList } from '$lib/types'
 
   const LANGUAGES = [
     { code: 'zh', label: 'Mandarin Chinese' }

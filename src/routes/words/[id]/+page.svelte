@@ -3,11 +3,11 @@
   import { goto } from '$app/navigation'
   import { onMount } from 'svelte'
   import { SvelteMap } from 'svelte/reactivity'
-  import { supabase } from '$lib/supabase.ts'
-  import { getActiveProfile } from '$lib/stores.svelte.ts'
-  import { splitCharacters } from '$lib/characters.ts'
-  import { speak } from '$lib/audio.ts'
-  import type { Word, WordList } from '$lib/types.ts'
+  import { supabase } from '$lib/supabase'
+  import { getActiveProfile } from '$lib/stores.svelte'
+  import { splitCharacters } from '$lib/characters'
+  import { speak } from '$lib/audio'
+  import type { Word, WordList } from '$lib/types'
   import CharacterWriter from '$lib/components/CharacterWriter.svelte'
 
   type CharData = {

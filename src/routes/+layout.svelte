@@ -1,6 +1,6 @@
 <script lang="ts">
     import "../app.css";
-    import { supabase } from "$lib/supabase.ts";
+    import { supabase } from "$lib/supabase";
     import { goto } from "$app/navigation";
     import { page } from "$app/state";
     import {
@@ -8,9 +8,9 @@
         getActiveProfile,
         setActiveProfile,
         clearActiveProfile,
-    } from "$lib/stores.svelte.ts";
+    } from "$lib/stores.svelte";
     import { onMount } from "svelte";
-    import type { Profile } from "$lib/types.ts";
+    import type { Profile } from "$lib/types";
 
     const PUBLIC_ROUTES = [
         "/",
