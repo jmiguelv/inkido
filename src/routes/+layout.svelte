@@ -187,9 +187,7 @@
 <footer>
     <span>Inkido v{__APP_VERSION__}</span>
     <span>
-        Character data:
-        <a href="https://www.unicode.org/charts/" target="_blank" rel="noopener noreferrer">Unicode Han Database</a>
-        and <a href="https://cc-cedict.org" target="_blank" rel="noopener noreferrer">CC-CEDICT</a>
+        Character data from <a href="https://www.dong-chinese.com/wiki/home" target="_blank" rel="noopener noreferrer">Chinese Character Wiki</a>
     </span>
 </footer>
 

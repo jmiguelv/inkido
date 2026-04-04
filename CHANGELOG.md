@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.1.1] — 2026-04-04
+
+### Changed
+- Character stroke animations play once on load; click to replay
+- Footer attribution corrected to Chinese Character Wiki (dong-chinese.com)
+
+### Fixed
+- CI: missing `.env` file caused `pnpm check` to fail
+- CI: `.ts` extension on `$lib` alias imports rejected by type checker
+- `__APP_VERSION__` declaration moved inside `declare global` so it resolves correctly
+
 ## [0.1.0] — 2026-04-04
 
 ### Added
