@@ -9,23 +9,39 @@
     size?: number
   } = $props()
 
+  let el = $state<HTMLDivElement | undefined>()
   let writerError = $state(false)
 
-  function mountWriter(node: HTMLDivElement) {
+  $effect(() => {
+    if (!el || language !== 'zh') return
+
+    const node = el
+    const currentChar = char
+    const currentSize = size
+    let cancelled = false
+
+    node.innerHTML = ''
+    writerError = false
+
     import('hanzi-writer').then(({ default: HanziWriter }) => {
-      HanziWriter.create(node, char, {
-        width: size,
-        height: size,
-        padding: Math.round(size * 0.05),
+      if (cancelled || !node.isConnected) return
+      HanziWriter.create(node, currentChar, {
+        width: currentSize,
+        height: currentSize,
+        padding: Math.round(currentSize * 0.05),
         showOutline: true,
         strokeAnimationSpeed: 1,
         delayBetweenStrokes: 300,
-        onLoadCharDataError: () => { writerError = true }
+        onLoadCharDataError: () => {
+          if (!cancelled) writerError = true
+        }
       }).loopCharacter()
     }).catch(() => {
-      writerError = true
+      if (!cancelled) writerError = true
     })
-  }
+
+    return () => { cancelled = true }
+  })
 </script>
 
 {#if language !== 'zh' || writerError}
@@ -36,14 +52,12 @@
     aria-hidden="true"
   >{char}</div>
 {:else}
-  {#key char}
-    <div
-      {@attach mountWriter}
-      class="writer-box"
-      style="width: {size}px; height: {size}px;"
-      aria-hidden="true"
-    ></div>
-  {/key}
+  <div
+    bind:this={el}
+    class="writer-box"
+    style="width: {size}px; height: {size}px;"
+    aria-hidden="true"
+  ></div>
 {/if}
 
 <style>
