@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { onMount } from 'svelte'
-
   let {
     char,
     language = 'zh',
@@ -11,23 +9,32 @@
     size?: number
   } = $props()
 
-  let el: HTMLDivElement
   let writerError = $state(false)
 
-  onMount(() => {
-    if (language !== 'zh') return
+  function initWriter(node: HTMLDivElement) {
+    let destroyed = false
+
     import('hanzi-writer').then(({ default: HanziWriter }) => {
-      HanziWriter.create(el, char, {
+      if (destroyed) return
+      const writer = HanziWriter.create(node, char, {
         width: size,
         height: size,
         padding: Math.round(size * 0.05),
         showOutline: true,
         strokeAnimationSpeed: 1,
         delayBetweenStrokes: 300,
-        onLoadCharDataError: () => { writerError = true }
-      }).loopCharacter()
-    }).catch(() => { writerError = true })
-  })
+        onLoadCharDataError: () => { if (!destroyed) writerError = true }
+      })
+      function loop() {
+        if (!destroyed) writer.animateCharacter({ onComplete: loop })
+      }
+      loop()
+    }).catch(() => { if (!destroyed) writerError = true })
+
+    return {
+      destroy() { destroyed = true }
+    }
+  }
 </script>
 
 {#if language !== 'zh' || writerError}
@@ -38,12 +45,14 @@
     aria-hidden="true"
   >{char}</div>
 {:else}
-  <div
-    bind:this={el}
-    class="writer-box"
-    style="width: {size}px; height: {size}px;"
-    aria-hidden="true"
-  ></div>
+  {#key char}
+    <div
+      use:initWriter
+      class="writer-box"
+      style="width: {size}px; height: {size}px;"
+      aria-hidden="true"
+    ></div>
+  {/key}
 {/if}
 
 <style>
