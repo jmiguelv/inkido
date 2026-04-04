@@ -2,6 +2,7 @@
   import { supabase } from '$lib/supabase'
   import CharacterModal from '$lib/components/CharacterModal.svelte'
   import { SvelteMap } from 'svelte/reactivity'
+  import { stripDiacritics } from '$lib/characters'
 
   type CharEntry = {
     char: string
@@ -18,17 +19,13 @@
   let modalChar = $state<string | null>(null)
   let debounceTimer = $state<ReturnType<typeof setTimeout> | null>(null)
 
-  function normalize(s: string): string {
-    return s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
-  }
-
   async function runSearch(q: string) {
     if (!q.trim()) { results = []; searched = false; return }
 
     searching = true
     searched = true
     try {
-      const nq = normalize(q)
+      const nq = stripDiacritics(q)
 
       // Search zh_chars by character or gloss, and zh_words by pinyin or translation
       const [{ data: charRows }, { data: wordRows }] = await Promise.all([
@@ -41,7 +38,7 @@
         supabase
           .from('zh_words')
           .select('word, pinyin')
-          .or(`pinyin.ilike.%${nq}%,translation.ilike.%${q}%`)
+          .or(`pinyin_search.ilike.%${nq}%,translation.ilike.%${q}%`)
           .like('word', '_')  // single characters only
           .limit(50)
       ])

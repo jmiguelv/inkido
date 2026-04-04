@@ -28,6 +28,23 @@ export interface Word {
   created_at: string
 }
 
+export interface ZHWord {
+  word: string
+  pinyin: string | null
+  pinyin_search: string | null
+  translation: string | null
+  hsk_level: number | null
+}
+
+export interface ZHChar {
+  char: string
+  gloss: string | null
+  stroke_count: number | null
+  hint: string | null
+  components: { character: string; type: string[] }[] | null
+  trad_variant: string | null
+}
+
 export interface UserPreferences {
   speechRate: number    // 0.25 – 1.0
 }

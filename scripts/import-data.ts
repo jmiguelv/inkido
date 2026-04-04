@@ -15,6 +15,7 @@ import { createInterface } from 'readline'
 import { resolve } from 'path'
 import { fileURLToPath } from 'url'
 import { dirname } from 'path'
+import { stripDiacritics } from '../src/lib/characters'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -88,6 +89,7 @@ async function importWords(): Promise<void> {
     batch.push({
       word: entry.simp,
       pinyin,
+      pinyin_search: pinyin ? stripDiacritics(pinyin) : null,
       translation: entry.gloss ?? null,
       hsk_level: entry.statistics?.hskLevel ?? null
     })

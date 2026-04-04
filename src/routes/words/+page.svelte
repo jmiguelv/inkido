@@ -3,7 +3,7 @@
   import { goto } from '$app/navigation'
   import { getActiveProfile } from '$lib/stores.svelte'
   import { onMount } from 'svelte'
-  import { splitCharacters } from '$lib/characters'
+  import { splitCharacters, stripDiacritics } from '$lib/characters'
   import CharacterModal from '$lib/components/CharacterModal.svelte'
   import type { Word, WordList } from '$lib/types'
 
@@ -16,19 +16,14 @@
   let query = $state('')
   let modalChar = $state<{ char: string; language: string } | null>(null)
 
-  // Strip diacritic marks for tone-insensitive pinyin search
-  function normalize(s: string): string {
-    return s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
-  }
-
   const filtered = $derived(
     query.trim()
       ? words.filter(w => {
-          const q = normalize(query)
+          const q = stripDiacritics(query)
           return (
             w.character.includes(query) ||
-            normalize(w.phonetic_annotation ?? '').includes(q) ||
-            normalize(w.translation ?? '').includes(q)
+            stripDiacritics(w.phonetic_annotation ?? '').includes(q) ||
+            stripDiacritics(w.translation ?? '').includes(q)
           )
         })
       : words
