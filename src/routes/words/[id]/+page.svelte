@@ -8,6 +8,7 @@
   import { splitCharacters } from '$lib/characters.ts'
   import { speak } from '$lib/audio.ts'
   import type { Word, WordList } from '$lib/types.ts'
+  import CharacterWriter from '$lib/components/CharacterWriter.svelte'
 
   type CharData = {
     phonetic: string | null
@@ -27,22 +28,6 @@
   let charDataMap = new SvelteMap<string, CharData>()
   let loading = $state(true)
   let errorMsg = $state('')
-
-  function makeWriter(char: string) {
-    return (node: HTMLDivElement) => {
-      import('hanzi-writer').then(({ default: HanziWriter }) => {
-        HanziWriter.create(node, char, {
-          width: 140,
-          height: 140,
-          padding: 8,
-          showOutline: true,
-          strokeAnimationSpeed: 1,
-          delayBetweenStrokes: 300,
-          onLoadCharDataError: () => { /* silently ignore */ }
-        }).animateCharacter()
-      }).catch(() => {})
-    }
-  }
 
   function handleListen() {
     if (!word || !list) return
@@ -159,13 +144,7 @@
           {#each splitCharacters(word.character) as char (char)}
             {@const data = charDataMap.get(char)}
             <div class="char-card">
-              {#if list.language === 'zh'}
-                {#key char}
-                  <div {@attach makeWriter(char)} class="writer-box" aria-hidden="true"></div>
-                {/key}
-              {:else}
-                <div class="char-fallback" lang={list.language}>{char}</div>
-              {/if}
+              <CharacterWriter char={char} language={list.language} size={140} />
 
               <p class="card-char" lang={list.language}>{char}</p>
 
@@ -346,25 +325,6 @@
     display: flex;
     flex-direction: column;
     gap: var(--size-2);
-  }
-
-  .writer-box {
-    width: 140px;
-    height: 140px;
-    align-self: center;
-  }
-
-  .char-fallback {
-    width: 140px;
-    height: 140px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 5rem;
-    line-height: 1;
-    border: var(--border);
-    background: var(--color-bg);
-    align-self: center;
   }
 
   .card-char {
