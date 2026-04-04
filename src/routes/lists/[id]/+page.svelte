@@ -223,6 +223,7 @@
             {#if word.translation}
               <p class="translation">{word.translation}</p>
             {/if}
+            <a href="/words/{word.id}" class="detail-link" aria-label="Full details for {word.character}">Detail →</a>
             <button
               class="delete-btn"
               onclick={() => handleDeleteWord(word.id)}
@@ -446,6 +447,22 @@
 
   .delete-btn:disabled {
     cursor: not-allowed;
+  }
+
+  .detail-link {
+    font-size: var(--font-size-0);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    text-decoration: none;
+    color: var(--color-text-muted);
+    margin-top: auto;
+  }
+
+  .detail-link:hover {
+    color: var(--color-text);
+    text-decoration: underline;
+    text-underline-offset: 2px;
   }
 
   .add-section { max-width: 500px; }

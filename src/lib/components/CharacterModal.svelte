@@ -1,4 +1,5 @@
 <script module lang="ts">
+  import { SvelteMap } from 'svelte/reactivity'
   type CharData = {
     phonetic: string | null
     translation: string | null
@@ -7,12 +8,13 @@
     components: { character: string }[] | null
     trad_variant: string | null
   }
-  const cache = new Map<string, CharData>()
+  const cache = new SvelteMap<string, CharData>()
 </script>
 
 <script lang="ts">
   import { supabase } from '$lib/supabase.ts'
   import { speak } from '$lib/audio.ts'
+  import CharacterWriter from '$lib/components/CharacterWriter.svelte'
 
   const {
     character,
@@ -29,7 +31,6 @@
   const viewChar = $derived(_viewChar ?? character)
 
   let charData = $state<CharData | null>(null)
-  let writerError = $state('')
 
   function handleAudio() {
     try {
@@ -41,24 +42,6 @@
 
   function openDialog(node: HTMLDialogElement) {
     node.showModal()
-  }
-
-  function initWriter(node: HTMLDivElement) {
-    import('hanzi-writer').then(({ default: HanziWriter }) => {
-      HanziWriter.create(node, viewChar, {
-        width: 200,
-        height: 200,
-        padding: 10,
-        showOutline: true,
-        strokeAnimationSpeed: 1,
-        delayBetweenStrokes: 300,
-        onLoadCharDataError: () => {
-          writerError = 'Stroke order unavailable for this character.'
-        }
-      }).animateCharacter()
-    }).catch(() => {
-      writerError = 'Stroke order unavailable for this character.'
-    })
   }
 
   async function loadCharData(char: string) {
@@ -86,7 +69,6 @@
   }
 
   $effect(() => {
-    writerError = ''
     charData = null
     loadCharData(viewChar)
   })
@@ -113,17 +95,9 @@
   {/if}
 
   <div class="stroke-area">
-    {#if language === 'zh'}
-      {#if writerError}
-        <div class="char-fallback" lang={language}>{viewChar}</div>
-      {:else}
-        {#key viewChar}
-          <div {@attach initWriter} class="writer-container" aria-hidden="true"></div>
-        {/key}
-      {/if}
-    {:else}
-      <div class="char-fallback" lang={language}>{viewChar}</div>
-    {/if}
+    {#key viewChar}
+      <CharacterWriter char={viewChar} {language} size={200} />
+    {/key}
   </div>
 
   <div class="modal-actions">
@@ -259,23 +233,6 @@
     justify-content: center;
   }
 
-  .writer-container {
-    width: 200px;
-    height: 200px;
-  }
-
-  .char-fallback {
-    width: 200px;
-    height: 200px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 7rem;
-    line-height: 1;
-    border: var(--border);
-    background: var(--color-bg);
-  }
-
   .modal-actions {
     display: flex;
     justify-content: center;
@@ -380,13 +337,6 @@
     color: var(--color-text-muted);
     text-align: center;
     font-style: italic;
-    margin: 0;
-  }
-
-  .detail-error {
-    font-size: var(--font-size-1);
-    color: var(--color-text-muted);
-    text-align: center;
     margin: 0;
   }
 

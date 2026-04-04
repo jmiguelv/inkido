@@ -13,6 +13,7 @@
     import type { Profile } from "$lib/types.ts";
 
     const PUBLIC_ROUTES = [
+        "/",
         "/auth/login",
         "/auth/signup",
         "/auth/confirm",
@@ -163,7 +164,7 @@
                                 <li class="menu-divider"></li>
                                 <li>
                                     <a
-                                        href="/"
+                                        href="/profiles"
                                         class="profile-manage"
                                         onclick={() => (dropdownOpen = false)}
                                     >
@@ -182,6 +183,15 @@
         {@render children()}
     </main>
 {/if}
+
+<footer>
+    <span>Inkido v{__APP_VERSION__}</span>
+    <span>
+        Character data:
+        <a href="https://www.unicode.org/charts/" target="_blank" rel="noopener noreferrer">Unicode Han Database</a>
+        and <a href="https://cc-cedict.org" target="_blank" rel="noopener noreferrer">CC-CEDICT</a>
+    </span>
+</footer>
 
 <style>
     header {
@@ -392,5 +402,22 @@
         max-width: 1200px;
         margin: 0 auto;
         padding: var(--size-6) var(--size-4);
+    }
+
+    footer {
+        border-top: var(--border);
+        padding: var(--size-4);
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: var(--size-3) var(--size-6);
+        font-size: var(--font-size-0);
+        color: var(--color-text-muted);
+        text-align: center;
+    }
+
+    footer a {
+        color: var(--color-text-muted);
+        text-underline-offset: 2px;
     }
 </style>

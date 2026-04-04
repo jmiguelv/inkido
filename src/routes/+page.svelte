@@ -1,338 +1,168 @@
 <script lang="ts">
   import { supabase } from '$lib/supabase.ts'
   import { goto } from '$app/navigation'
-  import { setActiveProfile, getActiveProfile } from '$lib/stores.svelte.ts'
   import { onMount } from 'svelte'
-  import type { Profile } from '$lib/types.ts'
 
-  let profiles = $state<Profile[]>([])
-  let newProfileName = $state('')
-  let errorMsg = $state('')
-  let loading = $state(false)
-  let renamingId = $state<string | null>(null)
-  let renameValue = $state('')
+  let loggedIn = $state(false)
 
-  const activeProfile = $derived(getActiveProfile())
-
-  async function loadProfiles() {
-    const { data, error } = await supabase.from('profiles').select('*').order('created_at')
-    if (error) throw error
-    profiles = data as Profile[]
-  }
-
-  async function handleAddProfile() {
-    if (!newProfileName.trim()) return
-    errorMsg = ''
-    loading = true
-    try {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) throw new Error('Not authenticated')
-      const { error } = await supabase.from('profiles').insert({ name: newProfileName.trim(), parent_id: user.id })
-      if (error) throw error
-      newProfileName = ''
-      await loadProfiles()
-    } catch (e) {
-      errorMsg = e instanceof Error ? e.message : 'Failed to add profile'
-    } finally {
-      loading = false
-    }
-  }
-
-  async function handleDeleteProfile(id: string) {
-    const { error } = await supabase.from('profiles').delete().eq('id', id)
-    if (error) throw error
-    if (activeProfile?.id === id) setActiveProfile(profiles.find(p => p.id !== id) ?? null as unknown as Profile)
-    await loadProfiles()
-  }
-
-  function handleSelectProfile(profile: Profile) {
-    setActiveProfile(profile)
-    goto('/lists')
-  }
-
-  function startRename(profile: Profile) {
-    renamingId = profile.id
-    renameValue = profile.name
-  }
-
-  async function handleRename(id: string) {
-    if (!renameValue.trim()) return
-    const { error } = await supabase.from('profiles').update({ name: renameValue.trim() }).eq('id', id)
-    if (error) throw error
-    if (activeProfile?.id === id) setActiveProfile({ ...activeProfile, name: renameValue.trim() })
-    renamingId = null
-    await loadProfiles()
-  }
-
-  onMount(() => {
-    loadProfiles()
+  onMount(async () => {
+    const { data } = await supabase.auth.getSession()
+    loggedIn = !!data.session
   })
 </script>
 
-<section>
-  <h1>Who's learning today?</h1>
+<svelte:head>
+  <title>Inkido — Mandarin Chinese spelling practice</title>
+</svelte:head>
 
-  {#if profiles.length === 0}
-    <p class="empty-state">No profiles yet. Add one below to get started.</p>
-  {:else}
-    <ul class="profile-list">
-      {#each profiles as profile (profile.id)}
-        <li class="profile-item">
-          {#if renamingId === profile.id}
-            <form
-              class="rename-form"
-              onsubmit={(e) => { e.preventDefault(); handleRename(profile.id) }}
-            >
-              <input
-                type="text"
-                bind:value={renameValue}
-                required
-                aria-label="New name for {profile.name}"
-              />
-              <button type="submit">Save</button>
-              <button type="button" onclick={() => { renamingId = null }}>Cancel</button>
-            </form>
-          {:else}
-            <button
-              class="profile-card"
-              class:active={activeProfile?.id === profile.id}
-              onclick={() => handleSelectProfile(profile)}
-            >
-              <span class="profile-name">{profile.name}</span>
-              {#if activeProfile?.id === profile.id}
-                <span class="active-badge">Active</span>
-              {/if}
-            </button>
-            <button
-              class="rename-btn"
-              onclick={() => startRename(profile)}
-              aria-label="Rename {profile.name}"
-            >✎</button>
-            <button
-              class="delete-btn"
-              onclick={() => handleDeleteProfile(profile.id)}
-              aria-label="Delete {profile.name}"
-            >×</button>
-          {/if}
-        </li>
-      {/each}
-    </ul>
-  {/if}
-
-  <form onsubmit={(e) => { e.preventDefault(); handleAddProfile() }} class="add-profile-form">
-    <h2>Add a profile</h2>
-    <div class="field">
-      <label for="profile-name">Name</label>
-      <input id="profile-name" type="text" bind:value={newProfileName} required placeholder="e.g. Alice" />
-    </div>
-    {#if errorMsg}
-      <output role="alert" class="error">{errorMsg}</output>
+<div class="landing">
+  <section class="hero">
+    <h1 class="logo">Inkido</h1>
+    <p class="tagline">Mandarin Chinese spelling practice</p>
+    <p class="sub">Build vocabulary in Mandarin Chinese. Create word lists, practise spelling with stroke-by-stroke animation, and track progress across profiles.</p>
+    {#if loggedIn}
+      <a href="/lists" class="cta cta-primary">Go to app →</a>
+    {:else}
+      <div class="cta-group">
+        <a href="/auth/signup" class="cta cta-primary">Sign up free</a>
+        <a href="/auth/login" class="cta cta-secondary">Log in</a>
+      </div>
     {/if}
-    <button type="submit" disabled={loading}>
-      {loading ? 'Adding…' : 'Add profile'}
-    </button>
-  </form>
-</section>
+  </section>
+
+  <section class="features">
+    <div class="feature-card">
+      <span class="feature-icon">列</span>
+      <h2>Word lists</h2>
+      <p>Organise vocabulary into lists per topic or week. Colour-coded by stroke complexity so you can see difficulty at a glance.</p>
+    </div>
+    <div class="feature-card">
+      <span class="feature-icon">練</span>
+      <h2>Practice mode</h2>
+      <p>Flashcard-style practice with stroke-by-stroke animation. Keyboard and touch friendly.</p>
+    </div>
+    <div class="feature-card">
+      <span class="feature-icon">掃</span>
+      <h2>Photo scan</h2>
+      <p>Photograph a worksheet and the app extracts the characters automatically — no typing required.</p>
+    </div>
+    <div class="feature-card">
+      <span class="feature-icon">探</span>
+      <h2>Character explorer</h2>
+      <p>Search 94,000 Chinese characters by meaning, pinyin or stroke count. Tap any character for full detail.</p>
+    </div>
+  </section>
+</div>
 
 <style>
-  h1 {
-    font-size: var(--font-size-8);
-    margin: 0 0 var(--size-6);
+  .landing {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--size-8) var(--size-4);
   }
 
-  h2 {
-    font-size: var(--font-size-4);
+  .hero {
+    text-align: center;
+    padding: var(--size-10) 0 var(--size-10);
+    border-bottom: var(--border);
+    margin-bottom: var(--size-10);
+  }
+
+  .logo {
+    font-family: var(--font-display);
+    font-size: clamp(3.5rem, 12vw, 8rem);
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    line-height: 1;
     margin: 0 0 var(--size-4);
   }
 
-  .empty-state {
+  .tagline {
+    font-size: var(--font-size-5);
+    font-weight: 700;
+    margin: 0 0 var(--size-4);
+  }
+
+  .sub {
+    max-width: 560px;
+    margin: 0 auto var(--size-8);
     color: var(--color-text-muted);
     font-size: var(--font-size-2);
-    margin: 0 0 var(--size-6);
+    line-height: 1.6;
   }
 
-  .profile-list {
-    list-style: none;
-    padding: 0;
-    margin: 0 0 var(--size-8);
-    display: grid;
-    gap: var(--size-3);
-  }
-
-  @media (min-width: 480px) {
-    .profile-list { grid-template-columns: repeat(2, 1fr); }
-  }
-
-  @media (min-width: 720px) {
-    .profile-list { grid-template-columns: repeat(3, 1fr); }
-  }
-
-  .profile-item {
-    position: relative;
-  }
-
-  .profile-card {
-    width: 100%;
-    background: var(--color-surface);
-    border: var(--border);
-    padding: var(--size-5) var(--size-4);
+  .cta-group {
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--size-2);
-    box-shadow: var(--shadow);
-    cursor: pointer;
-    text-align: left;
-    transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+    gap: var(--size-3);
+    justify-content: center;
+    flex-wrap: wrap;
   }
 
-  .profile-card:hover {
-    transform: translate(-3px, -3px);
-    box-shadow: 8px 8px 0 var(--color-border);
-  }
-
-  .profile-card:active {
-    transform: translate(0, 0);
-    box-shadow: none;
-  }
-
-  .profile-card.active {
-    background: var(--color-lemon);
-  }
-
-  .profile-name {
-    font-family: var(--font-display);
-    font-weight: 800;
-    font-size: var(--font-size-5);
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    line-height: 1;
-  }
-
-  .active-badge {
-    font-size: var(--font-size-0);
+  .cta {
+    display: inline-block;
+    padding: var(--size-3) var(--size-6);
+    font-size: var(--font-size-2);
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    opacity: 0.6;
-  }
-
-  .rename-btn,
-  .delete-btn {
-    position: absolute;
-    background: none;
-    border: none;
-    box-shadow: none;
-    font-size: var(--font-size-3);
-    line-height: 1;
-    padding: var(--size-1);
-    color: var(--color-text);
-    opacity: 0.25;
-    cursor: pointer;
-  }
-
-  .rename-btn {
-    top: var(--size-2);
-    right: calc(var(--size-2) + var(--size-6));
-  }
-
-  .delete-btn {
-    top: var(--size-2);
-    right: var(--size-2);
-  }
-
-  .rename-btn:hover {
-    opacity: 1;
-    color: var(--color-text);
-  }
-
-  .delete-btn:hover {
-    opacity: 1;
-    color: var(--color-danger);
-  }
-
-  .rename-form {
-    display: flex;
-    gap: var(--size-2);
-    align-items: center;
+    text-decoration: none;
     border: var(--border);
-    padding: var(--size-3) var(--size-4);
-    background: var(--color-surface);
     box-shadow: var(--shadow);
+    transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
   }
 
-  .rename-form input {
-    flex: 1;
-    padding: var(--size-1) var(--size-2);
-    font-size: var(--font-size-2);
-    font-family: var(--font-display);
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    min-width: 0;
+  .cta:hover {
+    transform: translate(-3px, -3px);
+    box-shadow: var(--shadow-lg);
+    text-decoration: none;
   }
 
-  .rename-form button {
-    padding: var(--size-1) var(--size-3);
-    border: var(--border);
-    background: var(--color-surface);
-    font-size: var(--font-size-1);
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--color-text);
-    box-shadow: var(--shadow-sm);
-    cursor: pointer;
-    white-space: nowrap;
-  }
-
-  .rename-form button:hover {
-    transform: translate(-2px, -2px);
-    box-shadow: 5px 5px 0 var(--color-border);
-  }
-
-  .rename-form button:active {
+  .cta:active {
     transform: translate(0, 0);
     box-shadow: none;
   }
 
-  .add-profile-form {
+  .cta-primary {
+    background: var(--color-accent);
+    color: var(--color-accent-fg);
+  }
+
+  .cta-secondary {
+    background: var(--color-surface);
+    color: var(--color-text);
+  }
+
+  .features {
+    display: grid;
+    gap: var(--size-4);
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  }
+
+  .feature-card {
     background: var(--color-surface);
     border: var(--border);
     padding: var(--size-6);
-    max-width: 400px;
-    box-shadow: var(--shadow);
+    box-shadow: var(--shadow-sm);
   }
 
-  .field {
-    display: flex;
-    flex-direction: column;
-    gap: var(--size-1);
-    margin-bottom: var(--size-4);
-  }
-
-  label {
-    font-size: var(--font-size-1);
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-  }
-
-  input {
-    padding: var(--size-2) var(--size-3);
-    font-size: var(--font-size-2);
-  }
-
-  .error {
+  .feature-icon {
     display: block;
-    color: var(--color-danger);
-    font-size: var(--font-size-1);
-    font-weight: 700;
+    font-size: var(--font-size-8);
+    line-height: 1;
     margin-bottom: var(--size-3);
+    color: var(--color-text-muted);
   }
 
-  button[type="submit"] {
-    padding: var(--size-2) var(--size-5);
-    font-size: var(--font-size-2);
+  .feature-card h2 {
+    font-size: var(--font-size-3);
+    margin: 0 0 var(--size-2);
+  }
+
+  .feature-card p {
+    font-size: var(--font-size-1);
+    color: var(--color-text-muted);
+    margin: 0;
+    line-height: 1.5;
   }
 </style>

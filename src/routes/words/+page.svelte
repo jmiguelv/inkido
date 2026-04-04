@@ -108,6 +108,7 @@
           <th scope="col">Pinyin</th>
           <th scope="col">Meaning</th>
           <th scope="col">List</th>
+          <th scope="col"><span class="visually-hidden">Detail</span></th>
         </tr>
       </thead>
       <tbody>
@@ -129,6 +130,9 @@
             <td class="col-translation">{word.translation ?? '—'}</td>
             <td class="col-list">
               <a href="/lists/{word.list_id}" class="list-badge">{word.listName}</a>
+            </td>
+            <td class="col-detail">
+              <a href="/words/{word.id}" class="detail-link" aria-label="Full details for {word.character}">→</a>
             </td>
           </tr>
         {/each}
@@ -256,6 +260,22 @@
     transform: translate(-1px, -1px);
     box-shadow: 2px 2px 0 var(--color-border);
     text-decoration: none;
+  }
+
+  .col-detail {
+    width: 2rem;
+    text-align: center;
+  }
+
+  .detail-link {
+    font-size: var(--font-size-3);
+    font-weight: 700;
+    color: var(--color-text-muted);
+    text-decoration: none;
+  }
+
+  .detail-link:hover {
+    color: var(--color-text);
   }
 
   .visually-hidden {
