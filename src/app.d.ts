@@ -1,5 +1,7 @@
 import type { Session, SupabaseClient } from '@supabase/supabase-js'
 
+declare const __APP_VERSION__: string
+
 declare global {
 	namespace App {
 		interface Locals {

@@ -9,7 +9,7 @@ A web app that helps children practise spelling tests for character-based script
 - **AI**: OpenRouter (photo scanning only, via Supabase Edge Functions — defaults to `google/gemma-3-27b-it:free`)
 - **Dictionary**: CC-CEDICT / Unicode open-source data (~145k words, ~94k characters)
 - **CSS**: OpenProps design tokens
-- **Deployment**: Vercel (static adapter)
+- **Deployment**: Vercel (`@sveltejs/adapter-vercel`)
 
 ## Prerequisites
 
@@ -122,6 +122,20 @@ pnpm supabase functions serve
 | `pnpm check` | Type-check with svelte-check |
 | `pnpm supabase` | Run Supabase CLI commands |
 | `npx tsx scripts/import-data.ts` | Import/refresh dictionary data into Supabase |
+
+## Deployment (Vercel)
+
+1. Connect the GitHub repo to a Vercel project.
+2. Add the following environment variables in the Vercel dashboard:
+
+| Variable | Description |
+|---|---|
+| `PUBLIC_SUPABASE_URL` | Your Supabase project URL |
+| `PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Your Supabase anon/publishable key |
+
+3. In Supabase dashboard → Authentication → URL Configuration:
+   - **Site URL**: `https://<your-vercel-domain>`
+   - **Additional Redirect URLs**: `https://<your-vercel-domain>/**`
 
 ## Auth configuration
 
