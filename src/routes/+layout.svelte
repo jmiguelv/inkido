@@ -116,8 +116,9 @@
     );
 </script>
 
+<div class="page-shell">
 {#if isPublicRoute}
-    {@render children()}
+    <div class="public-content">{@render children()}</div>
 {:else if session}
     <header>
         <nav>
@@ -206,6 +207,7 @@
         <img height="36" style="border:0;height:36px;" src="https://storage.ko-fi.com/cdn/kofi2.png?v=6" alt="Buy Me a Coffee at ko-fi.com" />
     </a>
 </footer>
+</div>
 
 <style>
     header {
@@ -418,10 +420,23 @@
         margin: var(--size-1) 0;
     }
 
+    .page-shell {
+        display: flex;
+        flex-direction: column;
+        min-height: 100dvh;
+    }
+
+    .public-content {
+        flex: 1;
+    }
+
     main {
+        flex: 1;
         max-width: 1200px;
         margin: 0 auto;
         padding: var(--size-6) var(--size-4);
+        width: 100%;
+        box-sizing: border-box;
     }
 
     footer {
