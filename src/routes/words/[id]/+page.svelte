@@ -101,32 +101,32 @@
   })
 </script>
 
-<section>
+<article class="word-detail-page">
   {#if loading}
     <p class="status" aria-live="polite">Loading…</p>
   {:else if errorMsg}
     <p class="error" role="alert">{errorMsg}</p>
   {:else if word && list}
-    <div class="page-header">
-      <a href="/lists/{list.id}" class="back-link">← {list.name}</a>
+    <header class="page-header">
+      <nav><a href="/lists/{list.id}" class="back-link">← {list.name}</a></nav>
       <button class="listen-btn" onclick={handleListen} aria-label="Listen to {word.character}">
         ♪ Listen
       </button>
-    </div>
+    </header>
 
-    <div class="word-hero">
-      <p class="word-character" lang={list.language}>{word.character}</p>
+    <header class="word-hero">
+      <h1 class="word-character" lang={list.language}>{word.character}</h1>
       {#if word.phonetic_annotation}
         <p class="word-phonetic">{word.phonetic_annotation}</p>
       {/if}
       {#if word.translation}
         <p class="word-translation">{word.translation}</p>
       {/if}
-    </div>
+    </header>
 
     {#if word.example}
-      <div class="section-card example-section">
-        <p class="section-label">Example</p>
+      <section class="section-card example-section">
+        <h2 class="section-label">Example</h2>
         <p class="example-text" lang={list.language}>{word.example}</p>
         {#if word.example_phonetic}
           <p class="example-phonetic">{word.example_phonetic}</p>
@@ -134,60 +134,74 @@
         {#if word.example_translation}
           <p class="example-translation">{word.example_translation}</p>
         {/if}
-      </div>
+      </section>
     {/if}
 
     {#if splitCharacters(word.character).length > 0}
-      <div class="chars-section">
-        <p class="section-label">Characters</p>
-        <div class="char-grid">
+      <section class="chars-section">
+        <h2 class="section-label">Characters</h2>
+        <div class="char-stack">
           {#each splitCharacters(word.character) as char (char)}
             {@const data = charDataMap.get(char)}
-            <div class="char-card">
-              <CharacterWriter char={char} language={list.language} size={140} />
+            <article class="char-card">
+              <div class="card-visuals">
+                <CharacterWriter char={char} language={list.language} size={140} />
+                <p class="card-char" lang={list.language}>{char}</p>
+              </div>
 
-              <p class="card-char" lang={list.language}>{char}</p>
+              <div class="card-data">
+                <header class="card-data-header">
+                  {#if data?.phonetic}
+                    <p class="card-phonetic">{data.phonetic}</p>
+                  {/if}
+                  {#if data?.translation}
+                    <p class="card-translation">{data.translation}</p>
+                  {/if}
+                </header>
 
-              {#if data?.trad_variant && data.trad_variant !== char}
-                <p class="card-trad">Trad: <span lang={list.language}>{data.trad_variant}</span></p>
-              {/if}
+                {#if data?.hint || data?.note || data?.stroke_count != null || data?.components?.length || (data?.trad_variant && data.trad_variant !== char)}
+                  <dl class="card-properties">
+                    {#if data?.trad_variant && data.trad_variant !== char}
+                      <dt>Traditional:</dt>
+                      <dd lang={list.language}>{data.trad_variant}</dd>
+                    {/if}
 
-              {#if data?.phonetic}
-                <p class="card-phonetic">{data.phonetic}</p>
-              {/if}
+                    {#if data?.hint}
+                      <dt>Hint:</dt>
+                      <dd class="hint-text">{data.hint}</dd>
+                    {/if}
 
-              {#if data?.translation}
-                <p class="card-translation">{data.translation}</p>
-              {/if}
+                    {#if data?.note}
+                      <dt>Note:</dt>
+                      <dd>{data.note}</dd>
+                    {/if}
 
-              {#if data?.hint}
-                <p class="card-hint">{data.hint}</p>
-              {/if}
+                    {#if data?.stroke_count != null}
+                      <dt>Strokes:</dt>
+                      <dd>{data.stroke_count}</dd>
+                    {/if}
 
-              {#if data?.note}
-                <p class="card-note">{data.note}</p>
-              {/if}
-
-              {#if data?.stroke_count != null}
-                <p class="card-strokes">
-                  {data.stroke_count} {data.stroke_count === 1 ? 'stroke' : 'strokes'}
-                </p>
-              {/if}
-
-              {#if data?.components?.length}
-                <p class="card-components">
-                  Made of: {data.components.map(c => c.character).join(' + ')}
-                </p>
-              {/if}
-            </div>
+                    {#if data?.components?.length}
+                      <dt>Components:</dt>
+                      <dd>{data.components.map(c => c.character).join(' + ')}</dd>
+                    {/if}
+                  </dl>
+                {/if}
+              </div>
+            </article>
           {/each}
         </div>
-      </div>
+      </section>
     {/if}
   {/if}
-</section>
+</article>
 
 <style>
+  .word-detail-page {
+    display: flex;
+    flex-direction: column;
+  }
+
   .status {
     color: var(--color-text-muted);
     font-size: var(--font-size-2);
@@ -311,20 +325,61 @@
     margin-bottom: var(--size-8);
   }
 
-  .char-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: var(--size-4);
+  .char-stack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--size-5);
   }
 
   .char-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--size-5);
     border: var(--border);
     padding: var(--size-5);
     box-shadow: var(--shadow-sm);
     background: var(--color-surface);
+  }
+
+  @media (min-width: 640px) {
+    .char-card {
+      flex-direction: row;
+      align-items: flex-start;
+    }
+  }
+
+  .card-visuals {
+    flex-shrink: 0;
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: var(--size-2);
+    width: 140px;
+    margin: 0 auto;
+  }
+
+  .card-data {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--size-4);
+  }
+
+  .card-data-header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--size-1);
+    text-align: center;
+  }
+
+  @media (min-width: 640px) {
+    .card-data-header {
+      text-align: left;
+    }
+    
+    .card-visuals {
+      margin: 0;
+    }
   }
 
   .card-char {
@@ -336,55 +391,43 @@
     text-align: center;
   }
 
-  .card-trad {
-    font-size: var(--font-size-0);
-    color: var(--color-text-muted);
-    margin: 0;
-    text-align: center;
-  }
-
   .card-phonetic {
-    font-size: var(--font-size-1);
+    font-size: var(--font-size-2);
     color: var(--color-text-muted);
     margin: 0;
-    text-align: center;
   }
 
   .card-translation {
-    font-size: var(--font-size-2);
+    font-size: var(--font-size-4);
     font-weight: 700;
     margin: 0;
-    text-align: center;
   }
 
-  .card-hint {
-    font-size: var(--font-size-1);
-    font-style: italic;
+  .card-properties {
+    display: grid;
+    grid-template-columns: min-content 1fr;
+    gap: var(--size-2) var(--size-3);
     margin: 0;
-    padding: var(--size-2) var(--size-3);
+    font-size: var(--font-size-1);
+    line-height: 1.4;
+  }
+
+  .card-properties dt {
+    font-weight: 700;
+    color: var(--color-text-muted);
+    white-space: nowrap;
+    text-align: right;
+  }
+
+  .card-properties dd {
+    margin: 0;
+    color: var(--color-text);
+  }
+
+  .hint-text {
+    font-style: italic;
+    padding: var(--size-1) var(--size-2);
     background: var(--color-mint);
-    border-left: 4px solid var(--color-border);
-  }
-
-  .card-note {
-    font-size: var(--font-size-1);
-    color: var(--color-text-muted);
-    font-style: italic;
-    margin: 0;
-  }
-
-  .card-strokes {
-    font-size: var(--font-size-0);
-    color: var(--color-text-muted);
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    margin: 0;
-  }
-
-  .card-components {
-    font-size: var(--font-size-1);
-    color: var(--color-text-muted);
-    margin: 0;
+    border-left: 3px solid var(--color-border);
   }
 </style>
