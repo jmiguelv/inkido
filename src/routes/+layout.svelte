@@ -128,13 +128,22 @@
                 class="menu-toggle"
                 onclick={() => (menuOpen = !menuOpen)}
                 aria-label="Toggle menu"
-                aria-expanded={menuOpen}
-            >{menuOpen ? '✕' : '☰'}</button>
+                aria-expanded={menuOpen}>{menuOpen ? "✕" : "☰"}</button
+            >
             <div class="nav-right" class:open={menuOpen}>
-                <a href="/lists" class:active={activeSection === "lists"}>Lists</a>
-                <a href="/words" class:active={activeSection === "words"}>My Words</a>
-                <a href="/characters" class:active={activeSection === "characters"}>Explore</a>
-                <a href="/settings" class:active={activeSection === "settings"}>Settings</a>
+                <a href="/lists" class:active={activeSection === "lists"}
+                    >Lists</a
+                >
+                <a href="/words" class:active={activeSection === "words"}
+                    >My Words</a
+                >
+                <a
+                    href="/characters"
+                    class:active={activeSection === "characters"}>Explore</a
+                >
+                <a href="/settings" class:active={activeSection === "settings"}
+                    >Settings</a
+                >
                 {#if activeProfile}
                     <div class="profile-dropdown">
                         <button
@@ -152,10 +161,13 @@
                                     <li>
                                         <button
                                             class="profile-option"
-                                            class:current={profile.id === activeProfile.id}
+                                            class:current={profile.id ===
+                                                activeProfile.id}
                                             role="option"
-                                            aria-selected={profile.id === activeProfile.id}
-                                            onclick={() => switchProfile(profile)}
+                                            aria-selected={profile.id ===
+                                                activeProfile.id}
+                                            onclick={() =>
+                                                switchProfile(profile)}
                                         >
                                             {profile.name}
                                         </button>
@@ -185,10 +197,14 @@
 {/if}
 
 <footer>
-    <span>Inkido v{__APP_VERSION__}</span>
-    <span>
-        Character data from <a href="https://www.dong-chinese.com/wiki/home" target="_blank" rel="noopener noreferrer">Chinese Character Wiki</a>
-    </span>
+    <div class="footer-meta">
+        <span>Inkido v{__APP_VERSION__}</span>
+        <span class="footer-sep">·</span>
+        <span>Character data from <a href="https://www.dong-chinese.com/wiki/home" target="_blank" rel="noopener noreferrer">Chinese Character Wiki</a></span>
+    </div>
+    <a href="https://ko-fi.com/Y8Y51X838W" target="_blank" rel="noopener noreferrer" class="kofi-link">
+        <img height="36" style="border:0;height:36px;" src="https://storage.ko-fi.com/cdn/kofi2.png?v=6" alt="Buy Me a Coffee at ko-fi.com" />
+    </a>
 </footer>
 
 <style>
@@ -267,7 +283,9 @@
 
     /* Desktop nav */
     @media (min-width: 680px) {
-        .menu-toggle { display: none; }
+        .menu-toggle {
+            display: none;
+        }
 
         .nav-right {
             display: flex;
@@ -335,7 +353,9 @@
     }
 
     @media (min-width: 680px) {
-        .profile-dropdown { width: auto; }
+        .profile-dropdown {
+            width: auto;
+        }
     }
 
     .profile-trigger {
@@ -345,7 +365,9 @@
     }
 
     @media (min-width: 680px) {
-        .profile-trigger { width: auto; }
+        .profile-trigger {
+            width: auto;
+        }
     }
 
     .profile-menu {
@@ -404,14 +426,30 @@
 
     footer {
         border-top: var(--border);
-        padding: var(--size-4);
+        padding: var(--size-5) var(--size-4);
         display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: var(--size-3) var(--size-6);
+        flex-direction: column;
+        align-items: center;
+        gap: var(--size-3);
         font-size: var(--font-size-0);
         color: var(--color-text-muted);
         text-align: center;
+    }
+
+    .kofi-link {
+        display: inline-flex;
+    }
+
+    .footer-meta {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        gap: var(--size-2);
+    }
+
+    .footer-sep {
+        opacity: 0.4;
     }
 
     footer a {
