@@ -175,6 +175,18 @@
     }
   }
 
+  async function handleReEnrichAll() {
+    if (words.length === 0) return
+    errorMsg = ''
+    try {
+      const ids = words.map(w => w.id)
+      const chars = words.map(w => w.character)
+      await enrichWords(ids, chars)
+    } catch (e) {
+      errorMsg = e instanceof Error ? e.message : 'Failed to re-lookup words'
+    }
+  }
+
   onMount(() => {
     if (!activeProfile) { goto('/'); return }
   })
@@ -195,7 +207,12 @@
         <h1>{list.name}</h1>
         <span class="list-lang">{list.language.toUpperCase()}</span>
       </div>
-      <a href="/lists/{list.id}/practice" class="practice-link" class:disabled={busy} onclick={(e) => { if (busy) e.preventDefault() }}>Practice →</a>
+      <div class="header-actions">
+        <button class="relookup-btn" disabled={busy || words.length === 0} onclick={handleReEnrichAll} aria-label="Re-lookup words">
+          ↻ Re-lookup
+        </button>
+        <a href="/lists/{list.id}/practice" class="practice-link" class:disabled={busy || words.length === 0} onclick={(e) => { if (busy || words.length === 0) e.preventDefault() }}>Practice →</a>
+      </div>
     </div>
 
     <div
@@ -323,6 +340,44 @@
     font-weight: 700;
     letter-spacing: 0.1em;
     color: var(--color-text-muted);
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--size-3);
+    flex-wrap: wrap;
+  }
+
+  .relookup-btn {
+    padding: var(--size-2) var(--size-4);
+    border: var(--border);
+    border-radius: 0;
+    font-size: var(--font-size-1);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    background: var(--color-surface);
+    color: var(--color-text);
+    box-shadow: var(--shadow-sm);
+    cursor: pointer;
+    transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+    white-space: nowrap;
+  }
+
+  .relookup-btn:hover:not(:disabled) {
+    transform: translate(-2px, -2px);
+    box-shadow: 2px 2px 0 var(--color-border);
+  }
+
+  .relookup-btn:active:not(:disabled) {
+    transform: translate(0, 0);
+    box-shadow: none;
+  }
+
+  .relookup-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
 
   .practice-link {
