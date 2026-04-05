@@ -67,6 +67,8 @@
   .writer-box {
     flex-shrink: 0;
     cursor: pointer;
+    max-width: 100%;
+    height: auto;
   }
 
   .fallback {
@@ -77,5 +79,6 @@
     background: var(--color-bg);
     line-height: 1;
     flex-shrink: 0;
+    max-width: 100%;
   }
 </style>
