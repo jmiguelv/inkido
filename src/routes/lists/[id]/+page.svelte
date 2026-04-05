@@ -74,7 +74,7 @@
   async function enrichWords(wordIds: string[], characters: string[]) {
     enriching = true
     try {
-      // Use OR to match simplified OR traditional forms
+      // 1. Try to find the whole words/phrases
       const { data: wordRows } = await supabase
         .from('zh_words')
         .select('word, traditional, pinyin, translation')
@@ -83,9 +83,19 @@
       const simplifiedMap = new Map(wordRows?.map(r => [r.word, r]) ?? [])
       const traditionalMap = new Map(wordRows?.filter(r => r.traditional).map(r => [r.traditional, r]) ?? [])
 
-      const singleChars = characters.filter(c => [...c].length === 1)
-      const { data: charRows } = singleChars.length
-        ? await supabase.from('zh_chars').select('char, gloss').in('char', singleChars)
+      // 2. For characters not found as words, we'll need their individual pinyin
+      const allChars = [...new Set(characters.flatMap(c => splitCharacters(c)))]
+      const { data: charPinyinRows } = await supabase
+        .from('zh_words')
+        .select('word, pinyin')
+        .in('word', allChars)
+        .like('word', '_') // single chars only
+      const charPinyinMap = new Map(charPinyinRows?.map(r => [r.word, r.pinyin]) ?? [])
+
+      // 3. Get glosses for single characters
+      const singleCharsOnly = characters.filter(c => [...c].length === 1)
+      const { data: charRows } = singleCharsOnly.length
+        ? await supabase.from('zh_chars').select('char, gloss').in('char', singleCharsOnly)
         : { data: [] }
       const charMap = new Map(charRows?.map(r => [r.char, r]) ?? [])
 
@@ -93,8 +103,16 @@
         const ch = characters[i]
         const w = simplifiedMap.get(ch) ?? traditionalMap.get(ch)
         const c = charMap.get(ch)
+
+        let pinyin = w?.pinyin ?? null
+        // Fallback: if whole word pinyin is missing, combine character pinyin
+        if (!pinyin && [...ch].length > 1) {
+          const parts = splitCharacters(ch).map(char => charPinyinMap.get(char) ?? char)
+          pinyin = parts.join(' ')
+        }
+
         const { error } = await supabase.from('words').update({
-          phonetic_annotation: w?.pinyin ?? null,
+          phonetic_annotation: pinyin,
           translation: w?.translation ?? null,
           character_note: c?.gloss ?? null,
           example: null,
