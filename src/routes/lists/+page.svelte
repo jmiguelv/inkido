@@ -74,7 +74,12 @@
       goto('/')
       return
     }
-    loadLists()
+  })
+
+  $effect(() => {
+    if (activeProfile?.id) {
+      loadLists()
+    }
   })
 </script>
 

@@ -76,9 +76,14 @@
 
   onMount(() => {
     if (!activeProfile) { goto('/'); return }
-    loadPractice()
     window.addEventListener('keydown', handleKeydown)
     return () => window.removeEventListener('keydown', handleKeydown)
+  })
+
+  $effect(() => {
+    if (activeProfile?.id) {
+      loadPractice()
+    }
   })
 </script>
 

@@ -97,7 +97,12 @@
 
   onMount(() => {
     if (!activeProfile) { goto('/'); return }
-    load()
+  })
+
+  $effect(() => {
+    if (activeProfile?.id) {
+      load()
+    }
   })
 </script>
 

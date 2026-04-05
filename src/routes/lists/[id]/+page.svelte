@@ -177,8 +177,13 @@
 
   onMount(() => {
     if (!activeProfile) { goto('/'); return }
-    loadList()
-    loadWords()
+  })
+
+  $effect(() => {
+    if (activeProfile?.id) {
+      loadList()
+      loadWords()
+    }
   })
 </script>
 
