@@ -74,12 +74,14 @@
   async function enrichWords(wordIds: string[], characters: string[]) {
     enriching = true
     try {
+      // Use OR to match simplified OR traditional forms
       const { data: wordRows } = await supabase
         .from('zh_words')
-        .select('word, pinyin, translation')
-        .in('word', characters)
+        .select('word, traditional, pinyin, translation')
+        .or(`word.in.(${characters.map(c => `"${c}"`).join(',')}),traditional.in.(${characters.map(c => `"${c}"`).join(',')})`)
 
-      const wordMap = new Map(wordRows?.map(r => [r.word, r]) ?? [])
+      const simplifiedMap = new Map(wordRows?.map(r => [r.word, r]) ?? [])
+      const traditionalMap = new Map(wordRows?.filter(r => r.traditional).map(r => [r.traditional, r]) ?? [])
 
       const singleChars = characters.filter(c => [...c].length === 1)
       const { data: charRows } = singleChars.length
@@ -89,7 +91,7 @@
 
       for (let i = 0; i < wordIds.length; i++) {
         const ch = characters[i]
-        const w = wordMap.get(ch)
+        const w = simplifiedMap.get(ch) ?? traditionalMap.get(ch)
         const c = charMap.get(ch)
         const { error } = await supabase.from('words').update({
           phonetic_annotation: w?.pinyin ?? null,

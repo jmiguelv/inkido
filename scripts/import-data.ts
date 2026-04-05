@@ -88,6 +88,7 @@ async function importWords(): Promise<void> {
 
     batch.push({
       word: entry.simp,
+      traditional: entry.trad ?? null,
       pinyin,
       pinyin_search: pinyin ? stripDiacritics(pinyin) : null,
       translation: entry.gloss ?? null,

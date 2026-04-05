@@ -30,6 +30,7 @@ export interface Word {
 
 export interface ZHWord {
   word: string
+  traditional: string | null
   pinyin: string | null
   pinyin_search: string | null
   translation: string | null
