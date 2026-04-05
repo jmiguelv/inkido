@@ -141,7 +141,7 @@
       <section class="chars-section">
         <h2 class="section-label">Characters</h2>
         <div class="char-stack">
-          {#each splitCharacters(word.character) as char (char)}
+          {#each splitCharacters(word.character) as char, i (i)}
             {@const data = charDataMap.get(char)}
             <article class="char-card">
               <div class="card-visuals">
