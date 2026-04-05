@@ -484,7 +484,7 @@
     margin: 0 0 var(--size-6);
     display: grid;
     gap: var(--size-3);
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   }
 
   .word-card {
@@ -496,6 +496,7 @@
     box-shadow: var(--shadow-sm);
     position: relative;
     min-width: 0;
+    container-type: inline-size;
   }
 
   .word-card.stroke-mint     { background: var(--color-mint); }
@@ -527,7 +528,7 @@
   }
 
   .char-btn {
-    font-size: var(--font-size-6);
+    font-size: clamp(var(--font-size-3), 10cqi, var(--font-size-6));
     background: none;
     border: none;
     padding: var(--size-1) 0;
