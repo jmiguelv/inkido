@@ -1,0 +1,95 @@
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type'
+}
+
+export async function handler(req: Request): Promise<Response> {
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', { headers: corsHeaders })
+  }
+
+  const { phrases, language }: { phrases: string[]; language: string } = await req.json()
+
+  if (!phrases || phrases.length === 0) {
+    return new Response(JSON.stringify({ results: [] }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    })
+  }
+
+  const apiKey = Deno.env.get('OPENROUTER_API_KEY')
+  if (!apiKey) {
+    return new Response(JSON.stringify({ error: 'OPENROUTER_API_KEY not configured' }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    })
+  }
+
+  // Use a faster, cheaper model for simple translation tasks
+  const model = Deno.env.get('OPENROUTER_MODEL') ?? 'google/gemma-3-27b-it:free'
+
+  const prompt = `You are a dictionary API for a language learning app.
+The target language is "${language}" (e.g., if "zh", assume Mandarin Chinese).
+I will provide a JSON array of words or phrases.
+You must return a JSON array of objects with the exact following structure for each item:
+{
+  "word": "The original phrase provided",
+  "pinyin": "The phonetic annotation (e.g., pinyin with tone marks for Chinese) using correct spacing",
+  "translation": "A concise, natural English translation"
+}
+
+Return ONLY the JSON array, no markdown formatting (\`\`\`json etc.), no explanations.
+
+Input phrases:
+${JSON.stringify(phrases)}`
+
+  const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${apiKey}`,
+      'HTTP-Referer': 'https://inkido.app',
+      'X-Title': 'InkiDo'
+    },
+    body: JSON.stringify({
+      model,
+      messages: [{
+        role: 'user',
+        content: prompt
+      }]
+    })
+  })
+
+  if (!res.ok) {
+    const errText = await res.text()
+    return new Response(JSON.stringify({ error: `OpenRouter error: ${errText}` }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    })
+  }
+
+  const data = await res.json()
+  const raw = data.choices?.[0]?.message?.content
+  if (!raw) {
+    return new Response(JSON.stringify({ error: 'No content returned from LLM' }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    })
+  }
+
+  try {
+    const cleaned = raw.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '').trim()
+    const results = JSON.parse(cleaned)
+    return new Response(JSON.stringify({ results }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    })
+  } catch (e) {
+    return new Response(JSON.stringify({ error: `Failed to parse LLM response: ${e.message}`, raw }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    })
+  }
+}
+
+if (import.meta.main) {
+  Deno.serve(handler)
+}

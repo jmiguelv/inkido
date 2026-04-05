@@ -24,6 +24,8 @@ export interface Word {
   example_phonetic: string | null
   example_translation: string | null
   character_note: string | null
+  is_llm_pinyin: boolean
+  is_llm_translation: boolean
   sort_order: number
   created_at: string
 }
