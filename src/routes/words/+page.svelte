@@ -62,7 +62,7 @@
   }
 
   onMount(() => {
-    if (!activeProfile) { goto('/'); return }
+    if (!activeProfile) { goto('/profiles'); return }
   })
 
   $effect(() => {

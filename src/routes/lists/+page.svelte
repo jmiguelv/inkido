@@ -71,7 +71,7 @@
 
   onMount(() => {
     if (!activeProfile) {
-      goto('/')
+      goto('/profiles')
       return
     }
   })

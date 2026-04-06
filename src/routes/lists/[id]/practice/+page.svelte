@@ -75,7 +75,7 @@
   }
 
   onMount(() => {
-    if (!activeProfile) { goto('/'); return }
+    if (!activeProfile) { goto('/profiles'); return }
     window.addEventListener('keydown', handleKeydown)
     return () => window.removeEventListener('keydown', handleKeydown)
   })
