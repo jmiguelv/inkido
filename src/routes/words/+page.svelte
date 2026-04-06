@@ -101,8 +101,9 @@
   {:else if filtered.length === 0}
     <p class="state-msg">No words match <strong>{query}</strong>.</p>
   {:else}
-    <table>
-      <thead>
+    <div class="table-wrapper">
+      <table>
+        <thead>
         <tr>
           <th scope="col">Character</th>
           <th scope="col">Pinyin</th>
@@ -138,7 +139,8 @@
         {/each}
       </tbody>
     </table>
-  {/if}
+  </div>
+{/if}
 </section>
 
 {#if modalChar}
@@ -184,33 +186,45 @@
     font-size: var(--font-size-2);
   }
 
+  .table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+  }
+
   table {
     width: 100%;
     border-collapse: collapse;
-    font-size: var(--font-size-1);
+    background: var(--color-surface);
+    border: var(--border);
+    box-shadow: var(--shadow-sm);
+    text-align: left;
   }
 
   thead th {
-    text-align: left;
-    padding: var(--size-2) var(--size-3);
+    padding: var(--size-3) var(--size-4);
     border-bottom: var(--border);
-    font-size: var(--font-size-0);
-    font-weight: 800;
-    font-family: var(--font-display);
+    font-size: var(--font-size-1);
+    font-weight: 700;
+    font-family: var(--font-body);
     color: var(--color-text);
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.06em;
+    background: var(--color-sky);
   }
 
   tbody tr {
-    border-bottom: var(--border);
+    border-bottom: 1px solid var(--color-border);
     transition: background var(--transition-speed);
   }
 
-  tbody tr:hover { background: var(--color-sky); }
+  tbody tr:hover { background: var(--color-lemon); }
+
+  tbody tr:last-child {
+    border-bottom: none;
+  }
 
   tbody td {
-    padding: var(--size-2) var(--size-3);
+    padding: var(--size-3) var(--size-4);
     vertical-align: middle;
   }
 
@@ -221,7 +235,9 @@
   }
 
   .char-btn {
+    font-family: var(--font-display);
     font-size: var(--font-size-5);
+    font-weight: 800;
     background: none;
     border: none;
     padding: 0;
@@ -234,11 +250,13 @@
 
   .col-phonetic {
     color: var(--color-text-muted);
-    font-size: var(--font-size-1);
+    font-size: var(--font-size-2);
+    white-space: nowrap;
   }
 
   .col-translation {
     font-size: var(--font-size-2);
+    font-weight: 700;
   }
 
   .list-badge {
