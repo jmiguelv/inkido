@@ -98,7 +98,7 @@
             <p>
                 <small
                     >Review and search every word across all your practice
-                    lists.</small
+                    sets.</small
                 >
             </p>
         </div>
@@ -128,7 +128,7 @@
         <p class="state-msg" aria-live="polite">Loading…</p>
     {:else if words.length === 0}
         <p class="state-msg">
-            No words yet. Add some from a <a href="/lists">list</a>.
+            No words yet. Add some from a <a href="/lists">set</a>.
         </p>
     {:else if filtered.length === 0}
         <p class="state-msg">No words match <strong>{query}</strong>.</p>
@@ -140,7 +140,7 @@
                         <th scope="col">Word/Sentence</th>
                         <th scope="col">Pinyin</th>
                         <th scope="col">Meaning</th>
-                        <th scope="col">List</th>
+                        <th scope="col">Spelling</th>
                         <th scope="col"
                             ><span class="visually-hidden">Detail</span></th
                         >

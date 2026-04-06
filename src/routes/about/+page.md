@@ -14,13 +14,13 @@ Inkido helps you practise writing Mandarin Chinese characters. Add the words you
 ### 1. Profiles
 Each learner has their own profile. Switch between them from the top-right menu.
 
-### 2. Word lists
-Create a list for whatever you're studying — a week's vocabulary, a topic, a chapter.
+### 2. Spellings
+Create a set for whatever you're studying — a week's vocabulary, a topic, a chapter.
 
 Add words by typing them in, or use **Photo Scan** to photograph a worksheet and let Inkido extract the characters automatically.
 
 ### 3. Practice
-Open a list and tap **Practice →**.
+Open a set and tap **Practice →**.
 
 - Tap a character to watch the stroke order animation
 - Use **♪ Listen** to hear the pronunciation
@@ -35,6 +35,6 @@ Search 94,000 characters by meaning, pinyin, or the character itself. See stroke
 
 Character data from the [Chinese Character Wiki](https://www.dong-chinese.com/wiki/home). Stroke animations by [Hanzi Writer](https://hanziwriter.org).
 
-Your word lists and profiles are stored in Supabase. We don't sell or share your data.
+Your spelling sets and profiles are stored in Supabase. We don't sell or share your data.
 
 </div>

@@ -165,7 +165,7 @@
       </button>
     </nav>
   {:else if words.length === 0 && list}
-    <p>This list has no words yet. <a href="/lists/{list.id}">Add some words</a>.</p>
+    <p>This set has no words yet. <a href="/lists/{list.id}">Add some words</a>.</p>
   {:else}
     <p>Loading…</p>
   {/if}

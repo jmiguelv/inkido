@@ -132,7 +132,7 @@
             >
             <div class="nav-right" class:open={menuOpen}>
                 <a href="/lists" class:active={activeSection === "lists"}
-                    >Lists</a
+                    >Spellings</a
                 >
                 <a href="/words" class:active={activeSection === "words"}
                     >My Words</a

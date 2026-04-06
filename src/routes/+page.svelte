@@ -21,23 +21,23 @@
       <h1 class="logo">Inkido</h1>
       <p class="tagline"><small>Mandarin Chinese spelling practice</small></p>
     </hgroup>
-    <p class="sub">Build vocabulary in Mandarin Chinese. Create word lists, practise spelling with stroke-by-stroke animation, and track progress across profiles.</p>
+    <p class="sub">Build vocabulary in Mandarin Chinese. Create practice sets, practise spelling with stroke-by-stroke animation, and track progress across profiles.</p>
     {#if loggedIn}
       <a href="/lists" class="cta cta-primary">Go to app →</a>
     {:else}
       <div class="cta-group">
-        <a href="/auth/signup" class="cta cta-primary">Sign up free</a>
+        <a href="/auth/signup" class="cta cta-primary">Get started — Free</a>
         <a href="/auth/login" class="cta cta-secondary">Log in</a>
       </div>
     {/if}
-  </section>
+    </section>
 
-  <section class="features">
-    <div class="feature-card">
-      <span class="feature-icon">列</span>
-      <h2>Word lists</h2>
-      <p>Organise vocabulary into lists per topic or week. Colour-coded by stroke complexity so you can see difficulty at a glance.</p>
-    </div>
+    <section class="features">
+    <article class="feature-card">
+      <span class="feature-icon" aria-hidden="true">📋</span>
+      <h2>Spelling sets</h2>
+      <p>Organise vocabulary into practice sets per topic or week. Colour-coded by stroke complexity so you can see difficulty at a glance.</p>
+    </article>
     <div class="feature-card">
       <span class="feature-icon">練</span>
       <h2>Practice mode</h2>

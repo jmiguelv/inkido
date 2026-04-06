@@ -44,7 +44,7 @@
       newListName = ''
       await loadLists()
     } catch (e) {
-      errorMsg = e instanceof Error ? e.message : 'Failed to create list'
+      errorMsg = e instanceof Error ? e.message : 'Failed to create spelling'
     } finally {
       loading = false
     }
@@ -86,13 +86,13 @@
 <section>
   <hgroup class="page-header">
     <div class="title-group">
-      <h1>{activeProfile?.name ?? ''}'s Lists</h1>
-      <p><small>Manage your practice lists, organized by topic or difficulty.</small></p>
+      <h1>{activeProfile?.name ?? ''}'s Spellings</h1>
+      <p><small>Manage your practice sets, organized by topic or difficulty.</small></p>
     </div>
   </hgroup>
 
   {#if lists.length === 0}
-    <p>No lists yet. Create one below.</p>
+    <p>No sets yet. Create one below.</p>
   {:else}
     <ul class="list-grid">
       {#each lists as list (list.id)}
@@ -134,7 +134,7 @@
   <hr />
 
   <form onsubmit={(e) => { e.preventDefault(); handleCreateList() }} class="create-form">
-    <h2>New list</h2>
+    <h2>New spelling</h2>
     <div class="field">
       <label for="list-name">Name</label>
       <input id="list-name" type="text" bind:value={newListName} required placeholder="e.g. Week 3" />
@@ -151,7 +151,7 @@
       <output role="alert" class="error">{errorMsg}</output>
     {/if}
     <button type="submit" disabled={loading}>
-      {loading ? 'Creating…' : 'Create list'}
+      {loading ? 'Creating…' : 'Create spelling'}
     </button>
   </form>
 </section>

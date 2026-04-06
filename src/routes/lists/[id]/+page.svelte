@@ -236,7 +236,7 @@
   {#if list}
     <div class="list-header">
       <div class="list-title">
-        <a href="/lists" class="back-link" class:disabled={busy} onclick={(e) => { if (busy) e.preventDefault() }}>← Lists</a>
+        <a href="/lists" class="back-link" class:disabled={busy} onclick={(e) => { if (busy) e.preventDefault() }}>← Spellings</a>
         <h1>{list.name}</h1>
         <span class="list-lang">{list.language.toUpperCase()}</span>
       </div>
