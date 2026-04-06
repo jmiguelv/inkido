@@ -35,6 +35,7 @@
     let errorMsg = $state("");
 
     let editData = $state({
+        character: "",
         pinyin: "",
         translation: "",
         note: "",
@@ -45,6 +46,7 @@
     function startEditing() {
         if (!word) return;
         editData = {
+            character: word.character,
             pinyin: word.phonetic_annotation ?? "",
             translation: word.translation ?? "",
             note: word.character_note ?? "",
@@ -54,12 +56,17 @@
 
     async function handleSave() {
         if (!word) return;
+        if (!editData.character.trim()) {
+            errorMsg = "Character cannot be empty";
+            return;
+        }
         saving = true;
         errorMsg = "";
         try {
             const { error } = await supabase
                 .from("words")
                 .update({
+                    character: editData.character.trim(),
                     phonetic_annotation: editData.pinyin || null,
                     translation: editData.translation || null,
                     character_note: editData.note || null,
@@ -221,6 +228,10 @@
         <hgroup class="word-hero">
             {#if editing}
                 <div class="edit-field">
+                    <label for="edit-character">Character</label>
+                    <input id="edit-character" type="text" bind:value={editData.character} disabled={isBusy} />
+                </div>
+                <div class="edit-field">
                     <label for="edit-pinyin">Pinyin</label>
                     <div class="input-with-action">
                         <input id="edit-pinyin" type="text" bind:value={editData.pinyin} disabled={isBusy} />
@@ -238,13 +249,8 @@
                 </span>
                 <div class="hero-animation" aria-hidden="true">
                     {#each splitCharacters(word.character) as char, i (i)}
-                        {@const pinyinParts =
-                            word.phonetic_annotation?.split(/\s+/) ?? []}
-                        {@const syllable =
-                            pinyinParts.length ===
-                            splitCharacters(word.character).length
-                                ? pinyinParts[i]
-                                : null}
+                        {@const pinyinParts = word.phonetic_annotation?.trim().split(/\s+/) ?? []}
+                        {@const syllable = pinyinParts[i] ?? null}
                         <div class="char-unit">
                             {#if syllable}
                                 <span class="char-unit-pinyin">{syllable}</span>
