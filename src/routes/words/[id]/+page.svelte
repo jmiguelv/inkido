@@ -1,471 +1,522 @@
 <script lang="ts">
-  import { page } from '$app/state'
-  import { goto } from '$app/navigation'
-  import { onMount } from 'svelte'
-  import { SvelteMap } from 'svelte/reactivity'
-  import { supabase } from '$lib/supabase'
-  import { getActiveProfile } from '$lib/stores.svelte'
-  import { splitCharacters } from '$lib/characters'
-  import { speak } from '$lib/audio'
-  import type { Word, WordList } from '$lib/types'
-  import CharacterWriter from '$lib/components/CharacterWriter.svelte'
+    import { page } from "$app/state";
+    import { goto } from "$app/navigation";
+    import { onMount } from "svelte";
+    import { SvelteMap } from "svelte/reactivity";
+    import { supabase } from "$lib/supabase";
+    import { getActiveProfile } from "$lib/stores.svelte";
+    import { splitCharacters } from "$lib/characters";
+    import { speak } from "$lib/audio";
+    import type { Word, WordList } from "$lib/types";
+    import CharacterWriter from "$lib/components/CharacterWriter.svelte";
 
-  type CharData = {
-    phonetic: string | null
-    translation: string | null
-    note: string | null
-    hint: string | null
-    components: { character: string }[] | null
-    trad_variant: string | null
-    stroke_count: number | null
-  }
+    type CharData = {
+        phonetic: string | null;
+        translation: string | null;
+        note: string | null;
+        hint: string | null;
+        components: { character: string }[] | null;
+        trad_variant: string | null;
+        stroke_count: number | null;
+    };
 
-  const wordId = $derived(page.params.id)
-  const activeProfile = $derived(getActiveProfile())
+    const wordId = $derived(page.params.id);
+    const activeProfile = $derived(getActiveProfile());
 
-  let word = $state<Word | null>(null)
-  let list = $state<WordList | null>(null)
-  let charDataMap = new SvelteMap<string, CharData>()
-  let loading = $state(true)
-  let errorMsg = $state('')
+    let word = $state<Word | null>(null);
+    let list = $state<WordList | null>(null);
+    let charDataMap = new SvelteMap<string, CharData>();
+    let loading = $state(true);
+    let errorMsg = $state("");
 
-  function handleListen() {
-    if (!word || !list) return
-    try {
-      speak(word.character, list.language)
-    } catch {
-      // speech not available
-    }
-  }
-
-  async function load() {
-    loading = true
-    errorMsg = ''
-    try {
-      const { data: wordData, error: wordErr } = await supabase
-        .from('words')
-        .select('*')
-        .eq('id', wordId)
-        .single()
-      if (wordErr) throw wordErr
-      word = wordData as Word
-
-      const { data: listData, error: listErr } = await supabase
-        .from('word_lists')
-        .select('*')
-        .eq('id', word.list_id)
-        .single()
-      if (listErr) throw listErr
-      list = listData as WordList
-
-      const chars = splitCharacters(word.character)
-      if (chars.length > 0) {
-        const [{ data: charRows }, { data: wordRows }] = await Promise.all([
-          supabase
-            .from('zh_chars')
-            .select('char, gloss, hint, components, trad_variant, stroke_count')
-            .in('char', chars),
-          supabase
-            .from('zh_words')
-            .select('word, pinyin, translation')
-            .in('word', chars)
-        ])
-
-        const charMap = new Map(charRows?.map(r => [r.char, r]) ?? [])
-        const wMap = new Map(wordRows?.map(r => [r.word, r]) ?? [])
-
-        for (const char of chars) {
-          const c = charMap.get(char)
-          const w = wMap.get(char)
-          charDataMap.set(char, {
-            phonetic: w?.pinyin ?? null,
-            translation: w?.translation ?? null,
-            note: c?.gloss ?? null,
-            hint: c?.hint ?? null,
-            components: c?.components ?? null,
-            trad_variant: c?.trad_variant ?? null,
-            stroke_count: c?.stroke_count ?? null
-          })
+    function handleListen() {
+        if (!word || !list) return;
+        try {
+            speak(word.character, list.language);
+        } catch {
+            // speech not available
         }
-      }
-    } catch (e) {
-      errorMsg = e instanceof Error ? e.message : 'Failed to load word'
-    } finally {
-      loading = false
     }
-  }
 
-  onMount(() => {
-    if (!activeProfile) { goto('/'); return }
-  })
+    async function load() {
+        loading = true;
+        errorMsg = "";
+        try {
+            const { data: wordData, error: wordErr } = await supabase
+                .from("words")
+                .select("*")
+                .eq("id", wordId)
+                .single();
+            if (wordErr) throw wordErr;
+            word = wordData as Word;
 
-  $effect(() => {
-    if (activeProfile?.id) {
-      load()
+            const { data: listData, error: listErr } = await supabase
+                .from("word_lists")
+                .select("*")
+                .eq("id", word.list_id)
+                .single();
+            if (listErr) throw listErr;
+            list = listData as WordList;
+
+            const chars = splitCharacters(word.character);
+            if (chars.length > 0) {
+                const [{ data: charRows }, { data: wordRows }] =
+                    await Promise.all([
+                        supabase
+                            .from("zh_chars")
+                            .select(
+                                "char, gloss, hint, components, trad_variant, stroke_count",
+                            )
+                            .in("char", chars),
+                        supabase
+                            .from("zh_words")
+                            .select("word, pinyin, translation")
+                            .in("word", chars),
+                    ]);
+
+                const charMap = new Map(
+                    charRows?.map((r) => [r.char, r]) ?? [],
+                );
+                const wMap = new Map(wordRows?.map((r) => [r.word, r]) ?? []);
+
+                for (const char of chars) {
+                    const c = charMap.get(char);
+                    const w = wMap.get(char);
+                    charDataMap.set(char, {
+                        phonetic: w?.pinyin ?? null,
+                        translation: w?.translation ?? null,
+                        note: c?.gloss ?? null,
+                        hint: c?.hint ?? null,
+                        components: c?.components ?? null,
+                        trad_variant: c?.trad_variant ?? null,
+                        stroke_count: c?.stroke_count ?? null,
+                    });
+                }
+            }
+        } catch (e) {
+            errorMsg = e instanceof Error ? e.message : "Failed to load word";
+        } finally {
+            loading = false;
+        }
     }
-  })
+
+    onMount(() => {
+        if (!activeProfile) {
+            goto("/");
+            return;
+        }
+    });
+
+    $effect(() => {
+        if (activeProfile?.id) {
+            load();
+        }
+    });
 </script>
 
 <article class="word-detail-page">
-  {#if loading}
-    <p class="status" aria-live="polite">Loading…</p>
-  {:else if errorMsg}
-    <p class="error" role="alert">{errorMsg}</p>
-  {:else if word && list}
-    <header class="page-header">
-      <nav><a href="/lists/{list.id}" class="back-link">← {list.name}</a></nav>
-      <button class="listen-btn" onclick={handleListen} aria-label="Listen to {word.character}">
-        ♪ Listen
-      </button>
-    </header>
+    {#if loading}
+        <p class="status" aria-live="polite">Loading…</p>
+    {:else if errorMsg}
+        <p class="error" role="alert">{errorMsg}</p>
+    {:else if word && list}
+        <header class="page-header">
+            <nav>
+                <a href="/lists/{list.id}" class="back-link">← {list.name}</a>
+            </nav>
+            <button
+                class="listen-btn"
+                onclick={handleListen}
+                aria-label="Listen to {word.character}"
+            >
+                ♪ Listen
+            </button>
+        </header>
 
-    <hgroup class="word-hero">
-      {#if word.phonetic_annotation}
-        <p class="word-phonetic">
-          {word.phonetic_annotation}
-          {#if word.is_llm_pinyin}<span class="llm-badge" title="Generated by AI">✨</span>{/if}
-        </p>
-      {/if}
-      <h1 class="word-character" lang={list.language}>
-        <span class="visually-hidden">{word.character}</span>
-        <div class="hero-animation" aria-hidden="true">
-          {#each splitCharacters(word.character) as char, i (i)}
-            <CharacterWriter char={char} language={list.language} size={140} />
-          {/each}
-        </div>
-      </h1>
-      {#if word.translation}
-        <p class="word-translation">
-          {word.translation}
-          {#if word.is_llm_translation}<span class="llm-badge" title="Generated by AI">✨</span>{/if}
-        </p>
-      {/if}
-    </hgroup>
-
-    {#if word.example}
-      <section class="section-card example-section">
-        <h2 class="section-label">Example</h2>
-        <p class="example-text" lang={list.language}>{word.example}</p>
-        {#if word.example_phonetic}
-          <p class="example-phonetic">{word.example_phonetic}</p>
-        {/if}
-        {#if word.example_translation}
-          <p class="example-translation">{word.example_translation}</p>
-        {/if}
-      </section>
-    {/if}
-
-    {#if splitCharacters(word.character).length > 0}
-      <section class="chars-section">
-        <h2 class="section-label">Characters</h2>
-        <div class="char-stack">
-          {#each splitCharacters(word.character) as char, i (i)}
-            {@const data = charDataMap.get(char)}
-            <article class="char-card">
-              <div class="card-visuals">
-                <CharacterWriter char={char} language={list.language} size={140} />
-                <p class="card-char" lang={list.language}>{char}</p>
-              </div>
-
-              <div class="card-data">
-                <header class="card-data-header">
-                  {#if data?.phonetic}
-                    <p class="card-phonetic">{data.phonetic}</p>
-                  {/if}
-                  {#if data?.translation}
-                    <p class="card-translation">{data.translation}</p>
-                  {/if}
-                </header>
-
-                {#if data?.hint || data?.note || data?.stroke_count != null || data?.components?.length || (data?.trad_variant && data.trad_variant !== char)}
-                  <dl class="card-properties">
-                    {#if data?.trad_variant && data.trad_variant !== char}
-                      <dt>Traditional:</dt>
-                      <dd lang={list.language}>{data.trad_variant}</dd>
+        <hgroup class="word-hero">
+            <h1 class="word-character" lang={list.language}>
+                <span class="visually-hidden">
+                    {word.character}
+                    {#if word.phonetic_annotation}
+                        ({word.phonetic_annotation})
                     {/if}
+                </span>
+                <div class="hero-animation" aria-hidden="true">
+                    {#each splitCharacters(word.character) as char, i (i)}
+                        {@const pinyinParts = word.phonetic_annotation?.split(/\s+/) ?? []}
+                        {@const syllable = pinyinParts.length === splitCharacters(word.character).length ? pinyinParts[i] : null}
+                        <div class="char-unit">
+                            {#if syllable}
+                                <span class="char-unit-pinyin">{syllable}</span>
+                            {/if}
+                            <CharacterWriter
+                                {char}
+                                language={list.language}
+                                size={140}
+                            />
+                        </div>
+                    {/each}
+                </div>
+            </h1>
+            {#if word.translation}
+                <p class="word-translation">
+                    {word.translation}
+                    {#if word.is_llm_translation}<span
+                            class="llm-badge"
+                            title="Generated by AI">✨</span
+                        >{/if}
+                </p>
+            {/if}
+        </hgroup>
 
-                    {#if data?.hint}
-                      <dt>Hint:</dt>
-                      <dd class="hint-text">{data.hint}</dd>
-                    {/if}
-
-                    {#if data?.note}
-                      <dt>Note:</dt>
-                      <dd>{data.note}</dd>
-                    {/if}
-
-                    {#if data?.stroke_count != null}
-                      <dt>Strokes:</dt>
-                      <dd>{data.stroke_count}</dd>
-                    {/if}
-
-                    {#if data?.components?.length}
-                      <dt>Components:</dt>
-                      <dd>{data.components.map(c => c.character).join(' + ')}</dd>
-                    {/if}
-                  </dl>
+        {#if word.example}
+            <section class="section-card example-section">
+                <h2 class="section-label">Example</h2>
+                <p class="example-text" lang={list.language}>{word.example}</p>
+                {#if word.example_phonetic}
+                    <p class="example-phonetic">{word.example_phonetic}</p>
                 {/if}
-              </div>
-            </article>
-          {/each}
-        </div>
-      </section>
+                {#if word.example_translation}
+                    <p class="example-translation">
+                        {word.example_translation}
+                    </p>
+                {/if}
+            </section>
+        {/if}
+
+        {#if splitCharacters(word.character).length > 0}
+            <section class="chars-section">
+                <h2 class="section-label">Characters</h2>
+                <div class="char-stack">
+                    {#each splitCharacters(word.character) as char, i (i)}
+                        {@const data = charDataMap.get(char)}
+                        <article class="char-card">
+                            <div class="card-visuals">
+                                <CharacterWriter
+                                    {char}
+                                    language={list.language}
+                                    size={140}
+                                />
+                                <p class="card-char" lang={list.language}>
+                                    {char}
+                                </p>
+                            </div>
+
+                            <div class="card-data">
+                                <header class="card-data-header">
+                                    {#if data?.phonetic}
+                                        <p class="card-phonetic">
+                                            {data.phonetic}
+                                        </p>
+                                    {/if}
+                                    {#if data?.translation}
+                                        <p class="card-translation">
+                                            {data.translation}
+                                        </p>
+                                    {/if}
+                                </header>
+
+                                {#if data?.hint || data?.note || data?.stroke_count != null || data?.components?.length || (data?.trad_variant && data.trad_variant !== char)}
+                                    <dl class="card-properties">
+                                        {#if data?.trad_variant && data.trad_variant !== char}
+                                            <dt>Traditional:</dt>
+                                            <dd lang={list.language}>
+                                                {data.trad_variant}
+                                            </dd>
+                                        {/if}
+
+                                        {#if data?.hint}
+                                            <dt>Hint:</dt>
+                                            <dd class="hint-text">
+                                                {data.hint}
+                                            </dd>
+                                        {/if}
+
+                                        {#if data?.note}
+                                            <dt>Note:</dt>
+                                            <dd>{data.note}</dd>
+                                        {/if}
+
+                                        {#if data?.stroke_count != null}
+                                            <dt>Strokes:</dt>
+                                            <dd>{data.stroke_count}</dd>
+                                        {/if}
+
+                                        {#if data?.components?.length}
+                                            <dt>Components:</dt>
+                                            <dd>
+                                                {data.components
+                                                    .map((c) => c.character)
+                                                    .join(" + ")}
+                                            </dd>
+                                        {/if}
+                                    </dl>
+                                {/if}
+                            </div>
+                        </article>
+                    {/each}
+                </div>
+            </section>
+        {/if}
     {/if}
-  {/if}
 </article>
 
 <style>
-  .word-detail-page {
-    display: flex;
-    flex-direction: column;
-  }
+    .word-detail-page {
+        display: flex;
+        flex-direction: column;
+    }
 
-  .status {
-    color: var(--color-text-muted);
-    font-size: var(--font-size-2);
-  }
+    .status {
+        color: var(--color-text-muted);
+        font-size: var(--font-size-2);
+    }
 
-  .error {
-    color: var(--color-danger);
-    font-weight: 700;
-    font-size: var(--font-size-2);
-  }
+    .error {
+        color: var(--color-danger);
+        font-weight: 700;
+        font-size: var(--font-size-2);
+    }
 
-  .page-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--size-4);
-    margin-bottom: var(--size-6);
-    flex-wrap: wrap;
-  }
+    .page-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--size-4);
+        margin-bottom: var(--size-6);
+        flex-wrap: wrap;
+    }
 
-  .back-link {
-    font-size: var(--font-size-1);
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    text-decoration: none;
-    color: var(--color-text-muted);
-  }
+    .back-link {
+        font-size: var(--font-size-1);
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        text-decoration: none;
+        color: var(--color-text-muted);
+    }
 
-  .back-link:hover {
-    color: var(--color-text);
-  }
+    .back-link:hover {
+        color: var(--color-text);
+    }
 
-  .listen-btn {
-    padding: var(--size-2) var(--size-5);
-    border: var(--border);
-    border-radius: 0;
-    font-size: var(--font-size-2);
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    background: var(--color-sky);
-    color: var(--color-text);
-    box-shadow: var(--shadow-sm);
-    cursor: pointer;
-  }
+    .listen-btn {
+        padding: var(--size-2) var(--size-5);
+        border: var(--border);
+        border-radius: 0;
+        font-size: var(--font-size-2);
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        background: var(--color-sky);
+        color: var(--color-text);
+        box-shadow: var(--shadow-sm);
+        cursor: pointer;
+    }
 
-  .listen-btn:hover {
-    transform: translate(-2px, -2px);
-    box-shadow: 2px 2px 0 var(--color-border);
-  }
+    .listen-btn:hover {
+        transform: translate(-2px, -2px);
+        box-shadow: 2px 2px 0 var(--color-border);
+    }
 
-  .listen-btn:active {
-    transform: translate(0, 0);
-    box-shadow: none;
-  }
+    .listen-btn:active {
+        transform: translate(0, 0);
+        box-shadow: none;
+    }
 
-  .word-hero {
-    display: flex;
-    flex-direction: column;
-    gap: var(--size-2);
-    margin-bottom: var(--size-8);
-  }
+    .word-hero {
+        display: flex;
+        flex-direction: column;
+        gap: var(--size-2);
+        margin-bottom: var(--size-8);
+    }
 
-  .word-character {
-    margin: 0;
-    line-height: 1;
-  }
+    .word-character {
+        margin: 0;
+        line-height: 1;
+    }
 
-  .hero-animation {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--size-2);
-  }
+    .hero-animation {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--size-2);
+    }
 
-  .word-phonetic {
-    font-size: var(--font-size-3);
-    color: var(--color-text-muted);
-    margin: 0;
-    display: flex;
-    align-items: center;
-    gap: var(--size-2);
-  }
+    .char-unit {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--size-1);
+    }
 
-  .llm-badge {
-    font-size: 0.7em;
-    cursor: help;
-  }
+    .char-unit-pinyin {
+        font-size: var(--font-size-3);
+        color: var(--color-text-muted);
+        line-height: 1;
+    }
 
-  .word-translation {
-    font-size: var(--font-size-5);
-    font-weight: 700;
-    margin: 0;
-    display: flex;
-    align-items: center;
-    gap: var(--size-2);
-  }
+    .llm-badge {
+        font-size: 0.7em;
+        cursor: help;
+    }
 
-  .section-label {
-    font-size: var(--font-size-0);
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--color-text-muted);
-    margin: 0 0 var(--size-3);
-  }
+    .word-translation {
+        font-size: var(--font-size-5);
+        font-weight: 700;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: var(--size-2);
+    }
 
-  .section-card {
-    border: var(--border);
-    padding: var(--size-5);
-    box-shadow: var(--shadow-sm);
-    background: var(--color-surface);
-    margin-bottom: var(--size-8);
-  }
+    .section-label {
+        font-size: var(--font-size-0);
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--color-text-muted);
+        margin: 0 0 var(--size-3);
+    }
 
-  .example-text {
-    font-size: var(--font-size-4);
-    margin: 0 0 var(--size-2);
-    font-family: var(--font-display);
-  }
+    .section-card {
+        border: var(--border);
+        padding: var(--size-5);
+        box-shadow: var(--shadow-sm);
+        background: var(--color-surface);
+        margin-bottom: var(--size-8);
+    }
 
-  .example-phonetic {
-    font-size: var(--font-size-1);
-    color: var(--color-text-muted);
-    margin: 0 0 var(--size-1);
-  }
+    .example-text {
+        font-size: var(--font-size-4);
+        margin: 0 0 var(--size-2);
+        font-family: var(--font-display);
+    }
 
-  .example-translation {
-    font-size: var(--font-size-2);
-    font-weight: 700;
-    margin: 0;
-  }
+    .example-phonetic {
+        font-size: var(--font-size-1);
+        color: var(--color-text-muted);
+        margin: 0 0 var(--size-1);
+    }
 
-  .chars-section {
-    margin-bottom: var(--size-8);
-  }
+    .example-translation {
+        font-size: var(--font-size-2);
+        font-weight: 700;
+        margin: 0;
+    }
 
-  .char-stack {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--size-5);
-  }
+    .chars-section {
+        margin-bottom: var(--size-8);
+    }
 
-  @media (min-width: 900px) {
     .char-stack {
-      grid-template-columns: repeat(2, 1fr);
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: var(--size-5);
     }
-  }
 
-  .char-card {
-    display: flex;
-    flex-direction: column;
-    gap: var(--size-5);
-    border: var(--border);
-    padding: var(--size-5);
-    box-shadow: var(--shadow-sm);
-    background: var(--color-surface);
-  }
+    @media (min-width: 900px) {
+        .char-stack {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
 
-  @media (min-width: 640px) {
     .char-card {
-      flex-direction: row;
-      align-items: flex-start;
+        display: flex;
+        flex-direction: column;
+        gap: var(--size-5);
+        border: var(--border);
+        padding: var(--size-5);
+        box-shadow: var(--shadow-sm);
+        background: var(--color-surface);
     }
-  }
 
-  .card-visuals {
-    flex-shrink: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--size-2);
-    width: 140px;
-    margin: 0 auto;
-  }
-
-  .card-data {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    gap: var(--size-4);
-  }
-
-  .card-data-header {
-    display: flex;
-    flex-direction: column;
-    gap: var(--size-1);
-    text-align: center;
-  }
-
-  @media (min-width: 640px) {
-    .card-data-header {
-      text-align: left;
+    @media (min-width: 640px) {
+        .char-card {
+            flex-direction: row;
+            align-items: flex-start;
+        }
     }
-    
+
     .card-visuals {
-      margin: 0;
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--size-2);
+        width: 140px;
+        margin: 0 auto;
     }
-  }
 
-  .card-char {
-    font-size: var(--font-size-7);
-    font-family: var(--font-display);
-    font-weight: 800;
-    line-height: 1;
-    margin: 0;
-    text-align: center;
-  }
+    .card-data {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        gap: var(--size-4);
+    }
 
-  .card-phonetic {
-    font-size: var(--font-size-2);
-    color: var(--color-text-muted);
-    margin: 0;
-  }
+    .card-data-header {
+        display: flex;
+        flex-direction: column;
+        gap: var(--size-1);
+        text-align: center;
+    }
 
-  .card-translation {
-    font-size: var(--font-size-4);
-    font-weight: 700;
-    margin: 0;
-  }
+    @media (min-width: 640px) {
+        .card-data-header {
+            text-align: left;
+        }
 
-  .card-properties {
-    display: grid;
-    grid-template-columns: min-content 1fr;
-    gap: var(--size-2) var(--size-3);
-    margin: 0;
-    font-size: var(--font-size-1);
-    line-height: 1.4;
-  }
+        .card-visuals {
+            margin: 0;
+        }
+    }
 
-  .card-properties dt {
-    font-weight: 700;
-    color: var(--color-text-muted);
-    white-space: nowrap;
-    text-align: right;
-  }
+    .card-char {
+        font-size: var(--font-size-7);
+        font-family: var(--font-display);
+        font-weight: 800;
+        line-height: 1;
+        margin: 0;
+        text-align: center;
+    }
 
-  .card-properties dd {
-    margin: 0;
-    color: var(--color-text);
-  }
+    .card-phonetic {
+        font-size: var(--font-size-2);
+        color: var(--color-text-muted);
+        margin: 0;
+    }
 
-  .hint-text {
-    font-style: italic;
-    padding: var(--size-1) var(--size-2);
-    background: var(--color-mint);
-    border-left: 3px solid var(--color-border);
-  }
+    .card-translation {
+        font-size: var(--font-size-4);
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .card-properties {
+        display: grid;
+        grid-template-columns: min-content 1fr;
+        gap: var(--size-2) var(--size-3);
+        margin: 0;
+        font-size: var(--font-size-1);
+        line-height: 1.4;
+    }
+
+    .card-properties dt {
+        font-weight: 700;
+        color: var(--color-text-muted);
+        white-space: nowrap;
+        text-align: right;
+    }
+
+    .card-properties dd {
+        margin: 0;
+        color: var(--color-text);
+    }
+
+    .hint-text {
+        font-style: italic;
+        padding: var(--size-1) var(--size-2);
+        background: var(--color-mint);
+        border-left: 3px solid var(--color-border);
+    }
 </style>
