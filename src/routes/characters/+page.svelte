@@ -3,6 +3,7 @@
   import CharacterModal from '$lib/components/CharacterModal.svelte'
   import { SvelteMap } from 'svelte/reactivity'
   import { stripDiacritics } from '$lib/characters'
+  import { speak } from '$lib/audio'
 
   type CharEntry = {
     char: string
@@ -116,33 +117,45 @@
   {:else if results.length === 0}
     <p class="state-msg">No characters match <strong>{query}</strong>.</p>
   {:else}
-    <table>
-      <thead>
-        <tr>
-          <th scope="col">Character</th>
-          <th scope="col">Pinyin</th>
-          <th scope="col">Meaning</th>
-          <th scope="col">Strokes</th>
-        </tr>
-      </thead>
-      <tbody>
-        {#each results as entry (entry.char)}
+    <div class="table-wrapper">
+      <table class="char-table">
+        <thead>
           <tr>
-            <td class="col-char">
-              <button
-                class="char-btn"
-                lang="zh"
-                onclick={() => modalChar = entry.char}
-                aria-label="Details for {entry.char}"
-              >{entry.char}</button>
-            </td>
-            <td class="col-phonetic" lang="zh">{entry.pinyin ?? '—'}</td>
-            <td class="col-gloss">{entry.gloss ?? '—'}</td>
-            <td class="col-strokes">{entry.stroke_count ?? '—'}</td>
+            <th scope="col">Char</th>
+            <th scope="col">Play</th>
+            <th scope="col">Pinyin</th>
+            <th scope="col">Meaning</th>
+            <th scope="col">Strokes</th>
           </tr>
-        {/each}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {#each results as entry (entry.char)}
+            <tr onclick={() => modalChar = entry.char} class="clickable-row">
+              <td class="td-char">
+                <button
+                  class="char-btn"
+                  lang="zh"
+                  onclick={(e) => { e.stopPropagation(); modalChar = entry.char }}
+                  aria-label="Details for {entry.char}"
+                >{entry.char}</button>
+              </td>
+              <td>
+                <button 
+                  class="play-char-btn" 
+                  onclick={(e) => { e.stopPropagation(); speak(entry.char, 'zh') }}
+                  aria-label="Listen to {entry.char}"
+                >
+                  ♪
+                </button>
+              </td>
+              <td class="td-pinyin" lang="zh">{entry.pinyin ?? '—'}</td>
+              <td class="td-gloss">{entry.gloss ?? '—'}</td>
+              <td class="td-strokes">{entry.stroke_count ?? '—'}</td>
+            </tr>
+          {/each}
+        </tbody>
+      </table>
+    </div>
   {/if}
 </section>
 
@@ -189,38 +202,53 @@
     font-size: var(--font-size-2);
   }
 
-  table {
+  .table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  .char-table {
     width: 100%;
     border-collapse: collapse;
-    font-size: var(--font-size-1);
+    background: var(--color-surface);
+    border: var(--border);
+    box-shadow: var(--shadow-sm);
+    text-align: left;
   }
 
   thead th {
-    text-align: left;
-    padding: var(--size-2) var(--size-3);
+    padding: var(--size-3) var(--size-4);
     border-bottom: var(--border);
-    font-size: var(--font-size-0);
-    font-weight: 800;
-    font-family: var(--font-display);
+    font-size: var(--font-size-1);
+    font-weight: 700;
+    font-family: var(--font-body);
     color: var(--color-text);
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.06em;
+    background: var(--color-sky);
   }
 
-  tbody tr {
-    border-bottom: var(--border);
-    transition: background var(--transition-speed);
+  .clickable-row {
+    cursor: pointer;
+    transition: background-color var(--transition-speed);
+    border-bottom: 1px solid var(--color-border);
   }
 
-  tbody tr:hover { background: var(--color-sky); }
+  .clickable-row:hover { background: var(--color-lemon); }
+
+  .clickable-row:last-child {
+    border-bottom: none;
+  }
 
   tbody td {
-    padding: var(--size-2) var(--size-3);
+    padding: var(--size-3) var(--size-4);
     vertical-align: middle;
   }
 
   .char-btn {
+    font-family: var(--font-display);
     font-size: var(--font-size-6);
+    font-weight: 800;
     background: none;
     border: none;
     padding: 0;
@@ -231,11 +259,38 @@
 
   .char-btn:hover { color: var(--color-accent-2); }
 
-  .col-phonetic {
-    color: var(--color-text-muted);
+  .play-char-btn {
+    background: var(--color-sky);
+    border: var(--border);
+    border-radius: 0;
+    width: var(--size-6);
+    height: var(--size-6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--font-size-2);
+    cursor: pointer;
+    padding: 0;
   }
 
-  .col-strokes {
+  .play-char-btn:hover {
+    background: var(--color-accent-2);
+    transform: translate(-1px, -1px);
+    box-shadow: 1px 1px 0 var(--color-border);
+  }
+
+  .td-pinyin {
+    color: var(--color-text-muted);
+    font-size: var(--font-size-2);
+    white-space: nowrap;
+  }
+
+  .td-gloss {
+    font-size: var(--font-size-2);
+    font-weight: 700;
+  }
+
+  .td-strokes {
     color: var(--color-text-muted);
     font-variant-numeric: tabular-nums;
   }
