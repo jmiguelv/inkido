@@ -7,6 +7,7 @@
     hint: string | null
     components: { character: string }[] | null
     trad_variant: string | null
+    stroke_count: number | null
   }
   const cache = new SvelteMap<string, CharData>()
 </script>
@@ -53,7 +54,7 @@
 
     const [{ data: w }, { data: c }] = await Promise.all([
       supabase.from('zh_words').select('pinyin, translation').eq('word', char).maybeSingle(),
-      supabase.from('zh_chars').select('gloss, hint, components, trad_variant').eq('char', char).maybeSingle()
+      supabase.from('zh_chars').select('gloss, hint, components, trad_variant, stroke_count').eq('char', char).maybeSingle()
     ])
 
     const data: CharData = {
@@ -62,7 +63,8 @@
       note: c?.gloss ?? null,
       hint: c?.hint ?? null,
       components: c?.components ?? null,
-      trad_variant: c?.trad_variant ?? null
+      trad_variant: c?.trad_variant ?? null,
+      stroke_count: c?.stroke_count ?? null
     }
     cache.set(key, data)
     charData = data
@@ -90,9 +92,14 @@
     <button class="close-btn" onclick={onclose} aria-label="Close">✕</button>
   </header>
 
-  {#if charData?.trad_variant && charData.trad_variant !== viewChar}
-    <p class="detail-trad">Traditional: <span lang={language}>{charData.trad_variant}</span></p>
-  {/if}
+  <div class="detail-meta">
+    {#if charData?.trad_variant && charData.trad_variant !== viewChar}
+      <p class="detail-trad">Traditional: <span lang={language}>{charData.trad_variant}</span></p>
+    {/if}
+    {#if charData?.stroke_count != null}
+      <p class="detail-strokes">Strokes: <span>{charData.stroke_count}</span></p>
+    {/if}
+  </div>
 
   <div class="stroke-area">
     {#key viewChar}
@@ -221,7 +228,13 @@
     box-shadow: none;
   }
 
-  .detail-trad {
+  .detail-meta {
+    display: flex;
+    justify-content: center;
+    gap: var(--size-4);
+  }
+
+  .detail-trad, .detail-strokes {
     font-size: var(--font-size-1);
     color: var(--color-text-muted);
     text-align: center;

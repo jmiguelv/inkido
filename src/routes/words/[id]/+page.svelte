@@ -9,6 +9,7 @@
     import { speak } from "$lib/audio";
     import type { Word, WordList } from "$lib/types";
     import CharacterWriter from "$lib/components/CharacterWriter.svelte";
+    import CharacterModal from "$lib/components/CharacterModal.svelte";
 
     type CharData = {
         phonetic: string | null;
@@ -26,6 +27,7 @@
     let word = $state<Word | null>(null);
     let list = $state<WordList | null>(null);
     let charDataMap = new SvelteMap<string, CharData>();
+    let modalChar = $state<{ char: string } | null>(null);
     let loading = $state(true);
     let errorMsg = $state("");
 
@@ -191,77 +193,39 @@
         {#if splitCharacters(word.character).length > 0}
             <section class="chars-section">
                 <h2 class="section-label">Characters</h2>
-                <div class="char-stack">
-                    {#each splitCharacters(word.character) as char, i (i)}
-                        {@const data = charDataMap.get(char)}
-                        <article class="char-card">
-                            <div class="card-visuals">
-                                <CharacterWriter
-                                    {char}
-                                    language={list.language}
-                                />
-
-                                <p class="card-char" lang={list.language}>
-                                    {char}
-                                </p>
-                            </div>
-
-                            <div class="card-data">
-                                <header class="card-data-header">
-                                    {#if data?.phonetic}
-                                        <p class="card-phonetic">
-                                            {data.phonetic}
-                                        </p>
-                                    {/if}
-                                    {#if data?.translation}
-                                        <p class="card-translation">
-                                            {data.translation}
-                                        </p>
-                                    {/if}
-                                </header>
-
-                                {#if data?.hint || data?.note || data?.stroke_count != null || data?.components?.length || (data?.trad_variant && data.trad_variant !== char)}
-                                    <dl class="card-properties">
-                                        {#if data?.trad_variant && data.trad_variant !== char}
-                                            <dt>Traditional:</dt>
-                                            <dd lang={list.language}>
-                                                {data.trad_variant}
-                                            </dd>
-                                        {/if}
-
-                                        {#if data?.hint}
-                                            <dt>Hint:</dt>
-                                            <dd class="hint-text">
-                                                {data.hint}
-                                            </dd>
-                                        {/if}
-
-                                        {#if data?.note}
-                                            <dt>Note:</dt>
-                                            <dd>{data.note}</dd>
-                                        {/if}
-
-                                        {#if data?.stroke_count != null}
-                                            <dt>Strokes:</dt>
-                                            <dd>{data.stroke_count}</dd>
-                                        {/if}
-
-                                        {#if data?.components?.length}
-                                            <dt>Components:</dt>
-                                            <dd>
-                                                {data.components
-                                                    .map((c) => c.character)
-                                                    .join(" + ")}
-                                            </dd>
-                                        {/if}
-                                    </dl>
-                                {/if}
-                            </div>
-                        </article>
-                    {/each}
+                <div class="table-wrapper">
+                    <table class="char-table">
+                        <thead>
+                            <tr>
+                                <th>Char</th>
+                                <th>Pinyin</th>
+                                <th>Meaning</th>
+                                <th>Strokes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {#each splitCharacters(word.character) as char, i (i)}
+                                {@const data = charDataMap.get(char)}
+                                <tr onclick={() => modalChar = { char }} class="clickable-row" role="button" tabindex="0" aria-label="Details for {char}">
+                                    <td class="td-char" lang={list.language}>{char}</td>
+                                    <td class="td-pinyin">{data?.phonetic ?? '-'}</td>
+                                    <td class="td-translation">{data?.translation ?? '-'}</td>
+                                    <td class="td-strokes">{data?.stroke_count ?? '-'}</td>
+                                </tr>
+                            {/each}
+                        </tbody>
+                    </table>
                 </div>
             </section>
         {/if}
+    {/if}
+
+    {#if modalChar}
+        <CharacterModal
+            character={modalChar.char}
+            language={list?.language ?? "zh"}
+            onclose={() => (modalChar = null)}
+        />
     {/if}
 </article>
 
@@ -412,115 +376,67 @@
         margin-bottom: var(--size-8);
     }
 
-    .char-stack {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: var(--size-5);
+    .table-wrapper {
+        width: 100%;
+        overflow-x: auto;
     }
 
-    @media (min-width: 900px) {
-        .char-stack {
-            grid-template-columns: repeat(2, 1fr);
-        }
-    }
-
-    .char-card {
-        display: flex;
-        flex-direction: column;
-        gap: var(--size-5);
-        border: var(--border);
-        padding: var(--size-5);
-        box-shadow: var(--shadow-sm);
+    .char-table {
+        width: 100%;
+        border-collapse: collapse;
         background: var(--color-surface);
+        border: var(--border);
+        box-shadow: var(--shadow-sm);
+        text-align: left;
     }
 
-    @media (min-width: 640px) {
-        .char-card {
-            flex-direction: row;
-            align-items: flex-start;
-        }
+    .char-table th,
+    .char-table td {
+        padding: var(--size-3) var(--size-4);
+        border-bottom: 1px solid var(--color-border);
     }
 
-    .card-visuals {
-        flex-shrink: 0;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: var(--size-2);
-        width: 140px;
-        margin: 0 auto;
-    }
-
-    .card-data {
-        flex-grow: 1;
-        display: flex;
-        flex-direction: column;
-        gap: var(--size-4);
-    }
-
-    .card-data-header {
-        display: flex;
-        flex-direction: column;
-        gap: var(--size-1);
-        text-align: center;
-    }
-
-    @media (min-width: 640px) {
-        .card-data-header {
-            text-align: left;
-        }
-
-        .card-visuals {
-            margin: 0;
-        }
-    }
-
-    .card-char {
-        font-size: var(--font-size-7);
-        font-family: var(--font-display);
-        font-weight: 800;
-        line-height: 1;
-        margin: 0;
-        text-align: center;
-    }
-
-    .card-phonetic {
-        font-size: var(--font-size-2);
-        color: var(--color-text-muted);
-        margin: 0;
-    }
-
-    .card-translation {
-        font-size: var(--font-size-4);
-        font-weight: 700;
-        margin: 0;
-    }
-
-    .card-properties {
-        display: grid;
-        grid-template-columns: min-content 1fr;
-        gap: var(--size-2) var(--size-3);
-        margin: 0;
+    .char-table th {
         font-size: var(--font-size-1);
-        line-height: 1.4;
-    }
-
-    .card-properties dt {
         font-weight: 700;
-        color: var(--color-text-muted);
-        white-space: nowrap;
-        text-align: right;
-    }
-
-    .card-properties dd {
-        margin: 0;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        background: var(--color-sky);
         color: var(--color-text);
+        border-bottom: var(--border);
     }
 
-    .hint-text {
-        font-style: italic;
-        padding: var(--size-1) var(--size-2);
-        background: var(--color-mint);
-        border-left: 3px solid var(--color-border);
+    .clickable-row {
+        cursor: pointer;
+        transition: background-color var(--transition-speed);
+    }
+
+    .clickable-row:hover {
+        background-color: var(--color-lemon);
+    }
+
+    .clickable-row:last-child td {
+        border-bottom: none;
+    }
+
+    .td-char {
+        font-family: var(--font-display);
+        font-size: var(--font-size-5);
+        font-weight: 800;
+    }
+
+    .td-pinyin {
+        color: var(--color-text-muted);
+        font-size: var(--font-size-2);
+        white-space: nowrap;
+    }
+
+    .td-translation {
+        font-weight: 700;
+    }
+
+    .td-strokes {
+        font-variant-numeric: tabular-nums;
+        color: var(--color-text-muted);
     }
 </style>
