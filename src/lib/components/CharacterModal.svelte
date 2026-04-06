@@ -1,21 +1,8 @@
-<script module lang="ts">
-  import { SvelteMap } from 'svelte/reactivity'
-  type CharData = {
-    phonetic: string | null
-    translation: string | null
-    note: string | null
-    hint: string | null
-    components: { character: string }[] | null
-    trad_variant: string | null
-    stroke_count: number | null
-  }
-  const cache = new SvelteMap<string, CharData>()
-</script>
-
 <script lang="ts">
-  import { supabase } from '$lib/supabase'
   import { speak } from '$lib/audio'
   import CharacterWriter from '$lib/components/CharacterWriter.svelte'
+  import { getCharData, getWordData } from '$lib/dictionary'
+  import type { ZHChar } from '$lib/types'
 
   const {
     character,
@@ -27,11 +14,13 @@
     onclose: () => void
   } = $props()
 
+  type ModalCharData = ZHChar & { phonetic?: string | null; translation?: string | null }
+
   // null means "show the prop character"; non-null is a user-navigated override
   let _viewChar = $state<string | null>(null)
   const viewChar = $derived(_viewChar ?? character)
 
-  let charData = $state<CharData | null>(null)
+  let charData = $state<ModalCharData | null>(null)
 
   function handleAudio() {
     try {
@@ -46,32 +35,22 @@
   }
 
   async function loadCharData(char: string) {
-    const key = `${language}:${char}`
-
-    charData = cache.get(key) ?? null
-
-    if (cache.has(key)) return
-
-    const [{ data: w }, { data: c }] = await Promise.all([
-      supabase.from('zh_words').select('pinyin, translation').eq('word', char).maybeSingle(),
-      supabase.from('zh_chars').select('gloss, hint, components, trad_variant, stroke_count').eq('char', char).maybeSingle()
+    charData = null
+    const [w, c] = await Promise.all([
+      getWordData(char),
+      getCharData(char)
     ])
 
-    const data: CharData = {
-      phonetic: w?.pinyin ?? null,
-      translation: w?.translation ?? null,
-      note: c?.gloss ?? null,
-      hint: c?.hint ?? null,
-      components: c?.components ?? null,
-      trad_variant: c?.trad_variant ?? null,
-      stroke_count: c?.stroke_count ?? null
+    if (c) {
+      charData = {
+        ...c,
+        phonetic: w?.pinyin ?? null,
+        translation: w?.translation ?? null
+      }
     }
-    cache.set(key, data)
-    charData = data
   }
 
   $effect(() => {
-    charData = null
     loadCharData(viewChar)
   })
 </script>
@@ -137,8 +116,8 @@
     {#if charData.hint}
       <p class="detail-hint">{charData.hint}</p>
     {/if}
-    {#if charData.note}
-      <p class="detail-note">{charData.note}</p>
+    {#if charData.gloss}
+      <p class="detail-note">{charData.gloss}</p>
     {/if}
   {:else}
     <p class="detail-loading" aria-live="polite">Loading…</p>
