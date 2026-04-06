@@ -72,22 +72,22 @@
 
                     if (data) {
                         editData.pinyin = data.pinyin || "";
-                        editData.translation = data.translation || "";
+                        if (data.translation) editData.translation = data.translation;
                     } else if (splitCharacters(charToLookup).length === 1) {
                         const { data: charData } = await supabase
                             .from("zh_chars")
                             .select("gloss")
                             .eq("char", charToLookup)
                             .maybeSingle();
-                        if (charData) {
-                            editData.translation = charData.gloss || "";
-                            const { data: pData } = await supabase
-                                .from("zh_words")
-                                .select("pinyin")
-                                .eq("word", charToLookup)
-                                .maybeSingle();
-                            editData.pinyin = pData?.pinyin || "";
+                        if (charData?.gloss) {
+                            editData.translation = charData.gloss;
                         }
+                        const { data: pData } = await supabase
+                            .from("zh_words")
+                            .select("pinyin")
+                            .eq("word", charToLookup)
+                            .maybeSingle();
+                        if (pData?.pinyin) editData.pinyin = pData.pinyin;
                     } else {
                         const chars = splitCharacters(charToLookup);
                         const { data: charPinyinRows } = await supabase
@@ -98,7 +98,7 @@
                         if (charPinyinRows && charPinyinRows.length > 0) {
                             const pMap = new Map(charPinyinRows.map((r) => [r.word, r.pinyin]));
                             editData.pinyin = chars.map((c) => pMap.get(c) ?? c).join(" ");
-                            editData.translation = "";
+                            // We do NOT clear translation here to avoid losing data while typing phrases
                         }
                     }
                 } finally {
