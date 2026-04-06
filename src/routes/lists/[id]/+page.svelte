@@ -522,16 +522,27 @@
 
   .char-btn {
     font-size: clamp(var(--font-size-3), 10cqi, var(--font-size-6));
-    background: none;
-    border: none;
-    padding: var(--size-1) 0;
-    border-radius: 0;
+    background: transparent;
+    border: 1px solid transparent;
+    padding: var(--size-1) var(--size-1);
+    margin: 0 calc(var(--size-1) * -1);
+    border-radius: var(--radius-2);
     cursor: pointer;
     line-height: 1;
-    transition: color var(--transition-speed);
+    transition: all var(--transition-speed);
   }
 
-  .char-btn:hover { color: var(--color-accent-2); }
+  .char-btn:hover {
+    background: var(--color-sky);
+    border-color: var(--color-border);
+    transform: scale(1.1);
+    z-index: 1;
+  }
+
+  .char-btn:focus-visible {
+    outline: 2px solid var(--color-accent-2);
+    background: var(--color-lemon);
+  }
 
   .translation {
     font-size: var(--font-size-1);
