@@ -63,8 +63,14 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-table {
-  border-radius: 0;
+table,
+thead,
+tbody,
+tfoot,
+tr,
+th,
+td {
+  border-radius: 0 !important;
 }
 
 hr {

@@ -526,7 +526,7 @@
     border: 1px solid transparent;
     padding: var(--size-1) var(--size-1);
     margin: 0 calc(var(--size-1) * -1);
-    border-radius: var(--radius-2);
+    border-radius: 0;
     cursor: pointer;
     line-height: 1;
     transition: all var(--transition-speed);
