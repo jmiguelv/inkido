@@ -1,52 +1,40 @@
 <hgroup class="page-header markdown-content">
   <div class="title-group">
     <h1>About Inkido</h1>
-    <p><small>Learn more about Inkido and how to use it for Mandarin practice.</small></p>
+    <p><small>What it is and how it works.</small></p>
   </div>
 </hgroup>
 
 <div class="markdown-content">
 
-Inkido is a practice tool for anyone learning Mandarin Chinese. It focuses on the **visual and structural** aspects of Chinese characters, helping you master both how they look and how they are written.
+Inkido helps you practise writing Mandarin Chinese characters. Add the words you're learning, then practise them until they stick.
 
-## How to use Inkido
+## Getting started
 
-### 1. Create your Profiles
-Inkido is designed for families or classrooms. Each learner can have their own **Profile**, which keeps their word lists separate. 
-- Go to the profile picker (top right menu) to add or switch between learners.
+### 1. Profiles
+Each learner has their own profile. Switch between them from the top-right menu.
 
-### 2. Build your Word Lists
-Once you've selected a profile, you can create **Word Lists**. 
-- A list could be a "Weekly Vocabulary" or a specific topic like "Fruit" or "Family".
-- Add words by typing them in (separated by commas) or using the **Photo Scan** feature.
+### 2. Word lists
+Create a list for whatever you're studying — a week's vocabulary, a topic, a chapter.
 
-### 3. Photo Scan (OCR)
-Have a paper worksheet? Use the **Photo Scan** button on any word list. 
-- Take a photo of the characters, and Inkido will automatically extract them and add them to your list.
-- It will also automatically look up their Pinyin and English meanings.
+Add words by typing them in, or use **Photo Scan** to photograph a worksheet and let Inkido extract the characters automatically.
 
-### 4. Practice Mode
-This is the heart of Inkido. Open any list and tap **Practice →**.
-- You'll see a flashcard with the Chinese characters.
-- Use the **♪ Listen** button to hear the pronunciation.
-- Click the characters to see a **stroke-by-stroke animation** showing exactly how to write them.
-- Use your keyboard (Arrow keys) or on-screen buttons to navigate.
+### 3. Practice
+Open a list and tap **Practice →**.
 
-### 5. Character Explorer
-Want to dive deeper into a single character?
-- Use the **Explore** tab to search through 94,000 characters.
-- You can search by meaning (e.g., "mountain"), pinyin (e.g., "shan"), or the character itself.
-- See the character's components (what it's "made of"), its traditional variant, and stroke count.
+- Tap a character to watch the stroke order animation
+- Use **♪ Listen** to hear the pronunciation
+- Navigate with the arrow keys or on-screen buttons
+
+### 4. Character explorer
+Search 94,000 characters by meaning, pinyin, or the character itself. See stroke count, components, and traditional variants.
 
 ---
 
-## Data & Privacy
-Inkido uses the **Chinese Character Wiki** data for dictionary information and **Hanzi Writer** for stroke animations. 
+## Data
 
-Your word lists and profiles are stored securely in Supabase. We do not sell your data or use it for advertising.
+Character data from the [Chinese Character Wiki](https://www.dong-chinese.com/wiki/home). Stroke animations by [Hanzi Writer](https://hanziwriter.org).
 
----
-
-*Happy learning!* ✍️
+Your word lists and profiles are stored in Supabase. We don't sell or share your data.
 
 </div>
