@@ -14,6 +14,7 @@
 
     const PUBLIC_ROUTES = [
         "/",
+        "/about",
         "/auth/login",
         "/auth/signup",
         "/auth/confirm",
@@ -200,6 +201,8 @@
 <footer>
     <div class="footer-meta">
         <span>Inkido v{__APP_VERSION__}</span>
+        <span class="footer-sep">·</span>
+        <a href="/about">About</a>
         <span class="footer-sep">·</span>
         <span>Character data from <a href="https://www.dong-chinese.com/wiki/home" target="_blank" rel="noopener noreferrer">Chinese Character Wiki</a></span>
     </div>
