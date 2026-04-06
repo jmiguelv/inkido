@@ -3,11 +3,14 @@
 ## Todo
 
 - [ ] test: Ensure tests are relevant and there is enough coverage
+- [ ] refactor: Move settings into the profiles dropdown, after manage profiles
+- [ ] refactor: Lists should be called spellings
 
 ## In progress
 
 ## Done
 
+- [x] feat: Show the character pinyin on character hover
 - [x] feat: For every route, change the heading to an hgroup as needed, and add a <small> explanation about the route
 - [x] fix: Tables remove radius
 - [x] feat: /characters, style the table in the same way as the other character table at /words/[id]

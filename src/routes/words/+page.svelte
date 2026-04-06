@@ -152,6 +152,7 @@
                             <td class="col-char">
                                 <div class="char-row">
                                     {#each splitCharacters(word.character) as char, i (i)}
+                                        {@const pinyinParts = word.phonetic_annotation?.trim().split(/\s+/) ?? []}
                                         <button
                                             class="char-btn"
                                             lang={word.language}
@@ -161,6 +162,7 @@
                                                     language: word.language,
                                                 })}
                                             aria-label="Details for {char}"
+                                            title={pinyinParts[i] ?? undefined}
                                             >{char}</button
                                         >
                                     {/each}

@@ -272,10 +272,12 @@
             {/if}
             <div class="char-row">
               {#each splitCharacters(word.character) as char, i (i)}
+                {@const pinyinParts = word.phonetic_annotation?.trim().split(/\s+/) ?? []}
                 <button
                   class="char-btn"
                   onclick={() => modalChar = { char }}
                   aria-label="Details for {char}"
+                  title={pinyinParts[i] ?? undefined}
                   lang={list?.language ?? 'zh'}
                 >{char}</button>
               {/each}

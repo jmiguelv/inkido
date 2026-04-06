@@ -112,10 +112,12 @@
           <div class="card-character">
             <div class="char-row" lang={list.language}>
               {#each splitCharacters(currentWord.character) as char, i (i)}
+                {@const pinyinParts = currentWord.phonetic_annotation?.trim().split(/\s+/) ?? []}
                 <button
                   class="char-btn is-large"
                   onclick={(e) => { e.stopPropagation(); modalChar = char }}
                   aria-label="Details for {char}"
+                  title={pinyinParts[i] ?? undefined}
                 >{char}</button>
               {/each}
             </div>
