@@ -32,7 +32,10 @@
     let saving = $state(false);
     let enriching = $state(false);
     let editing = $state(false);
+    let autoLookupRunning = $state(false);
     let errorMsg = $state("");
+
+    let lookupTimer: ReturnType<typeof setTimeout> | null = null;
 
     let editData = $state({
         character: "",
@@ -41,7 +44,7 @@
         note: "",
     });
 
-    const isBusy = $derived(loading || saving || enriching);
+    const isBusy = $derived(loading || saving || enriching || autoLookupRunning);
 
     function startEditing() {
         if (!word) return;
@@ -53,6 +56,57 @@
         };
         editing = true;
     }
+
+    $effect(() => {
+        const charToLookup = editData.character.trim();
+        if (editing && charToLookup && charToLookup !== word?.character) {
+            if (lookupTimer) clearTimeout(lookupTimer);
+            lookupTimer = setTimeout(async () => {
+                autoLookupRunning = true;
+                try {
+                    const { data } = await supabase
+                        .from("zh_words")
+                        .select("pinyin, translation")
+                        .or(`word.eq."${charToLookup}",traditional.eq."${charToLookup}"`)
+                        .maybeSingle();
+
+                    if (data) {
+                        editData.pinyin = data.pinyin || "";
+                        editData.translation = data.translation || "";
+                    } else if (splitCharacters(charToLookup).length === 1) {
+                        const { data: charData } = await supabase
+                            .from("zh_chars")
+                            .select("gloss")
+                            .eq("char", charToLookup)
+                            .maybeSingle();
+                        if (charData) {
+                            editData.translation = charData.gloss || "";
+                            const { data: pData } = await supabase
+                                .from("zh_words")
+                                .select("pinyin")
+                                .eq("word", charToLookup)
+                                .maybeSingle();
+                            editData.pinyin = pData?.pinyin || "";
+                        }
+                    } else {
+                        const chars = splitCharacters(charToLookup);
+                        const { data: charPinyinRows } = await supabase
+                            .from("zh_words")
+                            .select("word, pinyin")
+                            .in("word", chars)
+                            .like("word", "_");
+                        if (charPinyinRows && charPinyinRows.length > 0) {
+                            const pMap = new Map(charPinyinRows.map((r) => [r.word, r.pinyin]));
+                            editData.pinyin = chars.map((c) => pMap.get(c) ?? c).join(" ");
+                            editData.translation = "";
+                        }
+                    }
+                } finally {
+                    autoLookupRunning = false;
+                }
+            }, 600);
+        }
+    });
 
     async function handleSave() {
         if (!word) return;
@@ -90,7 +144,7 @@
         errorMsg = "";
         try {
             const res = await supabase.functions.invoke("enrich-words", {
-                body: { phrases: [word.character], language: list.language },
+                body: { phrases: [editData.character.trim()], language: list.language },
             });
             if (res.error) throw res.error;
             const { results } = res.data as {
