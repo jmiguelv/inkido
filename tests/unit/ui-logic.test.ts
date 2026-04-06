@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 
 /** 
- * Re-implementing the mapping logic from /lists/[id] to test it.
+ * Re-implementing the mapping logic from /spellings/[id] to test it.
  * In a real refactor, this logic would move to a shared utility file.
  */
 function getStrokeClass(avgStrokes: number): string {
