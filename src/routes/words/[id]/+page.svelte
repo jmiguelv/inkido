@@ -7,19 +7,12 @@
     import { getActiveProfile } from "$lib/stores.svelte";
     import { splitCharacters } from "$lib/characters";
     import { speak } from "$lib/audio";
-    import type { Word, WordList } from "$lib/types";
+    import { getCharData, getWordData, getCharsData, getWordsData } from "$lib/dictionary";
+    import type { Word, WordList, ZHChar } from "$lib/types";
     import CharacterWriter from "$lib/components/CharacterWriter.svelte";
     import CharacterModal from "$lib/components/CharacterModal.svelte";
 
-    type CharData = {
-        phonetic: string | null;
-        translation: string | null;
-        note: string | null;
-        hint: string | null;
-        components: { character: string }[] | null;
-        trad_variant: string | null;
-        stroke_count: number | null;
-    };
+    type CharData = ZHChar & { phonetic: string | null; translation: string | null };
 
     const wordId = $derived(page.params.id);
     const activeProfile = $derived(getActiveProfile());
@@ -64,40 +57,23 @@
             lookupTimer = setTimeout(async () => {
                 autoLookupRunning = true;
                 try {
-                    const { data } = await supabase
-                        .from("zh_words")
-                        .select("pinyin, translation")
-                        .or(`word.eq."${charToLookup}",traditional.eq."${charToLookup}"`)
-                        .maybeSingle();
+                    const data = await getWordData(charToLookup);
 
                     if (data) {
                         editData.pinyin = data.pinyin || "";
                         if (data.translation) editData.translation = data.translation;
                     } else if (splitCharacters(charToLookup).length === 1) {
-                        const { data: charData } = await supabase
-                            .from("zh_chars")
-                            .select("gloss")
-                            .eq("char", charToLookup)
-                            .maybeSingle();
+                        const charData = await getCharData(charToLookup);
                         if (charData?.gloss) {
                             editData.translation = charData.gloss;
                         }
-                        const { data: pData } = await supabase
-                            .from("zh_words")
-                            .select("pinyin")
-                            .eq("word", charToLookup)
-                            .maybeSingle();
+                        const pData = await getWordData(charToLookup);
                         if (pData?.pinyin) editData.pinyin = pData.pinyin;
                     } else {
                         const chars = splitCharacters(charToLookup);
-                        const { data: charPinyinRows } = await supabase
-                            .from("zh_words")
-                            .select("word, pinyin")
-                            .in("word", chars)
-                            .like("word", "_");
-                        if (charPinyinRows && charPinyinRows.length > 0) {
-                            const pMap = new Map(charPinyinRows.map((r) => [r.word, r.pinyin]));
-                            editData.pinyin = chars.map((c) => pMap.get(c) ?? c).join(" ");
+                        const charPinyinRows = await getWordsData(chars);
+                        if (charPinyinRows.size > 0) {
+                            editData.pinyin = chars.map((c) => charPinyinRows.get(c)?.pinyin ?? c).join(" ");
                             // We do NOT clear translation here to avoid losing data while typing phrases
                         }
                     }
@@ -192,37 +168,21 @@
 
             const chars = splitCharacters(word.character);
             if (chars.length > 0) {
-                const [{ data: charRows }, { data: wordRows }] =
-                    await Promise.all([
-                        supabase
-                            .from("zh_chars")
-                            .select(
-                                "char, gloss, hint, components, trad_variant, stroke_count",
-                            )
-                            .in("char", chars),
-                        supabase
-                            .from("zh_words")
-                            .select("word, pinyin, translation")
-                            .in("word", chars),
-                    ]);
-
-                const charMap = new Map(
-                    charRows?.map((r) => [r.char, r]) ?? [],
-                );
-                const wMap = new Map(wordRows?.map((r) => [r.word, r]) ?? []);
+                const [charRows, wordRows] = await Promise.all([
+                    getCharsData(chars),
+                    getWordsData(chars),
+                ]);
 
                 for (const char of chars) {
-                    const c = charMap.get(char);
-                    const w = wMap.get(char);
-                    charDataMap.set(char, {
-                        phonetic: w?.pinyin ?? null,
-                        translation: w?.translation ?? null,
-                        note: c?.gloss ?? null,
-                        hint: c?.hint ?? null,
-                        components: c?.components ?? null,
-                        trad_variant: c?.trad_variant ?? null,
-                        stroke_count: c?.stroke_count ?? null,
-                    });
+                    const c = charRows.get(char);
+                    const w = wordRows.get(char);
+                    if (c) {
+                        charDataMap.set(char, {
+                            ...c,
+                            phonetic: w?.pinyin ?? null,
+                            translation: w?.translation ?? null,
+                        });
+                    }
                 }
             }
         } catch (e) {

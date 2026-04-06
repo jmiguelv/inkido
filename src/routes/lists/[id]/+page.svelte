@@ -8,6 +8,7 @@
   import { SvelteMap } from 'svelte/reactivity'
   import CharacterModal from '$lib/components/CharacterModal.svelte'
   import { splitCharacters } from '$lib/characters'
+  import { getCharsData, getWordsData } from '$lib/dictionary'
   import type { Word, WordList } from '$lib/types'
 
   let list = $state<WordList | null>(null)
@@ -74,34 +75,20 @@
   async function enrichWords(wordIds: string[], characters: string[]) {
     enriching = true
     try {
-      // 1. Try to find the whole words/phrases
-      const { data: wordRows } = await supabase
-        .from('zh_words')
-        .select('word, traditional, pinyin, translation')
-        .or(`word.in.(${characters.map(c => `"${c}"`).join(',')}),traditional.in.(${characters.map(c => `"${c}"`).join(',')})`)
+      // 1. Try to find the whole words/phrases (uses cache)
+      const simplifiedMap = await getWordsData(characters)
 
-      const simplifiedMap = new Map(wordRows?.map(r => [r.word, r]) ?? [])
-      const traditionalMap = new Map(wordRows?.filter(r => r.traditional).map(r => [r.traditional, r]) ?? [])
-
-      // 2. For characters not found as words, we'll need their individual pinyin
+      // 2. For characters not found as words, we'll need their individual pinyin (uses cache)
       const allChars = [...new Set(characters.flatMap(c => splitCharacters(c)))]
-      const { data: charPinyinRows } = await supabase
-        .from('zh_words')
-        .select('word, pinyin')
-        .in('word', allChars)
-        .like('word', '_') // single chars only
-      const charPinyinMap = new Map(charPinyinRows?.map(r => [r.word, r.pinyin]) ?? [])
+      const charPinyinMap = await getWordsData(allChars)
 
-      // 3. Get glosses for single characters
+      // 3. Get glosses for single characters (uses cache)
       const singleCharsOnly = characters.filter(c => [...c].length === 1)
-      const { data: charRows } = singleCharsOnly.length
-        ? await supabase.from('zh_chars').select('char, gloss').in('char', singleCharsOnly)
-        : { data: [] }
-      const charMap = new Map(charRows?.map(r => [r.char, r]) ?? [])
+      const charMap = await getCharsData(singleCharsOnly)
 
       // 4. Identify phrases missing from the local dictionary
       const missingPhrases = characters.filter(ch => {
-        const w = simplifiedMap.get(ch) ?? traditionalMap.get(ch)
+        const w = simplifiedMap.get(ch)
         return !w || !w.translation
       })
 
@@ -122,7 +109,7 @@
 
       for (let i = 0; i < wordIds.length; i++) {
         const ch = characters[i]
-        const w = simplifiedMap.get(ch) ?? traditionalMap.get(ch)
+        const w = simplifiedMap.get(ch)
         const c = charMap.get(ch)
         const llmData = llmResultsMap.get(ch)
 
@@ -133,8 +120,7 @@
 
         // Fallback: if whole word pinyin is missing, combine character pinyin
         if (!pinyin && [...ch].length > 1) {
-          const parts = splitCharacters(ch).map(char => charPinyinMap.get(char) ?? char)
-          pinyin = parts.join(' ')
+          pinyin = splitCharacters(ch).map(char => charPinyinMap.get(char)?.pinyin ?? char).join(' ')
           isLlmPinyin = false // It's from the local character dictionary fallback
         }
 
