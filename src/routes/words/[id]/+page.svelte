@@ -143,8 +143,13 @@
                 </span>
                 <div class="hero-animation" aria-hidden="true">
                     {#each splitCharacters(word.character) as char, i (i)}
-                        {@const pinyinParts = word.phonetic_annotation?.split(/\s+/) ?? []}
-                        {@const syllable = pinyinParts.length === splitCharacters(word.character).length ? pinyinParts[i] : null}
+                        {@const pinyinParts =
+                            word.phonetic_annotation?.split(/\s+/) ?? []}
+                        {@const syllable =
+                            pinyinParts.length ===
+                            splitCharacters(word.character).length
+                                ? pinyinParts[i]
+                                : null}
                         <div class="char-unit">
                             {#if syllable}
                                 <span class="char-unit-pinyin">{syllable}</span>
@@ -152,7 +157,7 @@
                             <CharacterWriter
                                 {char}
                                 language={list.language}
-                                size={140}
+                                size={100}
                             />
                         </div>
                     {/each}
@@ -351,7 +356,7 @@
 
     .char-unit-pinyin {
         font-size: var(--font-size-3);
-        color: var(--color-text-muted);
+        color: var(--color-text);
         line-height: 1;
     }
 
