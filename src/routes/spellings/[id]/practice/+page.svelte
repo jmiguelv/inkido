@@ -110,19 +110,27 @@
       >
         <div class="card-front">
           <div class="card-character">
-            <div class="char-row" lang={list.language}>
-              {#each splitCharacters(currentWord.character) as char, i (i)}
-                {@const pinyinParts = currentWord.phonetic_annotation?.trim().split(/\s+/) ?? []}
-                <button
-                  class="char-btn is-large"
-                  onclick={(e) => { e.stopPropagation(); modalChar = char }}
-                  aria-label="Details for {char}"
-                  title={pinyinParts[i] ?? undefined}
-                >{char}</button>
-              {/each}
-            </div>
-            {#if flipped && currentWord.phonetic_annotation}
-              <p class="phonetic">{currentWord.phonetic_annotation}</p>
+            {#if flipped}
+              <div class="char-row" lang={list.language}>
+                {#each splitCharacters(currentWord.character) as char, i (i)}
+                  {@const pinyinParts = currentWord.phonetic_annotation?.trim().split(/\s+/) ?? []}
+                  <button
+                    class="char-btn is-large"
+                    onclick={(e) => { e.stopPropagation(); modalChar = char }}
+                    aria-label="Details for {char}"
+                    title={pinyinParts[i] ?? undefined}
+                  >{char}</button>
+                {/each}
+              </div>
+              {#if currentWord.phonetic_annotation}
+                <p class="phonetic">{currentWord.phonetic_annotation}</p>
+              {/if}
+            {:else}
+              <div class="char-placeholder" aria-label="Word with {splitCharacters(currentWord.character).length} characters">
+                {#each splitCharacters(currentWord.character) as _, i (i)}
+                  <span class="char-block"></span>
+                {/each}
+              </div>
             {/if}
           </div>
           <button
@@ -262,6 +270,24 @@
     flex-direction: column;
     align-items: center;
     gap: var(--size-2);
+  }
+
+  .char-placeholder {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--size-2);
+    align-items: center;
+    justify-content: center;
+    max-width: 100%;
+  }
+
+  .char-block {
+    width: var(--size-10);
+    height: var(--size-10);
+    background: var(--color-border);
+    opacity: 0.15;
+    border: var(--border);
+    flex-shrink: 0;
   }
 
   .phonetic {
