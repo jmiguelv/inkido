@@ -89,10 +89,14 @@
 
 <section class="practice">
   {#if list && currentWord}
-    <div class="practice-header">
-      <a href="/spellings/{list.id}" class="back-link">← {list.name}</a>
+    <hgroup class="page-header">
+      <div class="title-group">
+        <a href="/spellings/{list.id}" class="back-link">← {list.name}</a>
+        <h1>Spelling Practice</h1>
+        <p><small>Practise writing each character in this set stroke-by-stroke.</small></p>
+      </div>
       <span class="progress">{currentIndex + 1} / {words.length}</span>
-    </div>
+    </hgroup>
 
     {#if errorMsg}
       <output role="alert" class="error">{errorMsg}</output>
@@ -193,18 +197,13 @@
     margin: 0 auto;
   }
 
-  .practice-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: var(--size-6);
-  }
-
   .progress {
-    font-size: var(--font-size-1);
+    font-size: var(--font-size-2);
     font-weight: 700;
     font-family: var(--font-display);
     color: var(--color-text-muted);
+    align-self: flex-end;
+    margin-bottom: var(--size-1);
   }
 
   .flip-hint {
