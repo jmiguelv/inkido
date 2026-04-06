@@ -175,6 +175,74 @@ button[type="submit"]:active:not(:disabled),
   border: 0;
 }
 
+/* Global Page Header (hgroup) */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: var(--size-4);
+  margin-bottom: var(--size-8);
+  border-bottom: var(--border);
+  padding-bottom: var(--size-3);
+}
+
+.title-group h1 {
+  font-size: var(--font-size-8);
+  margin: 0;
+  line-height: 1;
+}
+
+.title-group p {
+  margin: var(--size-1) 0 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-1);
+  line-height: 1.4;
+  font-weight: 500;
+}
+
+/* Character Buttons (inline characters that are clickable) */
+.char-row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 0;
+}
+
+.char-btn {
+  font-family: var(--font-display);
+  font-size: var(--font-size-6);
+  background: transparent;
+  border: 1px solid transparent;
+  padding: var(--size-1) var(--size-1);
+  margin: 0 calc(var(--size-1) * -1);
+  border-radius: 0;
+  cursor: pointer;
+  line-height: 1;
+  transition: all var(--transition-speed);
+  font-weight: 800;
+  color: inherit;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.char-btn.is-large {
+  font-size: var(--font-size-fluid-3);
+}
+
+.char-btn:hover {
+  background: var(--color-sky);
+  border-color: var(--color-border);
+  transform: scale(1.1);
+  z-index: 1;
+  color: var(--color-text);
+}
+
+.char-btn:focus-visible {
+  outline: 2px solid var(--color-accent-2);
+  background: var(--color-lemon);
+}
+
 /* Markdown Content Styling */
 .markdown-content { max-width: 800px; margin: 0 auto; padding: var(--size-8) var(--size-4); }
 .markdown-content h1 { margin-top: 0; margin-bottom: var(--size-6); font-size: var(--font-size-8); }

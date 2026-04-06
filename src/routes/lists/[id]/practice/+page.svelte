@@ -113,7 +113,7 @@
             <div class="char-row" lang={list.language}>
               {#each splitCharacters(currentWord.character) as char, i (i)}
                 <button
-                  class="char-btn"
+                  class="char-btn is-large"
                   onclick={(e) => { e.stopPropagation(); modalChar = char }}
                   aria-label="Details for {char}"
                 >{char}</button>
@@ -261,23 +261,6 @@
     align-items: center;
     gap: var(--size-2);
   }
-
-  .char-row {
-    display: flex;
-    gap: var(--size-2);
-  }
-
-  .char-btn {
-    font-size: var(--font-size-fluid-3);
-    background: none;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-    line-height: 1;
-    transition: color var(--transition-speed);
-  }
-
-  .char-btn:hover { color: var(--color-accent-2); }
 
   .phonetic {
     font-size: var(--font-size-2);

@@ -265,35 +265,11 @@
     }
 
     tbody td {
-        padding: var(--size-3) var(--size-4);
-        vertical-align: middle;
+      padding: var(--size-3) var(--size-4);
+      vertical-align: middle;
     }
 
-    .char-row {
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        gap: var(--size-1);
-    }
-
-    .char-btn {
-        font-family: var(--font-display);
-        font-size: var(--font-size-5);
-        font-weight: 800;
-        background: none;
-        border: none;
-        padding: 0;
-        cursor: pointer;
-        line-height: 1;
-        transition: color var(--transition-speed);
-    }
-
-    .char-btn:hover {
-        color: var(--color-accent-2);
-    }
-
-    .col-phonetic {
-        color: var(--color-text-muted);
+    .col-phonetic {        color: var(--color-text-muted);
         font-size: var(--font-size-2);
         word-break: break-word;
     }

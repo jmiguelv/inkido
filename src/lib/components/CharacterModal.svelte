@@ -102,15 +102,16 @@
     {#if charData.components?.length}
       <div class="components">
         <span class="components-label">Made of</span>
-        {#each charData.components as comp, i (i)}
-          {#if i > 0}<span class="components-sep">+</span>{/if}
-          <button
-            class="component-btn"
-            lang={language}
-            onclick={() => _viewChar = comp.character}
-            aria-label="Explore component {comp.character}"
-          >{comp.character}</button>
-        {/each}
+        <div class="char-row">
+          {#each charData.components as comp, i (i)}
+            <button
+              class="char-btn"
+              lang={language}
+              onclick={() => _viewChar = comp.character}
+              aria-label="Explore component {comp.character}"
+            >{comp.character}</button>
+          {/each}
+        </div>
       </div>
     {/if}
     {#if charData.hint}
@@ -282,34 +283,6 @@
     text-transform: uppercase;
     letter-spacing: 0.06em;
     color: var(--color-text-muted);
-  }
-
-  .components-sep {
-    font-size: var(--font-size-1);
-    font-weight: 700;
-    color: var(--color-text-muted);
-  }
-
-  .component-btn {
-    font-size: var(--font-size-5);
-    background: var(--color-surface);
-    border: var(--border);
-    border-radius: 0;
-    padding: var(--size-1) var(--size-3);
-    cursor: pointer;
-    line-height: 1;
-    box-shadow: var(--shadow-sm);
-  }
-
-  .component-btn:hover:not(:disabled) {
-    background: var(--color-lemon);
-    transform: translate(-2px, -2px);
-    box-shadow: 2px 2px 0 var(--color-border);
-  }
-
-  .component-btn:active:not(:disabled) {
-    transform: translate(0, 0);
-    box-shadow: none;
   }
 
   .detail-hint {

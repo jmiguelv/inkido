@@ -508,43 +508,7 @@
     gap: var(--size-1);
   }
 
-  .llm-badge {
-    font-size: 0.8em;
-    cursor: help;
-  }
-
-  .char-row {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 0;
-  }
-
-  .char-btn {
-    font-size: clamp(var(--font-size-3), 10cqi, var(--font-size-6));
-    background: transparent;
-    border: 1px solid transparent;
-    padding: var(--size-1) var(--size-1);
-    margin: 0 calc(var(--size-1) * -1);
-    border-radius: 0;
-    cursor: pointer;
-    line-height: 1;
-    transition: all var(--transition-speed);
-  }
-
-  .char-btn:hover {
-    background: var(--color-sky);
-    border-color: var(--color-border);
-    transform: scale(1.1);
-    z-index: 1;
-  }
-
-  .char-btn:focus-visible {
-    outline: 2px solid var(--color-accent-2);
-    background: var(--color-lemon);
-  }
-
-  .translation {
+  .word-translation {
     font-size: var(--font-size-1);
     font-weight: 700;
     margin: 0;
@@ -552,6 +516,17 @@
     display: flex;
     align-items: center;
     gap: var(--size-1);
+  }
+
+  .llm-badge {
+    font-size: 0.65rem;
+    padding: 1px 4px;
+    background: var(--color-accent-2);
+    color: var(--color-text);
+    border-radius: 0;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
   }
 
   .delete-btn {

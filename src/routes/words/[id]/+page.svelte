@@ -438,10 +438,10 @@
                                     >
                                     <td class="td-components">
                                         {#if data?.components && data.components.length > 0}
-                                            <div class="component-list">
+                                            <div class="char-row">
                                                 {#each data.components as comp, ci (ci)}
                                                     <button
-                                                        class="mini-comp-btn"
+                                                        class="char-btn"
                                                         onclick={(e) => {
                                                             e.stopPropagation();
                                                             modalChar = {
@@ -778,26 +778,4 @@
         box-shadow: 1px 1px 0 var(--color-border);
     }
 
-    .component-list {
-        display: flex;
-        flex-wrap: wrap;
-        gap: var(--size-1);
-    }
-
-    .mini-comp-btn {
-        background: var(--color-surface);
-        border: 1px solid var(--color-border);
-        border-radius: 0;
-        padding: 2px var(--size-2);
-        font-family: var(--font-display);
-        font-size: var(--font-size-2);
-        cursor: pointer;
-        transition: all var(--transition-speed);
-    }
-
-    .mini-comp-btn:hover {
-        background: var(--color-lemon);
-        border-color: var(--color-border);
-        transform: translateY(-1px);
-    }
 </style>

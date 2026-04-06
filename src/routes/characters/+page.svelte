@@ -236,20 +236,6 @@
     vertical-align: middle;
   }
 
-  .char-btn {
-    font-family: var(--font-display);
-    font-size: var(--font-size-6);
-    font-weight: 800;
-    background: none;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-    line-height: 1;
-    transition: color var(--transition-speed);
-  }
-
-  .char-btn:hover { color: var(--color-accent-2); }
-
   .play-char-btn {
     background: var(--color-sky);
     border: var(--border);
