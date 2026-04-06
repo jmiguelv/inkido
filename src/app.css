@@ -246,14 +246,12 @@ button[type="submit"]:active:not(:disabled),
 /* AI Generation Badge */
 .llm-badge {
   font-size: 0.65rem;
-  padding: 1px 4px;
-  background: var(--color-accent-2);
   color: var(--color-text);
-  border-radius: 0;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   cursor: help;
+  vertical-align: super;
 }
 
 /* Markdown Content Styling */
