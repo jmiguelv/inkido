@@ -51,58 +51,60 @@
 <section>
   <h1>Settings</h1>
 
-  <article class="settings-card">
-    <h2>Speech rate</h2>
-    <p>Controls how fast the app reads words aloud.</p>
-    <div class="field">
-      <label for="speech-rate">
-        Rate: {speechRate.toFixed(2)}×
-      </label>
-      <input
-        id="speech-rate"
-        type="range"
-        min="0.25"
-        max="1"
-        step="0.05"
-        bind:value={speechRate}
-        oninput={handleSpeechRate}
-      />
-      <div class="range-labels">
-        <span>0.25× (slow)</span>
-        <span>1× (normal)</span>
-      </div>
-    </div>
-  </article>
-
-  <article class="settings-card">
-    <h2>Change email</h2>
-    <form onsubmit={(e) => { e.preventDefault(); handleChangeEmail() }}>
+  <div class="settings-grid">
+    <article class="settings-card">
+      <h2>Speech rate</h2>
+      <p>Controls how fast the app reads words aloud.</p>
       <div class="field">
-        <label for="new-email">New email address</label>
-        <input id="new-email" type="email" bind:value={newEmail} required autocomplete="email" />
+        <label for="speech-rate">
+          Rate: {speechRate.toFixed(2)}×
+        </label>
+        <input
+          id="speech-rate"
+          type="range"
+          min="0.25"
+          max="1"
+          step="0.05"
+          bind:value={speechRate}
+          oninput={handleSpeechRate}
+        />
+        <div class="range-labels">
+          <span>0.25× (slow)</span>
+          <span>1× (normal)</span>
+        </div>
       </div>
-      {#if emailMsg}
-        <output role="alert" class:error={emailMsg.startsWith('F')} class:success={!emailMsg.startsWith('F')}>
-          {emailMsg}
-        </output>
-      {/if}
-      <button type="submit" disabled={loading}>Update email</button>
-    </form>
-  </article>
+    </article>
 
-  <article class="settings-card danger-zone">
-    <h2>Delete account</h2>
-    <p>This will permanently delete your account and all your data. This cannot be undone.</p>
-    <form onsubmit={(e) => { e.preventDefault(); handleDeleteAccount() }}>
-      <div class="field">
-        <label for="delete-confirm">Type DELETE to confirm</label>
-        <input id="delete-confirm" type="text" bind:value={deleteConfirm} autocomplete="off" />
-      </div>
-      <button type="submit" class="danger" disabled={deleteConfirm !== 'DELETE'}>
-        Delete my account
-      </button>
-    </form>
-  </article>
+    <article class="settings-card">
+      <h2>Change email</h2>
+      <form onsubmit={(e) => { e.preventDefault(); handleChangeEmail() }}>
+        <div class="field">
+          <label for="new-email">New email address</label>
+          <input id="new-email" type="email" bind:value={newEmail} required autocomplete="email" />
+        </div>
+        {#if emailMsg}
+          <output role="alert" class:error={emailMsg.startsWith('F')} class:success={!emailMsg.startsWith('F')}>
+            {emailMsg}
+          </output>
+        {/if}
+        <button type="submit" disabled={loading}>Update email</button>
+      </form>
+    </article>
+
+    <article class="settings-card danger-zone">
+      <h2>Delete account</h2>
+      <p>This will permanently delete your account and all your data. This cannot be undone.</p>
+      <form onsubmit={(e) => { e.preventDefault(); handleDeleteAccount() }}>
+        <div class="field">
+          <label for="delete-confirm">Type DELETE to confirm</label>
+          <input id="delete-confirm" type="text" bind:value={deleteConfirm} autocomplete="off" />
+        </div>
+        <button type="submit" class="danger" disabled={deleteConfirm !== 'DELETE'}>
+          Delete my account
+        </button>
+      </form>
+    </article>
+  </div>
 </section>
 
 <style>
@@ -111,13 +113,18 @@
     margin: 0 0 var(--size-6);
   }
 
+  .settings-grid {
+    display: grid;
+    gap: var(--size-5);
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 400px), 1fr));
+    align-items: start;
+  }
+
   .settings-card {
     background: var(--color-surface);
     border: var(--border);
     border-radius: 0;
     padding: var(--size-6);
-    max-width: 500px;
-    margin-bottom: var(--size-5);
     box-shadow: var(--shadow-sm);
   }
 
