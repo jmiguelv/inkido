@@ -23,7 +23,7 @@
     </hgroup>
     <p class="sub">Build vocabulary in Mandarin Chinese. Create practice sets, practise spelling with stroke-by-stroke animation, and track progress across profiles.</p>
     {#if loggedIn}
-      <a href="/lists" class="cta cta-primary">Go to app →</a>
+      <a href="/spellings" class="cta cta-primary">Go to app →</a>
     {:else}
       <div class="cta-group">
         <a href="/auth/signup" class="cta cta-primary">Get started — Free</a>

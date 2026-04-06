@@ -90,7 +90,7 @@
 <section class="practice">
   {#if list && currentWord}
     <div class="practice-header">
-      <a href="/lists/{list.id}" class="back-link">← {list.name}</a>
+      <a href="/spellings/{list.id}" class="back-link">← {list.name}</a>
       <span class="progress">{currentIndex + 1} / {words.length}</span>
     </div>
 
@@ -165,7 +165,7 @@
       </button>
     </nav>
   {:else if words.length === 0 && list}
-    <p>This set has no words yet. <a href="/lists/{list.id}">Add some words</a>.</p>
+    <p>This set has no words yet. <a href="/spellings/{list.id}">Add some words</a>.</p>
   {:else}
     <p>Loading…</p>
   {/if}

@@ -110,7 +110,7 @@
                 <button type="button" onclick={() => { renamingId = null }}>Cancel</button>
               </form>
             {:else}
-              <a href="/lists/{list.id}" class="list-name">{list.name}</a>
+              <a href="/spellings/{list.id}" class="list-name">{list.name}</a>
               <span class="list-meta">
                 {LANGUAGES.find(l => l.code === list.language)?.label ?? list.language}
                 {#if list.last_practiced}
@@ -118,7 +118,7 @@
                 {/if}
               </span>
               <div class="list-footer">
-                <a href="/lists/{list.id}/practice" class="practice-link">Practice →</a>
+                <a href="/spellings/{list.id}/practice" class="practice-link">Practice →</a>
                 <div class="list-actions">
                   <button onclick={() => startRename(list)} aria-label="Rename {list.name}">Rename</button>
                   <button class="danger" onclick={() => handleDeleteList(list.id)} aria-label="Delete {list.name}">×</button>

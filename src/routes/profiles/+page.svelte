@@ -47,7 +47,7 @@
 
   function handleSelectProfile(profile: Profile) {
     setActiveProfile(profile)
-    goto('/lists')
+    goto('/spellings')
   }
 
   function startRename(profile: Profile) {

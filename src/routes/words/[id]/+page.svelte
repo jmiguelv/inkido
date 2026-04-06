@@ -231,7 +231,7 @@
     {:else if word && list}
         <header class="page-header">
             <nav>
-                <a href="/lists/{list.id}" class="back-link">← {list.name}</a>
+                <a href="/spellings/{list.id}" class="back-link">← {list.name}</a>
             </nav>
             <div class="header-actions">
                 {#if editing}

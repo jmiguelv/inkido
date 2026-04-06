@@ -128,7 +128,7 @@
         <p class="state-msg" aria-live="polite">Loading…</p>
     {:else if words.length === 0}
         <p class="state-msg">
-            No words yet. Add some from a <a href="/lists">set</a>.
+            No words yet. Add some from a <a href="/spellings">set</a>.
         </p>
     {:else if filtered.length === 0}
         <p class="state-msg">No words match <strong>{query}</strong>.</p>
@@ -176,7 +176,7 @@
                             >
                             <td class="col-list">
                                 <a
-                                    href="/lists/{word.list_id}"
+                                    href="/spellings/{word.list_id}"
                                     class="list-badge">{word.listName}</a
                                 >
                             </td>

@@ -88,7 +88,7 @@
     function switchProfile(profile: Profile) {
         setActiveProfile(profile);
         dropdownOpen = false;
-        goto("/lists");
+        goto("/spellings");
     }
 
     function handleDropdownKeydown(e: KeyboardEvent) {
@@ -105,7 +105,7 @@
     const activeProfile = $derived(getActiveProfile());
     const isPublicRoute = $derived(PUBLIC_ROUTES.includes(page.url.pathname));
     const activeSection = $derived(
-        page.url.pathname.startsWith("/lists")
+        page.url.pathname.startsWith("/spellings")
             ? "lists"
             : page.url.pathname.startsWith("/words")
               ? "words"
@@ -131,7 +131,7 @@
                 aria-expanded={menuOpen}>{menuOpen ? "✕" : "☰"}</button
             >
             <div class="nav-right" class:open={menuOpen}>
-                <a href="/lists" class:active={activeSection === "lists"}
+                <a href="/spellings" class:active={activeSection === "lists"}
                     >Spellings</a
                 >
                 <a href="/words" class:active={activeSection === "words"}

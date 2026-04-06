@@ -236,7 +236,7 @@
   {#if list}
     <div class="list-header">
       <div class="list-title">
-        <a href="/lists" class="back-link" class:disabled={busy} onclick={(e) => { if (busy) e.preventDefault() }}>← Spellings</a>
+        <a href="/spellings" class="back-link" class:disabled={busy} onclick={(e) => { if (busy) e.preventDefault() }}>← Spellings</a>
         <h1>{list.name}</h1>
         <span class="list-lang">{list.language.toUpperCase()}</span>
       </div>
@@ -244,7 +244,7 @@
         <button class="relookup-btn" disabled={busy || words.length === 0} onclick={handleReEnrichAll} aria-label="Re-lookup words">
           ↻ Re-lookup
         </button>
-        <a href="/lists/{list.id}/practice" class="practice-link" class:disabled={busy || words.length === 0} onclick={(e) => { if (busy || words.length === 0) e.preventDefault() }}>Practice →</a>
+        <a href="/spellings/{list.id}/practice" class="practice-link" class:disabled={busy || words.length === 0} onclick={(e) => { if (busy || words.length === 0) e.preventDefault() }}>Practice →</a>
       </div>
     </div>
 
