@@ -157,7 +157,6 @@
                             <CharacterWriter
                                 {char}
                                 language={list.language}
-                                size={100}
                             />
                         </div>
                     {/each}
@@ -200,8 +199,8 @@
                                 <CharacterWriter
                                     {char}
                                     language={list.language}
-                                    size={140}
                                 />
+
                                 <p class="card-char" lang={list.language}>
                                     {char}
                                 </p>

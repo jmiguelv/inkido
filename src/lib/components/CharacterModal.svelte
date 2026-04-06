@@ -96,7 +96,7 @@
 
   <div class="stroke-area">
     {#key viewChar}
-      <CharacterWriter char={viewChar} {language} size={200} />
+      <CharacterWriter char={viewChar} {language} />
     {/key}
   </div>
 

@@ -2,7 +2,7 @@
   let {
     char,
     language = 'zh',
-    size = 200
+    size = 100
   }: {
     char: string
     language?: string
