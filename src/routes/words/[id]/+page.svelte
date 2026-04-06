@@ -321,7 +321,10 @@
             {#if editing}
                 <div class="edit-field">
                     <label for="edit-translation">Meaning</label>
-                    <input id="edit-translation" type="text" bind:value={editData.translation} disabled={isBusy} />
+                    <div class="input-with-action">
+                        <input id="edit-translation" type="text" bind:value={editData.translation} disabled={isBusy} />
+                        <button class="enrich-btn" onclick={handleEnrich} disabled={isBusy} title="Ask AI to enrich">✨ AI</button>
+                    </div>
                 </div>
                 <div class="edit-field">
                     <label for="edit-note">Personal Note</label>
