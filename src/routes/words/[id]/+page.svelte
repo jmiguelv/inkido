@@ -504,19 +504,6 @@
         gap: var(--size-3);
     }
 
-    .back-link {
-        font-size: var(--font-size-1);
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
-        text-decoration: none;
-        color: var(--color-text-muted);
-    }
-
-    .back-link:hover {
-        color: var(--color-text);
-    }
-
     .listen-btn {
         padding: var(--size-2) var(--size-5);
         border: var(--border);

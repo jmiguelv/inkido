@@ -234,11 +234,11 @@
 
 <section>
   {#if list}
-    <div class="list-header">
-      <div class="list-title">
+    <header class="page-header">
+      <div class="title-group">
         <a href="/spellings" class="back-link" class:disabled={busy} onclick={(e) => { if (busy) e.preventDefault() }}>← Spellings</a>
-        <h1>{list.name}</h1>
-        <span class="list-lang">{list.language.toUpperCase()}</span>
+        <h1>{list.name} <span class="list-lang">{list.language.toUpperCase()}</span></h1>
+        <p><small>Update words, add new ones manually, or scan from a photo.</small></p>
       </div>
       <div class="header-actions">
         <button class="relookup-btn" disabled={busy || words.length === 0} onclick={handleReEnrichAll} aria-label="Re-lookup words">
@@ -246,7 +246,7 @@
         </button>
         <a href="/spellings/{list.id}/practice" class="practice-link" class:disabled={busy || words.length === 0} onclick={(e) => { if (busy || words.length === 0) e.preventDefault() }}>Practice →</a>
       </div>
-    </div>
+    </header>
 
     <div
       class="enriching-banner"
@@ -346,36 +346,11 @@
 </section>
 
 <style>
-  .list-header {
+  .header-actions {
     display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: var(--size-4);
-    margin-bottom: var(--size-6);
+    align-items: center;
+    gap: var(--size-3);
     flex-wrap: wrap;
-  }
-
-  .list-title {
-    display: flex;
-    flex-direction: column;
-    gap: var(--size-1);
-  }
-
-  .back-link {
-    font-size: var(--font-size-1);
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    text-decoration: none;
-    color: var(--color-text-muted);
-  }
-
-  .back-link:hover { color: var(--color-text); }
-
-  h1 {
-    font-size: var(--font-size-8);
-    margin: 0;
-    line-height: 1;
   }
 
   .list-lang {
@@ -383,13 +358,6 @@
     font-weight: 700;
     letter-spacing: 0.1em;
     color: var(--color-text-muted);
-  }
-
-  .header-actions {
-    display: flex;
-    align-items: center;
-    gap: var(--size-3);
-    flex-wrap: wrap;
   }
 
   .relookup-btn {

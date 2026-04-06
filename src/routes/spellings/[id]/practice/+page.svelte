@@ -200,17 +200,6 @@
     margin-bottom: var(--size-6);
   }
 
-  .back-link {
-    font-size: var(--font-size-1);
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    text-decoration: none;
-    color: var(--color-text-muted);
-  }
-
-  .back-link:hover { color: var(--color-text); }
-
   .progress {
     font-size: var(--font-size-1);
     font-weight: 700;

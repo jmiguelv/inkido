@@ -200,6 +200,19 @@ button[type="submit"]:active:not(:disabled),
   font-weight: 500;
 }
 
+.back-link {
+  font-size: var(--font-size-1);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  color: var(--color-text-muted);
+  display: inline-block;
+  margin-bottom: var(--size-1);
+}
+
+.back-link:hover { color: var(--color-text); }
+
 /* Character Buttons (inline characters that are clickable) */
 .char-row {
   display: flex;
