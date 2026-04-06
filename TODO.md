@@ -3,13 +3,14 @@
 ## Todo
 
 - [ ] test: Ensure tests are relevant and there is enough coverage
-- [ ] refactor: Move settings into the profiles dropdown, after manage profiles
 - [ ] refactor: Lists should be called spellings
+- [ ] refactor: Practice should not show the word by default, just character placeholder to give a rough idea of the length of the word, the listen button and the tap to reveal hint
 
 ## In progress
 
 ## Done
 
+- [x] refactor: Move settings into the profiles dropdown, after manage profiles
 - [x] feat: Show the character pinyin on character hover
 - [x] feat: For every route, change the heading to an hgroup as needed, and add a <small> explanation about the route
 - [x] fix: Tables remove radius

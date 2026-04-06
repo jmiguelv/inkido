@@ -111,9 +111,7 @@
               ? "words"
               : page.url.pathname.startsWith("/characters")
                 ? "characters"
-                : page.url.pathname.startsWith("/settings")
-                  ? "settings"
-                  : "",
+                : "",
     );
 </script>
 
@@ -142,9 +140,6 @@
                 <a
                     href="/characters"
                     class:active={activeSection === "characters"}>Explore</a
-                >
-                <a href="/settings" class:active={activeSection === "settings"}
-                    >Settings</a
                 >
                 {#if activeProfile}
                     <div class="profile-dropdown">
@@ -183,6 +178,15 @@
                                         onclick={() => (dropdownOpen = false)}
                                     >
                                         Manage profiles
+                                    </a>
+                                </li>
+                                <li>
+                                    <a
+                                        href="/settings"
+                                        class="profile-manage"
+                                        onclick={() => (dropdownOpen = false)}
+                                    >
+                                        Settings
                                     </a>
                                 </li>
                             </ul>
