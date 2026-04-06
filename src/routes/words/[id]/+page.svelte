@@ -230,9 +230,11 @@
         <p class="error" role="alert">{errorMsg}</p>
     {:else if word && list}
         <header class="page-header">
-            <nav>
+            <div class="title-group">
                 <a href="/spellings/{list.id}" class="back-link">← {list.name}</a>
-            </nav>
+                <h1>{word.character}</h1>
+                <p><small>Detailed breakdown and stroke-by-stroke guide for each character.</small></p>
+            </div>
             <div class="header-actions">
                 {#if editing}
                     <button
@@ -298,7 +300,7 @@
                 </div>
             {/if}
 
-            <h1 class="word-character" lang={list.language}>
+            <div class="word-character" lang={list.language}>
                 <span class="visually-hidden">
                     {word.character}
                     {#if word.phonetic_annotation}
@@ -318,13 +320,7 @@
                         </div>
                     {/each}
                 </div>
-            </h1>
-            <p class="hero-explanation">
-                <small
-                    >Detailed breakdown and stroke-by-stroke guide for each
-                    character.</small
-                >
-            </p>
+            </div>
 
             {#if editing}
                 <div class="edit-field">
@@ -576,13 +572,6 @@
     .word-character {
         margin: 0;
         line-height: 1;
-    }
-
-    .hero-explanation {
-        margin: 0 0 var(--size-4);
-        color: var(--color-text-muted);
-        font-size: var(--font-size-1);
-        line-height: 1.4;
     }
 
     .hero-animation {
