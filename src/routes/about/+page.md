@@ -1,3 +1,5 @@
+<div class="markdown-content">
+
 # About Inkido
 
 Inkido is a practice tool for anyone learning Mandarin Chinese. It focuses on the **visual and structural** aspects of Chinese characters, helping you master both how they look and how they are written.
@@ -41,3 +43,5 @@ Your word lists and profiles are stored securely in Supabase. We do not sell you
 ---
 
 *Happy learning!* ✍️
+
+</div>
