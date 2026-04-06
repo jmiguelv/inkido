@@ -49,7 +49,12 @@
 </script>
 
 <section>
-  <h1>Settings</h1>
+  <hgroup class="page-header">
+    <div class="title-group">
+      <h1>Settings</h1>
+      <p><small>Manage your account and app preferences.</small></p>
+    </div>
+  </hgroup>
 
   <div class="settings-grid">
     <article class="settings-card">
@@ -108,11 +113,6 @@
 </section>
 
 <style>
-  h1 {
-    font-size: var(--font-size-8);
-    margin: 0 0 var(--size-6);
-  }
-
   .settings-grid {
     display: grid;
     gap: var(--size-5);

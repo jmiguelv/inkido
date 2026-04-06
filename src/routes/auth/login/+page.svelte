@@ -30,8 +30,10 @@
 <div class="auth-page">
   <div class="auth-brand">InkiDo</div>
   <article class="auth-card">
-    <h1>Log in</h1>
-    <p class="subtitle">We'll send a magic link to your inbox.</p>
+    <hgroup>
+      <h1>Log in</h1>
+      <p class="subtitle"><small>We'll send a magic link to your inbox.</small></p>
+    </hgroup>
     <form onsubmit={(e) => { e.preventDefault(); handleSubmit() }}>
       <div class="field">
         <label for="email">Email</label>

@@ -84,7 +84,12 @@
 </script>
 
 <section>
-  <h1>{activeProfile?.name ?? ''}'s Lists</h1>
+  <hgroup class="page-header">
+    <div class="title-group">
+      <h1>{activeProfile?.name ?? ''}'s Lists</h1>
+      <p><small>Manage your practice lists, organized by topic or difficulty.</small></p>
+    </div>
+  </hgroup>
 
   {#if lists.length === 0}
     <p>No lists yet. Create one below.</p>
@@ -152,11 +157,6 @@
 </section>
 
 <style>
-  h1 {
-    font-size: var(--font-size-8);
-    margin: 0 0 var(--size-6);
-  }
-
   .list-grid {
     list-style: none;
     padding: 0;

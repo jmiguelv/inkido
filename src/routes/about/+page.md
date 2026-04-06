@@ -1,6 +1,11 @@
-<div class="markdown-content">
+<hgroup class="page-header markdown-content">
+  <div class="title-group">
+    <h1>About Inkido</h1>
+    <p><small>Learn more about Inkido and how to use it for Mandarin practice.</small></p>
+  </div>
+</hgroup>
 
-# About Inkido
+<div class="markdown-content">
 
 Inkido is a practice tool for anyone learning Mandarin Chinese. It focuses on the **visual and structural** aspects of Chinese characters, helping you master both how they look and how they are written.
 

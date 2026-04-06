@@ -70,7 +70,12 @@
 </script>
 
 <section>
-  <h1>Who's learning today?</h1>
+  <hgroup class="page-header">
+    <div class="title-group">
+      <h1>Who's learning today?</h1>
+      <p><small>Switch between learner profiles to track individual progress.</small></p>
+    </div>
+  </hgroup>
 
   {#if profiles.length === 0}
     <p class="empty-state">No profiles yet. Add one below to get started.</p>
@@ -137,11 +142,6 @@
 </section>
 
 <style>
-  h1 {
-    font-size: var(--font-size-8);
-    margin: 0 0 var(--size-6);
-  }
-
   h2 {
     font-size: var(--font-size-4);
     margin: 0 0 var(--size-4);

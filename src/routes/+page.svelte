@@ -17,8 +17,10 @@
 
 <div class="landing">
   <section class="hero">
-    <h1 class="logo">Inkido</h1>
-    <p class="tagline">Mandarin Chinese spelling practice</p>
+    <hgroup>
+      <h1 class="logo">Inkido</h1>
+      <p class="tagline"><small>Mandarin Chinese spelling practice</small></p>
+    </hgroup>
     <p class="sub">Build vocabulary in Mandarin Chinese. Create word lists, practise spelling with stroke-by-stroke animation, and track progress across profiles.</p>
     {#if loggedIn}
       <a href="/lists" class="cta cta-primary">Go to app →</a>

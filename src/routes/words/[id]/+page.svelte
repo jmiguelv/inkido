@@ -7,12 +7,20 @@
     import { getActiveProfile } from "$lib/stores.svelte";
     import { splitCharacters } from "$lib/characters";
     import { speak } from "$lib/audio";
-    import { getCharData, getWordData, getCharsData, getWordsData } from "$lib/dictionary";
+    import {
+        getCharData,
+        getWordData,
+        getCharsData,
+        getWordsData,
+    } from "$lib/dictionary";
     import type { Word, WordList, ZHChar } from "$lib/types";
     import CharacterWriter from "$lib/components/CharacterWriter.svelte";
     import CharacterModal from "$lib/components/CharacterModal.svelte";
 
-    type CharData = ZHChar & { phonetic: string | null; translation: string | null };
+    type CharData = ZHChar & {
+        phonetic: string | null;
+        translation: string | null;
+    };
 
     const wordId = $derived(page.params.id);
     const activeProfile = $derived(getActiveProfile());
@@ -37,7 +45,9 @@
         note: "",
     });
 
-    const isBusy = $derived(loading || saving || enriching || autoLookupRunning);
+    const isBusy = $derived(
+        loading || saving || enriching || autoLookupRunning,
+    );
 
     function startEditing() {
         if (!word) return;
@@ -61,7 +71,8 @@
 
                     if (data) {
                         editData.pinyin = data.pinyin || "";
-                        if (data.translation) editData.translation = data.translation;
+                        if (data.translation)
+                            editData.translation = data.translation;
                     } else if (splitCharacters(charToLookup).length === 1) {
                         const charData = await getCharData(charToLookup);
                         if (charData?.gloss) {
@@ -73,7 +84,9 @@
                         const chars = splitCharacters(charToLookup);
                         const charPinyinRows = await getWordsData(chars);
                         if (charPinyinRows.size > 0) {
-                            editData.pinyin = chars.map((c) => charPinyinRows.get(c)?.pinyin ?? c).join(" ");
+                            editData.pinyin = chars
+                                .map((c) => charPinyinRows.get(c)?.pinyin ?? c)
+                                .join(" ");
                             // We do NOT clear translation here to avoid losing data while typing phrases
                         }
                     }
@@ -108,7 +121,8 @@
             editing = false;
             await load();
         } catch (e) {
-            errorMsg = e instanceof Error ? e.message : "Failed to save changes";
+            errorMsg =
+                e instanceof Error ? e.message : "Failed to save changes";
         } finally {
             saving = false;
         }
@@ -120,7 +134,10 @@
         errorMsg = "";
         try {
             const res = await supabase.functions.invoke("enrich-words", {
-                body: { phrases: [editData.character.trim()], language: list.language },
+                body: {
+                    phrases: [editData.character.trim()],
+                    language: list.language,
+                },
             });
             if (res.error) throw res.error;
             const { results } = res.data as {
@@ -218,11 +235,19 @@
             </nav>
             <div class="header-actions">
                 {#if editing}
-                    <button class="cancel-btn" onclick={() => editing = false} disabled={isBusy}>
+                    <button
+                        class="cancel-btn"
+                        onclick={() => (editing = false)}
+                        disabled={isBusy}
+                    >
                         Cancel
                     </button>
-                    <button class="save-btn" onclick={handleSave} disabled={isBusy}>
-                        {saving ? 'Saving…' : 'Save'}
+                    <button
+                        class="save-btn"
+                        onclick={handleSave}
+                        disabled={isBusy}
+                    >
+                        {saving ? "Saving…" : "Save"}
                     </button>
                 {:else}
                     <button
@@ -232,7 +257,11 @@
                     >
                         ♪ Listen
                     </button>
-                    <button class="edit-btn" onclick={startEditing} disabled={isBusy}>
+                    <button
+                        class="edit-btn"
+                        onclick={startEditing}
+                        disabled={isBusy}
+                    >
                         Edit
                     </button>
                 {/if}
@@ -243,13 +272,28 @@
             {#if editing}
                 <div class="edit-field">
                     <label for="edit-character">Character</label>
-                    <input id="edit-character" type="text" bind:value={editData.character} disabled={isBusy} />
+                    <input
+                        id="edit-character"
+                        type="text"
+                        bind:value={editData.character}
+                        disabled={isBusy}
+                    />
                 </div>
                 <div class="edit-field">
                     <label for="edit-pinyin">Pinyin</label>
                     <div class="input-with-action">
-                        <input id="edit-pinyin" type="text" bind:value={editData.pinyin} disabled={isBusy} />
-                        <button class="enrich-btn" onclick={handleEnrich} disabled={isBusy} title="Ask AI to enrich">✨ AI</button>
+                        <input
+                            id="edit-pinyin"
+                            type="text"
+                            bind:value={editData.pinyin}
+                            disabled={isBusy}
+                        />
+                        <button
+                            class="enrich-btn"
+                            onclick={handleEnrich}
+                            disabled={isBusy}
+                            title="Ask AI to enrich">✨ AI</button
+                        >
                     </div>
                 </div>
             {/if}
@@ -263,32 +307,51 @@
                 </span>
                 <div class="hero-animation" aria-hidden="true">
                     {#each splitCharacters(word.character) as char, i (i)}
-                        {@const pinyinParts = word.phonetic_annotation?.trim().split(/\s+/) ?? []}
+                        {@const pinyinParts =
+                            word.phonetic_annotation?.trim().split(/\s+/) ?? []}
                         {@const syllable = pinyinParts[i] ?? null}
                         <div class="char-unit">
                             {#if syllable}
                                 <span class="char-unit-pinyin">{syllable}</span>
                             {/if}
-                            <CharacterWriter
-                                {char}
-                                language={list.language}
-                            />
+                            <CharacterWriter {char} language={list.language} />
                         </div>
                     {/each}
                 </div>
             </h1>
+            <p class="hero-explanation">
+                <small
+                    >Detailed breakdown and stroke-by-stroke guide for each
+                    character.</small
+                >
+            </p>
 
             {#if editing}
                 <div class="edit-field">
                     <label for="edit-translation">Meaning</label>
                     <div class="input-with-action">
-                        <input id="edit-translation" type="text" bind:value={editData.translation} disabled={isBusy} />
-                        <button class="enrich-btn" onclick={handleEnrich} disabled={isBusy} title="Ask AI to enrich">✨ AI</button>
+                        <input
+                            id="edit-translation"
+                            type="text"
+                            bind:value={editData.translation}
+                            disabled={isBusy}
+                        />
+                        <button
+                            class="enrich-btn"
+                            onclick={handleEnrich}
+                            disabled={isBusy}
+                            title="Ask AI to enrich">✨ AI</button
+                        >
                     </div>
                 </div>
                 <div class="edit-field">
                     <label for="edit-note">Personal Note</label>
-                    <textarea id="edit-note" bind:value={editData.note} disabled={isBusy} rows="3"></textarea>
+                    <textarea
+                        id="edit-note"
+                        bind:value={editData.note}
+                        disabled={isBusy}
+                        rows="3"
+                    ></textarea>
                 </div>
             {:else}
                 {#if word.translation}
@@ -328,8 +391,8 @@
                     <table class="char-table">
                         <thead>
                             <tr>
-                                <th>Char</th>
-                                <th>Play</th>
+                                <th>Character</th>
+                                <th>Listen</th>
                                 <th>Pinyin</th>
                                 <th>Meaning</th>
                                 <th>Strokes</th>
@@ -339,27 +402,52 @@
                         <tbody>
                             {#each splitCharacters(word.character) as char, i (i)}
                                 {@const data = charDataMap.get(char)}
-                                <tr onclick={() => modalChar = { char }} class="clickable-row" role="button" tabindex="0" aria-label="Details for {char}">
-                                    <td class="td-char" lang={list.language}>{char}</td>
+                                <tr
+                                    onclick={() => (modalChar = { char })}
+                                    class="clickable-row"
+                                    role="button"
+                                    tabindex="0"
+                                    aria-label="Details for {char}"
+                                >
+                                    <td class="td-char" lang={list.language}
+                                        >{char}</td
+                                    >
                                     <td>
-                                        <button 
-                                            class="play-char-btn" 
-                                            onclick={(e) => { e.stopPropagation(); speak(char, list?.language ?? 'zh') }}
+                                        <button
+                                            class="play-char-btn"
+                                            onclick={(e) => {
+                                                e.stopPropagation();
+                                                speak(
+                                                    char,
+                                                    list?.language ?? "zh",
+                                                );
+                                            }}
                                             aria-label="Listen to {char}"
                                         >
                                             ♪
                                         </button>
                                     </td>
-                                    <td class="td-pinyin">{data?.phonetic ?? '-'}</td>
-                                    <td class="td-translation">{data?.translation ?? '-'}</td>
-                                    <td class="td-strokes">{data?.stroke_count ?? '-'}</td>
+                                    <td class="td-pinyin"
+                                        >{data?.phonetic ?? "-"}</td
+                                    >
+                                    <td class="td-translation"
+                                        >{data?.translation ?? "-"}</td
+                                    >
+                                    <td class="td-strokes"
+                                        >{data?.stroke_count ?? "-"}</td
+                                    >
                                     <td class="td-components">
                                         {#if data?.components && data.components.length > 0}
                                             <div class="component-list">
                                                 {#each data.components as comp, ci (ci)}
-                                                    <button 
+                                                    <button
                                                         class="mini-comp-btn"
-                                                        onclick={(e) => { e.stopPropagation(); modalChar = { char: comp.character } }}
+                                                        onclick={(e) => {
+                                                            e.stopPropagation();
+                                                            modalChar = {
+                                                                char: comp.character,
+                                                            };
+                                                        }}
                                                         aria-label="Details for component {comp.character}"
                                                     >
                                                         {comp.character}
@@ -456,7 +544,9 @@
         box-shadow: none;
     }
 
-    .edit-btn, .cancel-btn, .save-btn {
+    .edit-btn,
+    .cancel-btn,
+    .save-btn {
         padding: var(--size-2) var(--size-4);
         border: var(--border);
         font-size: var(--font-size-1);
@@ -485,6 +575,13 @@
     .word-character {
         margin: 0;
         line-height: 1;
+    }
+
+    .hero-explanation {
+        margin: 0 0 var(--size-4);
+        color: var(--color-text-muted);
+        font-size: var(--font-size-1);
+        line-height: 1.4;
     }
 
     .hero-animation {

@@ -88,14 +88,17 @@
 </script>
 
 <section>
-  <div class="page-header">
-    <h1>Explore</h1>
+  <hgroup class="page-header">
+    <div class="title-group">
+      <h1>Explore</h1>
+      <p><small>Search {(94000).toLocaleString()} characters by pinyin, meaning or stroke count.</small></p>
+    </div>
     {#if searched && !searching}
       <span class="result-count">
         {results.length}{results.length === 60 ? '+' : ''} result{results.length === 1 ? '' : 's'}
       </span>
     {/if}
-  </div>
+  </hgroup>
 
   <div class="search-bar">
     <label for="search" class="visually-hidden">Search characters</label>
@@ -168,18 +171,6 @@
 {/if}
 
 <style>
-  .page-header {
-    display: flex;
-    align-items: baseline;
-    gap: var(--size-4);
-    margin-bottom: var(--size-6);
-  }
-
-  h1 {
-    font-size: var(--font-size-8);
-    margin: 0;
-  }
-
   .result-count {
     font-size: var(--font-size-1);
     color: var(--color-text-muted);

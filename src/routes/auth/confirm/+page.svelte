@@ -1,8 +1,10 @@
 <div class="auth-page">
   <div class="auth-brand">InkiDo</div>
   <article class="auth-card">
-    <h1>Check your email</h1>
-    <p>We've sent a confirmation link to your email address. Click the link to activate your account.</p>
+    <hgroup>
+      <h1>Check your email</h1>
+      <p><small>We've sent a confirmation link to your email address. Click the link to activate your account.</small></p>
+    </hgroup>
     <p class="links"><a href="/auth/login">Back to log in</a></p>
   </article>
 </div>
