@@ -475,6 +475,10 @@
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   }
 
+  .word-list li {
+    display: flex;
+  }
+
   .word-card {
     border: var(--border);
     padding: var(--size-4);
@@ -484,6 +488,7 @@
     box-shadow: var(--shadow-sm);
     position: relative;
     min-width: 0;
+    width: 100%;
     container-type: inline-size;
   }
 
