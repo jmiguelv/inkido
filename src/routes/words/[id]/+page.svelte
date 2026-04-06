@@ -490,18 +490,11 @@
         font-size: var(--font-size-2);
     }
 
-    .page-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: var(--size-4);
-        margin-bottom: var(--size-6);
-        flex-wrap: wrap;
-    }
-
     .header-actions {
         display: flex;
+        align-items: center;
         gap: var(--size-3);
+        flex-wrap: wrap;
     }
 
     .listen-btn {
