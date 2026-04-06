@@ -117,7 +117,6 @@
     display: grid;
     gap: var(--size-5);
     grid-template-columns: repeat(auto-fill, minmax(min(100%, 400px), 1fr));
-    align-items: start;
   }
 
   .settings-card {
