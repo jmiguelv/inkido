@@ -119,6 +119,8 @@
     </ul>
   {/if}
 
+  <hr />
+
   <form onsubmit={(e) => { e.preventDefault(); handleAddProfile() }} class="add-profile-form">
     <h2>Add a profile</h2>
     <div class="field">

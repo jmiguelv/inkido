@@ -299,6 +299,8 @@
     </ul>
   {/if}
 
+  <hr />
+
   {#if modalChar}
     <CharacterModal
       character={modalChar.char}

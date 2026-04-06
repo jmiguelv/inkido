@@ -126,6 +126,8 @@
     </ul>
   {/if}
 
+  <hr />
+
   <form onsubmit={(e) => { e.preventDefault(); handleCreateList() }} class="create-form">
     <h2>New list</h2>
     <div class="field">
