@@ -366,9 +366,11 @@
                         <thead>
                             <tr>
                                 <th>Char</th>
+                                <th>Play</th>
                                 <th>Pinyin</th>
                                 <th>Meaning</th>
                                 <th>Strokes</th>
+                                <th>Made of</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -376,9 +378,35 @@
                                 {@const data = charDataMap.get(char)}
                                 <tr onclick={() => modalChar = { char }} class="clickable-row" role="button" tabindex="0" aria-label="Details for {char}">
                                     <td class="td-char" lang={list.language}>{char}</td>
+                                    <td>
+                                        <button 
+                                            class="play-char-btn" 
+                                            onclick={(e) => { e.stopPropagation(); speak(char, list?.language ?? 'zh') }}
+                                            aria-label="Listen to {char}"
+                                        >
+                                            ♪
+                                        </button>
+                                    </td>
                                     <td class="td-pinyin">{data?.phonetic ?? '-'}</td>
                                     <td class="td-translation">{data?.translation ?? '-'}</td>
                                     <td class="td-strokes">{data?.stroke_count ?? '-'}</td>
+                                    <td class="td-components">
+                                        {#if data?.components && data.components.length > 0}
+                                            <div class="component-list">
+                                                {#each data.components as comp, ci (ci)}
+                                                    <button 
+                                                        class="mini-comp-btn"
+                                                        onclick={(e) => { e.stopPropagation(); modalChar = { char: comp.character } }}
+                                                        aria-label="Details for component {comp.character}"
+                                                    >
+                                                        {comp.character}
+                                                    </button>
+                                                {/each}
+                                            </div>
+                                        {:else}
+                                            -
+                                        {/if}
+                                    </td>
                                 </tr>
                             {/each}
                         </tbody>
@@ -668,5 +696,48 @@
     .td-strokes {
         font-variant-numeric: tabular-nums;
         color: var(--color-text-muted);
+    }
+
+    .play-char-btn {
+        background: var(--color-sky);
+        border: var(--border);
+        border-radius: 0;
+        width: var(--size-6);
+        height: var(--size-6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: var(--font-size-2);
+        cursor: pointer;
+        padding: 0;
+    }
+
+    .play-char-btn:hover {
+        background: var(--color-accent-2);
+        transform: translate(-1px, -1px);
+        box-shadow: 1px 1px 0 var(--color-border);
+    }
+
+    .component-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--size-1);
+    }
+
+    .mini-comp-btn {
+        background: var(--color-surface);
+        border: 1px solid var(--color-border);
+        border-radius: 0;
+        padding: 2px var(--size-2);
+        font-family: var(--font-display);
+        font-size: var(--font-size-2);
+        cursor: pointer;
+        transition: all var(--transition-speed);
+    }
+
+    .mini-comp-btn:hover {
+        background: var(--color-lemon);
+        border-color: var(--color-border);
+        transform: translateY(-1px);
     }
 </style>
