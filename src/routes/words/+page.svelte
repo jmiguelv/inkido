@@ -48,14 +48,17 @@
         .from('words')
         .select('*')
         .in('list_id', listIds)
-        .order('character')
       if (error) throw error
 
       words = (data as Word[]).map(w => ({
         ...w,
         listName: listMap.get(w.list_id)?.name ?? '',
         language: listMap.get(w.list_id)?.language ?? 'zh'
-      }))
+      })).sort((a, b) => {
+        const pA = stripDiacritics(a.phonetic_annotation ?? '').trim() || a.character;
+        const pB = stripDiacritics(b.phonetic_annotation ?? '').trim() || b.character;
+        return pA.localeCompare(pB, 'en', { sensitivity: 'base' });
+      })
     } finally {
       loading = false
     }
@@ -231,6 +234,7 @@
   .char-row {
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
     gap: var(--size-1);
   }
 
@@ -251,7 +255,7 @@
   .col-phonetic {
     color: var(--color-text-muted);
     font-size: var(--font-size-2);
-    white-space: nowrap;
+    word-break: break-word;
   }
 
   .col-translation {
