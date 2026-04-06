@@ -145,3 +145,16 @@ button[type="submit"]:active:not(:disabled),
   transform: translate(0, 0);
   box-shadow: none;
 }
+
+/* Utilities */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
