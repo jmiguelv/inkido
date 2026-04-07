@@ -104,6 +104,7 @@
         <span class="components-label">Made of</span>
         <div class="char-row">
           {#each charData.components as comp, i (i)}
+            {#if i > 0}<span class="comp-plus">+</span>{/if}
             <button
               class="char-btn"
               lang={language}
@@ -275,6 +276,10 @@
     justify-content: center;
     gap: var(--size-2);
     flex-wrap: wrap;
+  }
+
+  .components .char-btn {
+    font-size: var(--font-size-4);
   }
 
   .components-label {

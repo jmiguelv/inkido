@@ -247,6 +247,16 @@ button[type="submit"]:active:not(:disabled),
 }
 
 /* Character Buttons (inline characters that are clickable) */
+.comp-plus {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 var(--size-1);
+  font-weight: 700;
+}
+
 .char-row {
   display: flex;
   flex-direction: row;

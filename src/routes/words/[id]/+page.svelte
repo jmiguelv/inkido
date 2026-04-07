@@ -437,6 +437,7 @@
                                         {#if data?.components && data.components.length > 0}
                                             <div class="char-row">
                                                 {#each data.components as comp, ci (ci)}
+                                                    {#if ci > 0}<span class="comp-plus">+</span>{/if}
                                                     <button
                                                         class="char-btn"
                                                         onclick={(e) => {
@@ -698,6 +699,10 @@
     .td-strokes {
         font-variant-numeric: tabular-nums;
         color: var(--color-text-muted);
+    }
+
+    .td-components .char-btn {
+        font-size: var(--font-size-4);
     }
 
     .td-components .char-row {
