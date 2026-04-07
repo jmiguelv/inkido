@@ -12,9 +12,7 @@
     import { onMount } from "svelte";
     import type { Profile } from "$lib/types";
 
-    const PUBLIC_ROUTES = [
-        "/",
-        "/about",
+    const AUTH_ROUTES = [
         "/auth/login",
         "/auth/signup",
         "/auth/confirm",
@@ -48,7 +46,7 @@
 
         supabase.auth.getSession().then(({ data }) => {
             session = data.session;
-            if (!session && !PUBLIC_ROUTES.includes(page.url.pathname)) {
+            if (!session && !AUTH_ROUTES.includes(page.url.pathname) && page.url.pathname !== "/" && page.url.pathname !== "/about") {
                 goto("/auth/login");
             } else if (session) {
                 loadProfiles();
@@ -59,7 +57,7 @@
             data: { subscription },
         } = supabase.auth.onAuthStateChange((_event, newSession) => {
             session = newSession;
-            if (!session && !PUBLIC_ROUTES.includes(page.url.pathname)) {
+            if (!session && !AUTH_ROUTES.includes(page.url.pathname) && page.url.pathname !== "/" && page.url.pathname !== "/about") {
                 goto("/auth/login");
             } else if (newSession) {
                 loadProfiles();
@@ -103,7 +101,7 @@
     });
 
     const activeProfile = $derived(getActiveProfile());
-    const isPublicRoute = $derived(PUBLIC_ROUTES.includes(page.url.pathname));
+    const isAuthRoute = $derived(AUTH_ROUTES.includes(page.url.pathname));
     const activeSection = $derived(
         page.url.pathname.startsWith("/spellings")
             ? "lists"
@@ -111,98 +109,108 @@
               ? "words"
               : page.url.pathname.startsWith("/characters")
                 ? "characters"
-                : "",
+                : page.url.pathname === "/about"
+                  ? "about"
+                  : "",
     );
 </script>
 
 <div class="page-shell">
-{#if isPublicRoute}
-    <div class="public-content">{@render children()}</div>
-{:else if session}
-    <header>
-        <nav>
-            <a href="/" class="brand">
-                <span class="brand-name">Inkido</span>
-            </a>
-            <button
-                class="menu-toggle"
-                onclick={() => (menuOpen = !menuOpen)}
-                aria-label="Toggle menu"
-                aria-expanded={menuOpen}>{menuOpen ? "✕" : "☰"}</button
-            >
-            <div class="nav-right" class:open={menuOpen}>
-                <a href="/spellings" class:active={activeSection === "lists"}
-                    >Spellings</a
+    {#if isAuthRoute}
+        <div class="auth-layout">
+            {@render children()}
+        </div>
+    {:else}
+        <header>
+            <nav>
+                <a href="/" class="brand">
+                    <span class="brand-name">Inkido</span>
+                </a>
+                <button
+                    class="menu-toggle"
+                    onclick={() => (menuOpen = !menuOpen)}
+                    aria-label="Toggle menu"
+                    aria-expanded={menuOpen}>{menuOpen ? "✕" : "☰"}</button
                 >
-                <a href="/words" class:active={activeSection === "words"}
-                    >My Words</a
-                >
-                <a
-                    href="/characters"
-                    class:active={activeSection === "characters"}>Explore</a
-                >
-                {#if activeProfile}
-                    <div class="profile-dropdown">
-                        <button
-                            class="profile-trigger"
-                            onclick={() => (dropdownOpen = !dropdownOpen)}
-                            onkeydown={handleDropdownKeydown}
-                            aria-haspopup="listbox"
-                            aria-expanded={dropdownOpen}
+                <div class="nav-right" class:open={menuOpen}>
+                    {#if session}
+                        <a href="/spellings" class:active={activeSection === "lists"}
+                            >Spellings</a
                         >
-                            {activeProfile.name} ▾
-                        </button>
-                        {#if dropdownOpen}
-                            <ul class="profile-menu" role="listbox">
-                                {#each profiles as profile (profile.id)}
-                                    <li>
-                                        <button
-                                            class="profile-option"
-                                            class:current={profile.id ===
-                                                activeProfile.id}
-                                            role="option"
-                                            aria-selected={profile.id ===
-                                                activeProfile.id}
-                                            onclick={() =>
-                                                switchProfile(profile)}
-                                        >
-                                            {profile.name}
-                                        </button>
-                                    </li>
-                                {/each}
-                                <li class="menu-divider"></li>
-                                <li>
-                                    <a
-                                        href="/profiles"
-                                        class="profile-manage"
-                                        onclick={() => (dropdownOpen = false)}
-                                    >
-                                        Manage profiles
-                                    </a>
-                                </li>
-                                <li>
-                                    <a
-                                        href="/settings"
-                                        class="profile-manage"
-                                        onclick={() => (dropdownOpen = false)}
-                                    >
-                                        Settings
-                                    </a>
-                                </li>
-                            </ul>
+                        <a href="/words" class:active={activeSection === "words"}
+                            >My Words</a
+                        >
+                        <a
+                            href="/characters"
+                            class:active={activeSection === "characters"}>Explore</a
+                        >
+                        {#if activeProfile}
+                            <div class="profile-dropdown">
+                                <button
+                                    class="profile-trigger"
+                                    onclick={() => (dropdownOpen = !dropdownOpen)}
+                                    onkeydown={handleDropdownKeydown}
+                                    aria-haspopup="listbox"
+                                    aria-expanded={dropdownOpen}
+                                >
+                                    {activeProfile.name} ▾
+                                </button>
+                                {#if dropdownOpen}
+                                    <ul class="profile-menu" role="listbox">
+                                        {#each profiles as profile (profile.id)}
+                                            <li>
+                                                <button
+                                                    class="profile-option"
+                                                    class:current={profile.id ===
+                                                        activeProfile.id}
+                                                    role="option"
+                                                    aria-selected={profile.id ===
+                                                        activeProfile.id}
+                                                    onclick={() =>
+                                                        switchProfile(profile)}
+                                                >
+                                                    {profile.name}
+                                                </button>
+                                            </li>
+                                        {/each}
+                                        <li class="menu-divider"></li>
+                                        <li>
+                                            <a
+                                                href="/profiles"
+                                                class="profile-manage"
+                                                onclick={() => (dropdownOpen = false)}
+                                            >
+                                                Manage profiles
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a
+                                                href="/settings"
+                                                class="profile-manage"
+                                                onclick={() => (dropdownOpen = false)}
+                                            >
+                                                Settings
+                                            </a>
+                                        </li>
+                                    </ul>
+                                {/if}
+                            </div>
                         {/if}
-                    </div>
-                {/if}
-                <button onclick={handleLogout}>Log out</button>
-            </div>
-        </nav>
-    </header>
-    <main>
-        {@render children()}
-    </main>
-{/if}
+                        <button onclick={handleLogout}>Log out</button>
+                    {:else}
+                        <a href="/about" class:active={activeSection === "about"}>About</a>
+                        <a href="/auth/login">Log in</a>
+                        <a href="/auth/signup" class="nav-signup">Sign up</a>
+                    {/if}
+                </div>
+            </nav>
+        </header>
+        <main>
+            {@render children()}
+        </main>
+    {/if}
 
-<footer>
+    <footer>
     <div class="footer-meta">
         <span>Inkido v{__APP_VERSION__}</span>
         <span class="footer-sep">·</span>
@@ -332,6 +340,18 @@
         padding: var(--size-1) var(--size-2);
     }
 
+    .nav-signup {
+        background-color: var(--color-accent) !important;
+        color: var(--color-accent-fg) !important;
+        padding: var(--size-1) var(--size-3) !important;
+        box-shadow: 2px 2px 0 var(--color-border);
+    }
+
+    .nav-signup:hover {
+        transform: translate(-1px, -1px);
+        box-shadow: 3px 3px 0 var(--color-border);
+    }
+
     nav button {
         background: var(--color-surface);
         border: var(--border);
@@ -431,10 +451,6 @@
         display: flex;
         flex-direction: column;
         min-height: 100dvh;
-    }
-
-    .public-content {
-        flex: 1;
     }
 
     main {

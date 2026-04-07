@@ -1,4 +1,4 @@
-<hgroup class="page-header markdown-content">
+<hgroup class="page-header">
   <div class="title-group">
     <h1>About Inkido</h1>
     <p><small>What it is and how it works.</small></p>

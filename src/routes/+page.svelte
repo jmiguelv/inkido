@@ -58,9 +58,7 @@
 
 <style>
   .landing {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: var(--size-8) var(--size-4);
+    padding: var(--size-4) 0 var(--size-8);
   }
 
   .hero {
