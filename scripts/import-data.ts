@@ -137,7 +137,7 @@ async function importChars(): Promise<void> {
             type: c.type ?? []
           }))
         : null,
-      stroke_fragments: entry.fragments ?? entry.images?.[0]?.data?.fragments ?? null,
+      stroke_fragments: entry.fragments ?? entry.images?.[0]?.fragments ?? entry.images?.[0]?.data?.fragments ?? null,
       trad_variant: entry.tradVariants?.[0] ?? null
     })
 
