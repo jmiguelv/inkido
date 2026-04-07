@@ -497,30 +497,6 @@
         flex-wrap: wrap;
     }
 
-    .listen-btn {
-        padding: var(--size-2) var(--size-5);
-        border: var(--border);
-        border-radius: 0;
-        font-size: var(--font-size-2);
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
-        background: var(--color-sky);
-        color: var(--color-text);
-        box-shadow: var(--shadow-sm);
-        cursor: pointer;
-    }
-
-    .listen-btn:hover {
-        transform: translate(-2px, -2px);
-        box-shadow: 2px 2px 0 var(--color-border);
-    }
-
-    .listen-btn:active {
-        transform: translate(0, 0);
-        box-shadow: none;
-    }
-
     .edit-btn,
     .cancel-btn,
     .save-btn {

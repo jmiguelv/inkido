@@ -144,11 +144,11 @@
             {/if}
           </div>
           <button
-            class="audio-btn"
+            class="listen-btn"
             onclick={(e) => { e.stopPropagation(); handleAudio() }}
             aria-label="Speak {currentWord.character}"
           >
-            ♪
+            ♪ Listen
           </button>
           {#if !flipped}
             <p class="flip-hint">Tap to reveal</p>
@@ -287,29 +287,6 @@
     font-size: var(--font-size-2);
     color: var(--color-text-muted);
     margin: 0;
-  }
-
-  .audio-btn {
-    background: var(--color-sky);
-    border: var(--border);
-    border-radius: 0;
-    width: 3rem;
-    height: 3rem;
-    font-size: var(--font-size-4);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: var(--shadow-sm);
-  }
-
-  .audio-btn:hover:not(:disabled) {
-    transform: translate(-2px, -2px);
-    box-shadow: 2px 2px 0 var(--color-border);
-  }
-
-  .audio-btn:active:not(:disabled) {
-    transform: translate(0, 0);
-    box-shadow: none;
   }
 
   .card-back {
