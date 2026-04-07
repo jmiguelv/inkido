@@ -37,13 +37,26 @@
 
   function strokeClass(character: string): string {
     const chars = splitCharacters(character)
+    const charCount = chars.length
+    
+    // Long sentences get their own color (lemon yellow)
+    if (charCount > 6) return 'stroke-lemon'
+
     const known = chars.filter(c => strokeMap.has(c))
     if (known.length === 0) return 'stroke-lemon'
+    
     const avg = known.reduce((sum, c) => sum + strokeMap.get(c)!, 0) / known.length
-    if (avg <= 7)  return 'stroke-mint'
-    if (avg <= 11) return 'stroke-sky'
-    if (avg <= 16) return 'stroke-lavender'
-    return 'stroke-rose'
+    
+    if (charCount <= 2) {
+      if (avg <= 6)  return 'stroke-mint'
+      if (avg <= 10) return 'stroke-sky'
+      if (avg <= 14) return 'stroke-lavender'
+      return 'stroke-rose'
+    } else {
+      if (avg <= 8)  return 'stroke-sky'
+      if (avg <= 12) return 'stroke-lavender'
+      return 'stroke-rose'
+    }
   }
 
   async function loadList() {
