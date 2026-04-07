@@ -6,7 +6,7 @@
   import { speak, unlockAudio } from '$lib/audio'
   import { onMount } from 'svelte'
   import { splitCharacters } from '$lib/characters'
-  import { getCharsData, getStrokeClass } from '$lib/dictionary'
+  import { getCharsData, getStrokeClass, getHoverStrokeClass } from '$lib/dictionary'
   import CharacterModal from '$lib/components/CharacterModal.svelte'
   import type { Word, WordList } from '$lib/types'
 
@@ -125,7 +125,7 @@
                 {#each splitCharacters(currentWord.character) as char, i (i)}
                   {@const pinyinParts = currentWord.phonetic_annotation?.trim().split(/\s+/) ?? []}
                   <button
-                    class="char-btn is-large"
+                    class="char-btn is-large {getHoverStrokeClass(char)}"
                     onclick={(e) => { e.stopPropagation(); modalChar = char }}
                     aria-label="Details for {char}"
                     title={pinyinParts[i] ?? undefined}

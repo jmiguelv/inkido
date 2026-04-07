@@ -1,7 +1,7 @@
 <script lang="ts">
   import { speak } from '$lib/audio'
   import CharacterWriter from '$lib/components/CharacterWriter.svelte'
-  import { getCharData, getWordData } from '$lib/dictionary'
+  import { getCharData, getWordData, getHoverStrokeClass } from '$lib/dictionary'
   import type { ZHChar } from '$lib/types'
 
   const {
@@ -106,7 +106,7 @@
           {#each charData.components as comp, i (i)}
             {#if i > 0}<span class="comp-plus">+</span>{/if}
             <button
-              class="char-btn"
+              class="char-btn {getHoverStrokeClass(comp.character)}"
               lang={language}
               onclick={() => _viewChar = comp.character}
               aria-label="Explore component {comp.character}"

@@ -4,6 +4,7 @@
   import { SvelteMap } from 'svelte/reactivity'
   import { stripDiacritics } from '$lib/characters'
   import { speak } from '$lib/audio'
+  import { getCharsData, getHoverStrokeClass } from '$lib/dictionary'
 
   type CharEntry = {
     char: string
@@ -76,6 +77,10 @@
         stroke_count: charMap.get(char)?.stroke_count ?? null,
         hint: charMap.get(char)?.hint ?? null
       }))
+      const resultChars = results.map(r => r.char)
+      if (resultChars.length > 0) {
+        await getCharsData(resultChars)
+      }
     } finally {
       searching = false
     }
@@ -136,7 +141,7 @@
             <tr onclick={() => modalChar = entry.char} class="clickable-row">
               <td class="td-char">
                 <button
-                  class="char-btn"
+                  class="char-btn {getHoverStrokeClass(entry.char)}"
                   lang="zh"
                   onclick={(e) => { e.stopPropagation(); modalChar = entry.char }}
                   aria-label="Details for {entry.char}"

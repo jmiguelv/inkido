@@ -2,16 +2,20 @@
 
 ## Todo
 
+- [ ] feat: Record how many times a user has used AI features, might need to enforce a daily limit because I am using OpenRouter's free tier
 - [ ] test: Ensure tests are relevant and there is enough coverage
-- [ ] refactor: Practice should not show the word by default, just character placeholder to give a rough idea of the length of the word, the listen button and the tap to reveal hint
 
 ## In progress
 
 ## Done
 
+- [x] feat: Add a header to the /spellings/[id]/practice
+- [x] fix: Check how the word cards are being coloured as I am only getting green and blue, and some of the words are long sentences
+- [x] refactor: Practice should not show the word by default, just character placeholder to give a rough idea of the length of the word, the listen button and the tap to reveal hint
 - [x] refactor: Lists should be called spellings
 - [x] refactor: Move settings into the profiles dropdown, after manage profiles
 - [x] feat: Show the character pinyin on character hover
+- [x] feat: Individual character background on hover based on stroke count
 - [x] feat: For every route, change the heading to an hgroup as needed, and add a <small> explanation about the route
 - [x] fix: Tables remove radius
 - [x] feat: /characters, style the table in the same way as the other character table at /words/[id]

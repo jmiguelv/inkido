@@ -4,6 +4,7 @@
     import { getActiveProfile } from "$lib/stores.svelte";
     import { onMount } from "svelte";
     import { splitCharacters, stripDiacritics } from "$lib/characters";
+    import { getHoverStrokeClass, getCharsData } from "$lib/dictionary";
     import CharacterModal from "$lib/components/CharacterModal.svelte";
     import type { Word, WordList } from "$lib/types";
 
@@ -154,7 +155,7 @@
                                     {#each splitCharacters(word.character) as char, i (i)}
                                         {@const pinyinParts = word.phonetic_annotation?.trim().split(/\s+/) ?? []}
                                         <button
-                                            class="char-btn"
+                                            class="char-btn {getHoverStrokeClass(char)}"
                                             lang={word.language}
                                             onclick={() =>
                                                 (modalChar = {

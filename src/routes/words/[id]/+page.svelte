@@ -12,6 +12,7 @@
         getWordData,
         getCharsData,
         getWordsData,
+        getHoverStrokeClass,
     } from "$lib/dictionary";
     import type { Word, WordList, ZHChar } from "$lib/types";
     import CharacterWriter from "$lib/components/CharacterWriter.svelte";
@@ -439,7 +440,7 @@
                                                 {#each data.components as comp, ci (ci)}
                                                     {#if ci > 0}<span class="comp-plus">+</span>{/if}
                                                     <button
-                                                        class="char-btn"
+                                                        class="char-btn {getHoverStrokeClass(comp.character)}"
                                                         onclick={(e) => {
                                                             e.stopPropagation();
                                                             modalChar = {

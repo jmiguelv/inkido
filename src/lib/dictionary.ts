@@ -29,6 +29,11 @@ export function getStrokeClass(character: string): string {
   }
 }
 
+export function getHoverStrokeClass(character: string): string {
+  const cls = getStrokeClass(character)
+  return cls.replace('stroke-', 'hover-')
+}
+
 /**
  * Fetch character data with caching.
  */

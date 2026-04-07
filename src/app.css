@@ -287,12 +287,19 @@ button[type="submit"]:active:not(:disabled),
 }
 
 .char-btn:hover {
-  background: var(--color-sky);
   border-color: var(--color-border);
   transform: scale(1.1);
   z-index: 1;
   color: var(--color-text);
+  background: var(--color-sky); /* Fallback */
 }
+
+/* Dynamic Hover Colors */
+.char-btn.hover-mint:hover { background: var(--color-mint); color: var(--color-text); }
+.char-btn.hover-sky:hover { background: var(--color-sky); color: var(--color-text); }
+.char-btn.hover-lavender:hover { background: var(--color-lavender); color: var(--color-text); }
+.char-btn.hover-rose:hover { background: var(--color-rose); color: var(--color-surface); }
+.char-btn.hover-lemon:hover { background: var(--color-lemon); color: var(--color-text); }
 
 .char-btn:focus-visible {
   outline: 2px solid var(--color-accent-2);
