@@ -1,15 +1,19 @@
 <script lang="ts">
+  import { getCharData } from '$lib/dictionary'
+
   let {
     char,
     language = 'zh',
     size = 100,
     mode = 'animate',
+    colorize = false,
     onComplete
   }: {
     char: string
     language?: string
     size?: number
     mode?: 'animate' | 'quiz'
+    colorize?: boolean
     onComplete?: () => void
   } = $props()
 
@@ -19,8 +23,12 @@
     let destroyed = false
     let animating = false
 
-    import('hanzi-writer').then(({ default: HanziWriter }) => {
+    async function setup() {
+      const { default: HanziWriter } = await import('hanzi-writer')
       if (destroyed) return
+
+      const dataPromise = colorize ? getCharData(char) : Promise.resolve(null)
+
       const writer = HanziWriter.create(node, char, {
         width: size,
         height: size,
@@ -28,7 +36,34 @@
         showOutline: true,
         strokeAnimationSpeed: 1,
         delayBetweenStrokes: 300,
-        onLoadCharDataError: () => { if (!destroyed) writerError = true }
+        onLoadCharDataError: () => { if (!destroyed) writerError = true },
+        onLoadCharDataSuccess: async () => {
+          if (destroyed || !colorize) return
+          try {
+            const data = await dataPromise
+            if (data?.stroke_fragments && data.components && !destroyed) {
+              for (let i = 0; i < data.components.length; i++) {
+                const comp = data.components[i]
+                const frags = data.stroke_fragments[i]
+                if (!frags) continue
+
+                let color = 'var(--color-text)'
+                if (comp.type.includes('semantic') || comp.type.includes('radical')) {
+                  color = '#2ecc71' // Mint-ish green
+                } else if (comp.type.includes('phonetic')) {
+                  color = '#3498db' // Sky blue
+                }
+
+                for (const strokeIdx of frags) {
+                  // @ts-ignore - strokeNum is supported but missing from types
+                  writer.updateColor('strokeColor', color, { strokeNum: strokeIdx })
+                }
+              }
+            }
+          } catch (e) {
+            console.error("Colorize failed:", e)
+          }
+        }
       })
 
       function play() {
@@ -47,7 +82,9 @@
         play()
         node.addEventListener('click', play)
       }
-    }).catch(() => { if (!destroyed) writerError = true })
+    }
+
+    setup().catch(() => { if (!destroyed) writerError = true })
 
     return {
       destroy() { destroyed = true }
