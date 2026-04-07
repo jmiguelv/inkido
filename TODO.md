@@ -11,6 +11,7 @@
 
 ## Done
 
+- [x] fix: OpenProps seems to have an auto dark-mode for tables, making them unreadable at night time (Added dedicated Brutalist Dark Mode)
 - [x] fix: Colorize failed: Error: Invalid color: var(--color-text)
 - [x] feat: Record AI usage and enforce 20/day limit
 - [x] feat: Is there enough information in the data model to draw a character in different colours for the meaning component and the sound component?
