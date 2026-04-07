@@ -2,6 +2,7 @@
 
 ## Todo
 
+- [ ] fix: /word/[id], When there is punctuation in a word/sentence, the pinyin gets out of alignment with the characters
 - [ ] feat: Record how many times a user has used AI features, might need to enforce a daily limit because I am using OpenRouter's free tier
 - [ ] test: Ensure tests are relevant and there is enough coverage
 
@@ -9,6 +10,13 @@
 
 ## Done
 
+- [x] feat: Scale down component characters and add plus separator
+- [x] refactor: Center align all cells in characters table on word detail page
+- [x] feat: Unify listen button styling and text across practice and word details
+- [x] refactor: Extract card coloring logic and apply to practice flashcards
+- [x] feat: Align listen and edit buttons to bottom of word detail header
+- [x] feat: Unify header styling for spelling detail and move back-link to global styles
+- [x] feat: Add word title and explanation to word detail header
 - [x] feat: Add a header to the /spellings/[id]/practice
 - [x] fix: Check how the word cards are being coloured as I am only getting green and blue, and some of the words are long sentences
 - [x] refactor: Practice should not show the word by default, just character placeholder to give a rough idea of the length of the word, the listen button and the tap to reveal hint
