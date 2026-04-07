@@ -41,22 +41,24 @@
           if (destroyed || !colorize) return
           try {
             const data = await dataPromise
+            console.log(`Colorizing "${char}":`, { 
+              hasFragments: !!data?.stroke_fragments, 
+              components: data?.components?.length 
+            })
             if (data?.stroke_fragments && data.components && !destroyed) {
-              // Color in reverse order because often the radical/meaning component 
-              // is defined later but overlaps or contains the strokes of smaller parts.
-              // By coloring it last, it takes precedence.
               for (let i = data.components.length - 1; i >= 0; i--) {
                 const comp = data.components[i]
                 const frags = data.stroke_fragments[i]
                 if (!frags) continue
 
-                // Data uses "meaning", "sound", "radical"
                 let color = '#0A0A0A'
                 if (comp.type.includes('meaning') || comp.type.includes('radical')) {
                   color = '#2ecc71' // Mint green
                 } else if (comp.type.includes('sound')) {
                   color = '#3498db' // Sky blue
                 }
+
+                console.log(`  Component "${comp.character}" (${comp.type}): Color ${color}, Strokes ${frags.join(',')}`)
 
                 for (const strokeIdx of frags) {
                   // @ts-ignore - strokeNum is supported but missing from types
