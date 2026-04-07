@@ -50,7 +50,7 @@
     </div>
     <div class="feature-card">
       <span class="feature-icon">探</span>
-      <h2>Character explorer</h2>
+      <h2>Dictionary</h2>
       <p>Search 94,000 Chinese characters by meaning, pinyin or stroke count. Tap any character for full detail.</p>
     </div>
   </section>

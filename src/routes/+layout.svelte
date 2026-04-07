@@ -107,8 +107,8 @@
             ? "lists"
             : page.url.pathname.startsWith("/words")
               ? "words"
-              : page.url.pathname.startsWith("/characters")
-                ? "characters"
+              : page.url.pathname.startsWith("/dictionary")
+                ? "dictionary"
                 : page.url.pathname === "/about"
                   ? "about"
                   : "",
@@ -141,8 +141,8 @@
                             >My Words</a
                         >
                         <a
-                            href="/characters"
-                            class:active={activeSection === "characters"}>Explore</a
+                            href="/dictionary"
+                            class:active={activeSection === "dictionary"}>Dictionary</a
                         >
                         {#if activeProfile}
                             <div class="profile-dropdown">

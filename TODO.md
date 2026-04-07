@@ -2,19 +2,18 @@
 
 ## Todo
 
-- [ ] refactor: The /about page feels out of place compared to the rest of the site, it is also missing the navbar
-- [ ] feat: Record how many times a user has used AI features, might need to enforce a daily limit because I am using OpenRouter's free tier
-- [ ] feat: Rename explore to Dictionary and the route to /dictionary
+- [ ] feat: Expand /dictionary search to search in the words data as well
 - [ ] feat: Is there enough information in the data model to draw a character in different colours for the meaning component and the sound component?
+- [ ] feat: Record how many times a user has used AI features, might need to enforce a daily limit because I am using OpenRouter's free tier
 - [ ] test: Ensure tests are relevant and there is enough coverage
 
 ## In progress
 
 ## Done
 
+- [x] feat: Rename explore to Dictionary and the route to /dictionary
 - [x] refactor: The /about page feels out of place compared to the rest of the site, it is also missing the navbar
 - [x] fix: /word/[id], When there is punctuation in a word/sentence, the pinyin gets out of alignment with the characters
-
 - [x] feat: Scale down component characters and add plus separator
 - [x] refactor: Center align all cells in characters table on word detail page
 - [x] feat: Unify listen button styling and text across practice and word details

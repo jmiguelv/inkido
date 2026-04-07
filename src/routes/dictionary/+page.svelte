@@ -95,7 +95,7 @@
 <section>
   <hgroup class="page-header">
     <div class="title-group">
-      <h1>Explore</h1>
+      <h1>Dictionary</h1>
       <p><small>Search {(94000).toLocaleString()} characters by pinyin, meaning or stroke count.</small></p>
     </div>
     {#if searched && !searching}

@@ -29,7 +29,7 @@ Open a set and tap **Practice →**.
 - Use **♪ Listen** to hear the pronunciation
 - Navigate with the arrow keys or on-screen buttons
 
-### 4. Character explorer
+### 4. Dictionary
 
 Search 94,000 characters by meaning, pinyin, or the character itself. See stroke count, components, and traditional variants.
 
