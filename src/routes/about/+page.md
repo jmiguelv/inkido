@@ -12,14 +12,17 @@ Inkido helps you practise writing Mandarin Chinese characters. Add the words you
 ## Getting started
 
 ### 1. Profiles
+
 Each learner has their own profile. Switch between them from the top-right menu.
 
 ### 2. Spellings
+
 Create a set for whatever you're studying — a week's vocabulary, a topic, a chapter.
 
 Add words by typing them in, or use **Photo Scan** to photograph a worksheet and let Inkido extract the characters automatically.
 
 ### 3. Practice
+
 Open a set and tap **Practice →**.
 
 - Tap a character to watch the stroke order animation
@@ -27,9 +30,8 @@ Open a set and tap **Practice →**.
 - Navigate with the arrow keys or on-screen buttons
 
 ### 4. Character explorer
-Search 94,000 characters by meaning, pinyin, or the character itself. See stroke count, components, and traditional variants.
 
----
+Search 94,000 characters by meaning, pinyin, or the character itself. See stroke count, components, and traditional variants.
 
 ## Data
 
