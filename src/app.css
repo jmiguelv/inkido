@@ -8,9 +8,9 @@
 @import 'open-props/normalize';
 
 :root {
-  color-scheme: light only;
+  color-scheme: light dark;
 
-  /* Palette */
+  /* Palette (Light) */
   --color-bg:           #FFFBF0;
   --color-surface:      #FFFFFF;
   --color-text:         #0A0A0A;
@@ -24,7 +24,7 @@
   --color-lavender:     #F0D9FF;
   --color-lemon:        #FBFF4A;
 
-  /* Semantic aliases */
+  /* Semantic aliases (Light) */
   --color-accent:       #0A0A0A;
   --color-accent-fg:    #FBFF4A;
   --color-accent-2:     #B8D4FF;
@@ -46,6 +46,28 @@
 
   /* Motion */
   --transition-speed:   120ms;
+}
+
+:root[data-theme='dark'] {
+  /* Palette (Dark) */
+  --color-bg:           #0A0A0A;
+  --color-surface:      #1A1A1A;
+  --color-text:         #FFFBF0;
+  --color-text-muted:   #A0A0A0;
+  --color-border:       #FFFBF0;
+
+  /* Neon family for Dark Mode */
+  --color-mint:         #00FF66;
+  --color-rose:         #FF0066;
+  --color-sky:          #00CCFF;
+  --color-lavender:     #CC66FF;
+  --color-lemon:        #FFFF00;
+
+  /* Semantic aliases (Dark) */
+  --color-accent:       #FFFBF0;
+  --color-accent-fg:    #0A0A0A;
+  --color-accent-2:     #0066CC;
+  --color-accent-3:     #CC0033;
 }
 
 *,
@@ -127,7 +149,7 @@ select {
 input:focus,
 textarea:focus,
 select:focus {
-  outline: 3px solid var(--color-lemon);
+  outline: 3px solid var(--color-accent-fg);
   outline-offset: 0;
   border-color: var(--color-border);
 }

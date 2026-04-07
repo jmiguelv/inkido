@@ -8,6 +8,9 @@
         getActiveProfile,
         setActiveProfile,
         clearActiveProfile,
+        initTheme,
+        getTheme,
+        toggleTheme,
     } from "$lib/stores.svelte";
     import { onMount } from "svelte";
     import type { Profile } from "$lib/types";
@@ -43,6 +46,7 @@
 
     onMount(() => {
         initActiveProfile();
+        initTheme();
 
         supabase.auth.getSession().then(({ data }) => {
             session = data.session;
@@ -100,6 +104,14 @@
         dropdownOpen = false;
     });
 
+    const activeTheme = $derived(getTheme());
+
+    $effect(() => {
+        if (typeof document !== "undefined") {
+            document.documentElement.dataset.theme = activeTheme;
+        }
+    });
+
     const activeProfile = $derived(getActiveProfile());
     const isAuthRoute = $derived(AUTH_ROUTES.includes(page.url.pathname));
     const activeSection = $derived(
@@ -133,6 +145,13 @@
                     aria-expanded={menuOpen}>{menuOpen ? "✕" : "☰"}</button
                 >
                 <div class="nav-right" class:open={menuOpen}>
+                    <button
+                        class="theme-toggle"
+                        onclick={toggleTheme}
+                        aria-label="Toggle theme"
+                    >
+                        {activeTheme === "light" ? "🌙" : "☀️"}
+                    </button>
                     {#if session}
                         <a href="/spellings" class:active={activeSection === "lists"}
                             >Spellings</a

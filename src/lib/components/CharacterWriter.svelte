@@ -47,16 +47,18 @@
                             data.components &&
                             !destroyed
                         ) {
+                            const fragsList = data.stroke_fragments;
+                            const compsList = data.components;
                             // Small timeout to ensure internal SVG structure is ready
                             setTimeout(() => {
                                 if (destroyed) return;
                                 for (
-                                    let i = data.components.length - 1;
+                                    let i = compsList.length - 1;
                                     i >= 0;
                                     i--
                                 ) {
-                                    const comp = data.components[i];
-                                    const frags = data.stroke_fragments[i];
+                                    const comp = compsList[i];
+                                    const frags = fragsList[i];
                                     if (!frags) continue;
 
                                     let color = "#0A0A0A";
@@ -70,8 +72,7 @@
                                     }
 
                                     for (const strokeIdx of frags) {
-                                        // @ts-ignore - strokeNum is supported but missing from types
-                                        writer.updateColor(
+                                        (writer as any).updateColor(
                                             "strokeColor",
                                             color,
                                             { strokeNum: strokeIdx },
