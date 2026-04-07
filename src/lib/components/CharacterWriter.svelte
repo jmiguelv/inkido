@@ -47,7 +47,7 @@
                 const frags = data.stroke_fragments[i]
                 if (!frags) continue
 
-                let color = 'var(--color-text)'
+                let color = '#0A0A0A'
                 if (comp.type.includes('semantic') || comp.type.includes('radical')) {
                   color = '#2ecc71' // Mint-ish green
                 } else if (comp.type.includes('phonetic')) {

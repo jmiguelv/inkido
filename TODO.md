@@ -8,6 +8,7 @@
 
 ## Done
 
+- [x] fix: Colorize failed: Error: Invalid color: var(--color-text)
 - [x] feat: Record AI usage and enforce 20/day limit
 - [x] feat: Is there enough information in the data model to draw a character in different colours for the meaning component and the sound component?
 - [x] feat: Integrate the HanziWriter quizz functionalisty into the /practice cards
