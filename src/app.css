@@ -267,6 +267,13 @@ button[type="submit"]:active:not(:disabled),
   vertical-align: super;
 }
 
+/* Stroke Classes (for Word Cards and Flashcards) */
+.stroke-mint { background: var(--color-mint) !important; }
+.stroke-sky { background: var(--color-sky) !important; }
+.stroke-lavender { background: var(--color-lavender) !important; }
+.stroke-rose { background: var(--color-rose) !important; }
+.stroke-lemon { background: var(--color-lemon) !important; }
+
 /* Markdown Content Styling */
 .markdown-content { max-width: 800px; margin: 0 auto; padding: var(--size-8) var(--size-4); }
 .markdown-content h1 { margin-top: 0; margin-bottom: var(--size-6); font-size: var(--font-size-8); }

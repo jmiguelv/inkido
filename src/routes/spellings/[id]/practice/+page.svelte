@@ -6,6 +6,7 @@
   import { speak, unlockAudio } from '$lib/audio'
   import { onMount } from 'svelte'
   import { splitCharacters } from '$lib/characters'
+  import { getCharsData, getStrokeClass } from '$lib/dictionary'
   import CharacterModal from '$lib/components/CharacterModal.svelte'
   import type { Word, WordList } from '$lib/types'
 
@@ -31,6 +32,11 @@
       .from('words').select('*').eq('list_id', listId).order('sort_order').order('created_at')
     if (wordsError) throw wordsError
     words = wordsData as Word[]
+
+    const allChars = [...new Set(words.flatMap(w => splitCharacters(w.character)))]
+    if (allChars.length > 0) {
+      await getCharsData(allChars)
+    }
 
     await supabase.from('word_lists').update({ last_practiced: new Date().toISOString() }).eq('id', listId)
 
@@ -104,7 +110,7 @@
 
     <div class="card-container">
       <div
-        class="flashcard"
+        class="flashcard {getStrokeClass(currentWord.character)}"
         class:flipped
         onclick={handleFlip}
         role="button"
@@ -243,7 +249,6 @@
   }
 
   .flashcard:hover { box-shadow: var(--shadow); }
-  .flashcard.flipped { background: var(--color-lavender); }
   .flashcard:focus { outline: 3px solid var(--color-lemon); outline-offset: 0; }
 
   .card-front {

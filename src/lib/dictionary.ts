@@ -1,9 +1,33 @@
 import { SvelteMap } from 'svelte/reactivity'
 import { supabase } from './supabase'
+import { splitCharacters } from './characters'
 import type { ZHWord, ZHChar } from './types'
 
 const charCache = new SvelteMap<string, ZHChar>()
 const wordCache = new SvelteMap<string, ZHWord>()
+
+export function getStrokeClass(character: string): string {
+  const chars = splitCharacters(character)
+  const charCount = chars.length
+  
+  if (charCount > 6) return 'stroke-lemon'
+
+  const known = chars.map(c => charCache.get(c)?.stroke_count).filter(s => s != null) as number[]
+  if (known.length === 0) return 'stroke-lemon'
+  
+  const avg = known.reduce((sum, s) => sum + s, 0) / known.length
+  
+  if (charCount <= 2) {
+    if (avg <= 6)  return 'stroke-mint'
+    if (avg <= 10) return 'stroke-sky'
+    if (avg <= 14) return 'stroke-lavender'
+    return 'stroke-rose'
+  } else {
+    if (avg <= 8)  return 'stroke-sky'
+    if (avg <= 12) return 'stroke-lavender'
+    return 'stroke-rose'
+  }
+}
 
 /**
  * Fetch character data with caching.

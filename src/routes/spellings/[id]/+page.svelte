@@ -8,7 +8,7 @@
   import { SvelteMap } from 'svelte/reactivity'
   import CharacterModal from '$lib/components/CharacterModal.svelte'
   import { splitCharacters } from '$lib/characters'
-  import { getCharsData, getWordsData } from '$lib/dictionary'
+  import { getCharsData, getWordsData, getStrokeClass } from '$lib/dictionary'
   import type { Word, WordList } from '$lib/types'
 
   let list = $state<WordList | null>(null)
@@ -18,7 +18,6 @@
   let enriching = $state(false)
   let addingWords = $state(false)
   let scanLoading = $state(false)
-  let strokeMap = new SvelteMap<string, number>()
   const activeProfile = $derived(getActiveProfile())
   const listId = $derived(page.params.id)
   const busy = $derived(addingWords || enriching || scanLoading)
@@ -27,35 +26,8 @@
 
   async function loadStrokeCounts(wordList: Word[]) {
     const allChars = [...new Set(wordList.flatMap(w => splitCharacters(w.character)))]
-    if (!allChars.length) return
-    const { data } = await supabase
-      .from('zh_chars')
-      .select('char, stroke_count')
-      .in('char', allChars)
-    data?.forEach(r => { if (r.stroke_count != null) strokeMap.set(r.char, r.stroke_count) })
-  }
-
-  function strokeClass(character: string): string {
-    const chars = splitCharacters(character)
-    const charCount = chars.length
-    
-    // Long sentences get their own color (lemon yellow)
-    if (charCount > 6) return 'stroke-lemon'
-
-    const known = chars.filter(c => strokeMap.has(c))
-    if (known.length === 0) return 'stroke-lemon'
-    
-    const avg = known.reduce((sum, c) => sum + strokeMap.get(c)!, 0) / known.length
-    
-    if (charCount <= 2) {
-      if (avg <= 6)  return 'stroke-mint'
-      if (avg <= 10) return 'stroke-sky'
-      if (avg <= 14) return 'stroke-lavender'
-      return 'stroke-rose'
-    } else {
-      if (avg <= 8)  return 'stroke-sky'
-      if (avg <= 12) return 'stroke-lavender'
-      return 'stroke-rose'
+    if (allChars.length > 0) {
+      await getCharsData(allChars)
     }
   }
 
@@ -276,7 +248,7 @@
     <ul class="word-list">
       {#each words as word (word.id)}
         <li>
-          <article class="word-card {strokeClass(word.character)}">
+          <article class="word-card {getStrokeClass(word.character)}">
             {#if word.phonetic_annotation}
               <p class="word-phonetic">
                 {word.phonetic_annotation}
@@ -474,12 +446,6 @@
     width: 100%;
     container-type: inline-size;
   }
-
-  .word-card.stroke-mint     { background: var(--color-mint); }
-  .word-card.stroke-sky      { background: var(--color-sky); }
-  .word-card.stroke-lavender { background: var(--color-lavender); }
-  .word-card.stroke-rose     { background: var(--color-rose); }
-  .word-card.stroke-lemon    { background: var(--color-lemon); }
 
   .word-phonetic {
     font-size: var(--font-size-0);
