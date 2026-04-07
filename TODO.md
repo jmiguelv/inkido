@@ -12,6 +12,7 @@
 
 ## Done
 
+- [x] refactor: The /about page feels out of place compared to the rest of the site, it is also missing the navbar
 - [x] fix: /word/[id], When there is punctuation in a word/sentence, the pinyin gets out of alignment with the characters
 
 - [x] feat: Scale down component characters and add plus separator
