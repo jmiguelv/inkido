@@ -5,7 +5,7 @@
   </div>
 </hgroup>
 
-<div class="markdown-content">
+<article class="markdown-content">
 
 Inkido helps you practise writing Mandarin Chinese characters. Add the words you're learning, then practise them until they stick.
 
@@ -39,4 +39,4 @@ Character data from the [Chinese Character Wiki](https://www.dong-chinese.com/wi
 
 Your spelling sets and profiles are stored in Supabase. We don't sell or share your data.
 
-</div>
+</article>
