@@ -41,11 +41,23 @@
       getCharData(char)
     ])
 
-    if (c) {
+    if (c || w) {
+      // If it's a single character from zh_chars, use its components.
+      // If it's a multi-character word from zh_words, use its characters as components.
+      const charCount = [...char].length
+      const wordComponents = (charCount > 1) 
+        ? [...char].map(cc => ({ character: cc, type: [] }))
+        : (c?.components || [])
+
       charData = {
-        ...c,
-        phonetic: w?.pinyin ?? null,
-        translation: w?.translation ?? null
+        char: c?.char || w?.word || char,
+        gloss: c?.gloss || null,
+        stroke_count: c?.stroke_count || null,
+        hint: c?.hint || null,
+        trad_variant: c?.trad_variant || null,
+        components: wordComponents,
+        phonetic: w?.pinyin || null,
+        translation: w?.translation || null
       }
     }
   }

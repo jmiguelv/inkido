@@ -2,7 +2,7 @@
   import { supabase } from '$lib/supabase'
   import CharacterModal from '$lib/components/CharacterModal.svelte'
   import { SvelteMap } from 'svelte/reactivity'
-  import { stripDiacritics } from '$lib/characters'
+  import { splitCharacters, stripDiacritics, alignPinyin } from '$lib/characters'
   import { speak } from '$lib/audio'
   import { getCharsData, getHoverStrokeClass } from '$lib/dictionary'
 
@@ -39,17 +39,17 @@
           .order('char'),
         supabase
           .from('zh_words')
-          .select('word, pinyin')
+          .select('word, pinyin, translation')
           .or(`pinyin_search.ilike.%${nq}%,translation.ilike.%${q}%`)
-          .like('word', '_')  // single characters only
           .limit(50)
       ])
 
       const charMap = new SvelteMap(charRows?.map(r => [r.char, r]) ?? [])
       const pinyinMap = new SvelteMap(wordRows?.map(r => [r.word, r.pinyin]) ?? [])
+      const translationMap = new SvelteMap(wordRows?.map(r => [r.word, r.translation]) ?? [])
 
       // Chars found via zh_words but missing zh_chars data
-      const extraChars = wordRows?.map(r => r.word).filter(w => !charMap.has(w)) ?? []
+      const extraChars = wordRows?.map(r => r.word).filter(w => !charMap.has(w) && [...w].length === 1) ?? []
       // Chars found via zh_chars but missing pinyin
       const charsMissingPinyin = charRows?.map(r => r.char).filter(c => !pinyinMap.has(c)) ?? []
 
@@ -59,27 +59,41 @@
               .then(({ data }) => data?.forEach(r => charMap.set(r.char, r)))
           : Promise.resolve(),
         charsMissingPinyin.length
-          ? supabase.from('zh_words').select('word, pinyin').in('word', charsMissingPinyin)
-              .then(({ data }) => data?.forEach(r => pinyinMap.set(r.word, r.pinyin)))
+          ? supabase.from('zh_words').select('word, pinyin, translation').in('word', charsMissingPinyin)
+              .then(({ data }) => data?.forEach(r => {
+                pinyinMap.set(r.word, r.pinyin);
+                translationMap.set(r.word, r.translation);
+              }))
           : Promise.resolve()
       ])
 
-      const allChars = new Set([...charMap.keys(), ...pinyinMap.keys()])
+      const allResults = new Set([...charMap.keys(), ...pinyinMap.keys()])
 
-      // Exclude CJK Extension B and above (codepoints ≥ U+20000) — no common
-      // font renders them and they never appear in modern Chinese text.
-      results = [...allChars]
-        .filter(char => (char.codePointAt(0) ?? 0) < 0x20000)
-        .sort().slice(0, 60).map(char => ({
-        char,
-        pinyin: pinyinMap.get(char) ?? null,
-        gloss: charMap.get(char)?.gloss ?? null,
-        stroke_count: charMap.get(char)?.stroke_count ?? null,
-        hint: charMap.get(char)?.hint ?? null
+      // Exclude CJK Extension B and above (codepoints ≥ U+20000)
+      results = [...allResults]
+        .filter(char => {
+          const cp = char.codePointAt(0) ?? 0;
+          return cp < 0x20000;
+        })
+        .sort((a, b) => {
+          // Put single characters first, then by length, then alphabetically
+          if (a.length !== b.length) {
+            if (a.length === 1) return -1;
+            if (b.length === 1) return 1;
+            return a.length - b.length;
+          }
+          return a.localeCompare(b);
+        })
+        .slice(0, 60).map(text => ({
+        char: text,
+        pinyin: pinyinMap.get(text) ?? null,
+        gloss: text.length === 1 ? (charMap.get(text)?.gloss ?? translationMap.get(text) ?? null) : (translationMap.get(text) ?? null),
+        stroke_count: text.length === 1 ? (charMap.get(text)?.stroke_count ?? null) : null,
+        hint: text.length === 1 ? (charMap.get(text)?.hint ?? null) : null
       }))
-      const resultChars = results.map(r => r.char)
-      if (resultChars.length > 0) {
-        await getCharsData(resultChars)
+      const allChars = [...new Set(results.flatMap(r => splitCharacters(r.char)))]
+      if (allChars.length > 0) {
+        await getCharsData(allChars)
       }
     } finally {
       searching = false
@@ -129,7 +143,7 @@
       <table class="char-table">
         <thead>
           <tr>
-            <th scope="col">Char</th>
+            <th scope="col">Word / Char</th>
             <th scope="col">Play</th>
             <th scope="col">Pinyin</th>
             <th scope="col">Meaning</th>
@@ -140,12 +154,16 @@
           {#each results as entry (entry.char)}
             <tr onclick={() => modalChar = entry.char} class="clickable-row">
               <td class="td-char">
-                <button
-                  class="char-btn {getHoverStrokeClass(entry.char)}"
-                  lang="zh"
-                  onclick={(e) => { e.stopPropagation(); modalChar = entry.char }}
-                  aria-label="Details for {entry.char}"
-                >{entry.char}</button>
+                <div class="char-row" lang="zh">
+                  {#each alignPinyin(entry.char, entry.pinyin) as {char, pinyin}}
+                    <button
+                      class="char-btn {getHoverStrokeClass(char)}"
+                      onclick={(e) => { e.stopPropagation(); modalChar = char }}
+                      aria-label="Details for {char}"
+                      title={pinyin ?? undefined}
+                    >{char}</button>
+                  {/each}
+                </div>
               </td>
               <td>
                 <button 
