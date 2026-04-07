@@ -2,6 +2,9 @@
 
 ## Todo
 
+- [ ] debug: Stroke colorization sometimes applies incorrectly or requires a delay; look into a more robust way to ensure SVG is ready in CharacterWriter.svelte
+- [ ] fix: OpenProps seems to have an auto dark-mode for tables, making them unreadable at night time
+- [ ] feat: Persist the search query in the /dictionary url
 - [ ] test: Ensure tests are relevant and there is enough coverage
 
 ## In progress
