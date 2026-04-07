@@ -42,15 +42,19 @@
           try {
             const data = await dataPromise
             if (data?.stroke_fragments && data.components && !destroyed) {
-              for (let i = 0; i < data.components.length; i++) {
+              // Color in reverse order because often the radical/meaning component 
+              // is defined later but overlaps or contains the strokes of smaller parts.
+              // By coloring it last, it takes precedence.
+              for (let i = data.components.length - 1; i >= 0; i--) {
                 const comp = data.components[i]
                 const frags = data.stroke_fragments[i]
                 if (!frags) continue
 
+                // Data uses "meaning", "sound", "radical"
                 let color = '#0A0A0A'
-                if (comp.type.includes('semantic') || comp.type.includes('radical')) {
-                  color = '#2ecc71' // Mint-ish green
-                } else if (comp.type.includes('phonetic')) {
+                if (comp.type.includes('meaning') || comp.type.includes('radical')) {
+                  color = '#2ecc71' // Mint green
+                } else if (comp.type.includes('sound')) {
                   color = '#3498db' // Sky blue
                 }
 
