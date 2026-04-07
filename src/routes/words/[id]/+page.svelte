@@ -646,13 +646,14 @@
         background: var(--color-surface);
         border: var(--border);
         box-shadow: var(--shadow-sm);
-        text-align: left;
+        text-align: center;
     }
 
     .char-table th,
     .char-table td {
         padding: var(--size-3) var(--size-4);
         border-bottom: 1px solid var(--color-border);
+        vertical-align: middle;
     }
 
     .char-table th {
@@ -699,6 +700,10 @@
         color: var(--color-text-muted);
     }
 
+    .td-components .char-row {
+        justify-content: center;
+    }
+
     .play-char-btn {
         background: var(--color-sky);
         border: var(--border);
@@ -711,6 +716,7 @@
         font-size: var(--font-size-2);
         cursor: pointer;
         padding: 0;
+        margin: 0 auto;
     }
 
     .play-char-btn:hover {
