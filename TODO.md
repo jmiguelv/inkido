@@ -2,13 +2,15 @@
 
 ## Todo
 
-- [ ] fix: /word/[id], When there is punctuation in a word/sentence, the pinyin gets out of alignment with the characters
+- [ ] refactor: The /about page feels out of place compared to the rest of the site, it is also missing the navbar
 - [ ] feat: Record how many times a user has used AI features, might need to enforce a daily limit because I am using OpenRouter's free tier
 - [ ] test: Ensure tests are relevant and there is enough coverage
 
 ## In progress
 
 ## Done
+
+- [x] fix: /word/[id], When there is punctuation in a word/sentence, the pinyin gets out of alignment with the characters
 
 - [x] feat: Scale down component characters and add plus separator
 - [x] refactor: Center align all cells in characters table on word detail page

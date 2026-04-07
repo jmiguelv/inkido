@@ -3,7 +3,7 @@
     import { goto } from "$app/navigation";
     import { getActiveProfile } from "$lib/stores.svelte";
     import { onMount } from "svelte";
-    import { splitCharacters, stripDiacritics } from "$lib/characters";
+    import { splitCharacters, stripDiacritics, alignPinyin } from "$lib/characters";
     import { getHoverStrokeClass, getCharsData } from "$lib/dictionary";
     import CharacterModal from "$lib/components/CharacterModal.svelte";
     import type { Word, WordList } from "$lib/types";
@@ -152,8 +152,7 @@
                         <tr>
                             <td class="col-char">
                                 <div class="char-row">
-                                    {#each splitCharacters(word.character) as char, i (i)}
-                                        {@const pinyinParts = word.phonetic_annotation?.trim().split(/\s+/) ?? []}
+                                    {#each alignPinyin(word.character, word.phonetic_annotation) as {char, pinyin}, i (i)}
                                         <button
                                             class="char-btn {getHoverStrokeClass(char)}"
                                             lang={word.language}
@@ -163,7 +162,7 @@
                                                     language: word.language,
                                                 })}
                                             aria-label="Details for {char}"
-                                            title={pinyinParts[i] ?? undefined}
+                                            title={pinyin ?? undefined}
                                             >{char}</button
                                         >
                                     {/each}

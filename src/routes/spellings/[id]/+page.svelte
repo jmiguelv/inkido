@@ -7,7 +7,7 @@
   import { onMount } from 'svelte'
   import { SvelteMap } from 'svelte/reactivity'
   import CharacterModal from '$lib/components/CharacterModal.svelte'
-  import { splitCharacters } from '$lib/characters'
+  import { splitCharacters, alignPinyin } from '$lib/characters'
   import { getCharsData, getWordsData, getStrokeClass, getHoverStrokeClass } from '$lib/dictionary'
   import type { Word, WordList } from '$lib/types'
 
@@ -256,13 +256,12 @@
               </p>
             {/if}
             <div class="char-row">
-              {#each splitCharacters(word.character) as char, i (i)}
-                {@const pinyinParts = word.phonetic_annotation?.trim().split(/\s+/) ?? []}
+              {#each alignPinyin(word.character, word.phonetic_annotation) as {char, pinyin}, i (i)}
                 <button
                   class="char-btn {getHoverStrokeClass(char)}"
                   onclick={() => modalChar = { char }}
                   aria-label="Details for {char}"
-                  title={pinyinParts[i] ?? undefined}
+                  title={pinyin ?? undefined}
                   lang={list?.language ?? 'zh'}
                 >{char}</button>
               {/each}

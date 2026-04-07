@@ -5,7 +5,7 @@
   import { getActiveProfile } from '$lib/stores.svelte'
   import { speak, unlockAudio } from '$lib/audio'
   import { onMount } from 'svelte'
-  import { splitCharacters } from '$lib/characters'
+  import { splitCharacters, alignPinyin } from '$lib/characters'
   import { getCharsData, getStrokeClass, getHoverStrokeClass } from '$lib/dictionary'
   import CharacterModal from '$lib/components/CharacterModal.svelte'
   import type { Word, WordList } from '$lib/types'
@@ -122,13 +122,12 @@
           <div class="card-character">
             {#if flipped}
               <div class="char-row" lang={list.language}>
-                {#each splitCharacters(currentWord.character) as char, i (i)}
-                  {@const pinyinParts = currentWord.phonetic_annotation?.trim().split(/\s+/) ?? []}
+                {#each alignPinyin(currentWord.character, currentWord.phonetic_annotation) as {char, pinyin}, i (i)}
                   <button
                     class="char-btn is-large {getHoverStrokeClass(char)}"
                     onclick={(e) => { e.stopPropagation(); modalChar = char }}
                     aria-label="Details for {char}"
-                    title={pinyinParts[i] ?? undefined}
+                    title={pinyin ?? undefined}
                   >{char}</button>
                 {/each}
               </div>

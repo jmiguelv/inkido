@@ -5,7 +5,7 @@
     import { SvelteMap } from "svelte/reactivity";
     import { supabase } from "$lib/supabase";
     import { getActiveProfile } from "$lib/stores.svelte";
-    import { splitCharacters } from "$lib/characters";
+    import { splitCharacters, alignPinyin } from "$lib/characters";
     import { speak } from "$lib/audio";
     import {
         getCharData,
@@ -309,13 +309,10 @@
                     {/if}
                 </span>
                 <div class="hero-animation" aria-hidden="true">
-                    {#each splitCharacters(word.character) as char, i (i)}
-                        {@const pinyinParts =
-                            word.phonetic_annotation?.trim().split(/\s+/) ?? []}
-                        {@const syllable = pinyinParts[i] ?? null}
+                    {#each alignPinyin(word.character, word.phonetic_annotation) as {char, pinyin}, i (i)}
                         <div class="char-unit">
-                            {#if syllable}
-                                <span class="char-unit-pinyin">{syllable}</span>
+                            {#if pinyin}
+                                <span class="char-unit-pinyin">{pinyin}</span>
                             {/if}
                             <CharacterWriter {char} language={list.language} />
                         </div>
