@@ -1,17 +1,53 @@
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type'
 }
+
+const AI_DAILY_LIMIT = 20
 
 export async function handler(req: Request): Promise<Response> {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
   }
 
+  const authHeader = req.headers.get('Authorization')
+  if (!authHeader) {
+    return new Response(JSON.stringify({ error: 'Missing Authorization header' }), {
+      status: 401,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    })
+  }
+
   const { phrases, language }: { phrases: string[]; language: string } = await req.json()
 
   if (!phrases || phrases.length === 0) {
     return new Response(JSON.stringify({ results: [] }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    })
+  }
+
+  // Initialize Supabase client with the user's JWT to use RPC
+  const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? ''
+  const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY') ?? ''
+  const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+    global: { headers: { Authorization: authHeader } }
+  })
+
+  // 1. Increment and check usage count
+  const { data: usageCount, error: usageError } = await supabase.rpc('increment_ai_usage')
+  
+  if (usageError) {
+    return new Response(JSON.stringify({ error: `Usage check failed: ${usageError.message}` }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    })
+  }
+
+  if (usageCount > AI_DAILY_LIMIT) {
+    return new Response(JSON.stringify({ error: `Daily AI limit reached (${AI_DAILY_LIMIT} calls). Try again tomorrow.` }), {
+      status: 429,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     })
   }

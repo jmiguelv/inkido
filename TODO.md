@@ -1,7 +1,14 @@
 # Inkido TODO.md
 
+## Todo
+
+- [ ] test: Ensure tests are relevant and there is enough coverage
+
+## In progress
+
 ## Done
 
+- [x] feat: Record AI usage and enforce 20/day limit
 - [x] feat: Is there enough information in the data model to draw a character in different colours for the meaning component and the sound component?
 - [x] feat: Integrate the HanziWriter quizz functionalisty into the /practice cards
 - [x] fix: Now that the dictionary results can also return words, the click action should not open the character modal for words, but it should go to the word view
