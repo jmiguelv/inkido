@@ -56,6 +56,7 @@
         hint: c?.hint || null,
         trad_variant: c?.trad_variant || null,
         components: wordComponents,
+        stroke_fragments: c?.stroke_fragments || null,
         phonetic: w?.pinyin || null,
         translation: w?.translation || null
       }
@@ -94,7 +95,7 @@
 
   <div class="stroke-area">
     {#key viewChar}
-      <CharacterWriter char={viewChar} {language} />
+      <CharacterWriter char={viewChar} {language} colorize={true} />
     {/key}
   </div>
 

@@ -45,6 +45,7 @@ export interface ZHChar {
   stroke_count: number | null
   hint: string | null
   components: { character: string; type: string[] }[] | null
+  stroke_fragments: number[][] | null
   trad_variant: string | null
 }
 

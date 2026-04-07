@@ -42,7 +42,7 @@ export async function getCharData(char: string): Promise<ZHChar | null> {
   
   const { data } = await supabase
     .from('zh_chars')
-    .select('char, gloss, stroke_count, hint, components, trad_variant')
+    .select('char, gloss, stroke_count, hint, components, stroke_fragments, trad_variant')
     .eq('char', char)
     .maybeSingle()
     
@@ -84,7 +84,7 @@ export async function getCharsData(chars: string[]): Promise<Map<string, ZHChar>
   if (missing.length > 0) {
     const { data } = await supabase
       .from('zh_chars')
-      .select('char, gloss, stroke_count, hint, components, trad_variant')
+      .select('char, gloss, stroke_count, hint, components, stroke_fragments, trad_variant')
       .in('char', missing)
       
     data?.forEach(r => charCache.set(r.char, r as ZHChar))

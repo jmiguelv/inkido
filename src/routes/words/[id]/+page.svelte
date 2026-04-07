@@ -314,7 +314,7 @@
                             {#if pinyin}
                                 <span class="char-unit-pinyin">{pinyin}</span>
                             {/if}
-                            <CharacterWriter {char} language={list.language} />
+                            <CharacterWriter {char} language={list.language} colorize={true} />
                         </div>
                     {/each}
                 </div>
