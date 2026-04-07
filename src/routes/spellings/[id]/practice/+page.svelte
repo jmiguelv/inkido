@@ -8,12 +8,15 @@
   import { splitCharacters, alignPinyin } from '$lib/characters'
   import { getCharsData, getStrokeClass, getHoverStrokeClass } from '$lib/dictionary'
   import CharacterModal from '$lib/components/CharacterModal.svelte'
+  import CharacterWriter from '$lib/components/CharacterWriter.svelte'
   import type { Word, WordList } from '$lib/types'
 
   let list = $state<WordList | null>(null)
   let words = $state<Word[]>([])
   let currentIndex = $state(0)
   let flipped = $state(false)
+  let quizMode = $state(false)
+  let quizCharIndex = $state(0)
   let errorMsg = $state('')
   let speechRate = $state(0.75)
   let modalChar = $state<string | null>(null)
@@ -21,6 +24,7 @@
   const activeProfile = $derived(getActiveProfile())
   const listId = $derived(page.params.id)
   const currentWord = $derived(words[currentIndex] ?? null)
+  const currentChars = $derived(currentWord ? splitCharacters(currentWord.character) : [])
 
   async function loadPractice() {
     const { data: listData, error: listError } = await supabase
@@ -47,8 +51,26 @@
   }
 
   function handleFlip() {
+    if (quizMode) return
     unlockAudio()
     flipped = !flipped
+  }
+
+  function toggleQuiz(e: MouseEvent) {
+    e.stopPropagation()
+    quizMode = !quizMode
+    quizCharIndex = 0
+    flipped = false
+  }
+
+  function handleQuizComplete() {
+    if (quizCharIndex < currentChars.length - 1) {
+      quizCharIndex++
+    } else {
+      // Word complete! Flip to show details
+      quizMode = false
+      flipped = true
+    }
   }
 
   function handleAudio() {
@@ -64,6 +86,8 @@
     if (currentIndex > 0) {
       currentIndex--
       flipped = false
+      quizMode = false
+      quizCharIndex = 0
     }
   }
 
@@ -71,6 +95,8 @@
     if (currentIndex < words.length - 1) {
       currentIndex++
       flipped = false
+      quizMode = false
+      quizCharIndex = 0
     }
   }
 
@@ -101,7 +127,9 @@
         <h1>Spelling Practice</h1>
         <p><small>Practise writing each character in this set stroke-by-stroke.</small></p>
       </div>
-      <span class="progress">{currentIndex + 1} / {words.length}</span>
+      <div class="header-actions">
+        <span class="progress">{currentIndex + 1} / {words.length}</span>
+      </div>
     </hgroup>
 
     {#if errorMsg}
@@ -120,7 +148,21 @@
       >
         <div class="card-front">
           <div class="card-character">
-            {#if flipped}
+            {#if quizMode}
+              <div class="quiz-container">
+                <CharacterWriter
+                  char={currentChars[quizCharIndex]}
+                  size={200}
+                  mode="quiz"
+                  onComplete={handleQuizComplete}
+                />
+                {#if currentChars.length > 1}
+                  <p class="quiz-progress">
+                    Drawing {quizCharIndex + 1} of {currentChars.length}
+                  </p>
+                {/if}
+              </div>
+            {:else if flipped}
               <div class="char-row" lang={list.language}>
                 {#each alignPinyin(currentWord.character, currentWord.phonetic_annotation) as {char, pinyin}, i (i)}
                   <button
@@ -135,21 +177,35 @@
                 <p class="phonetic">{currentWord.phonetic_annotation}</p>
               {/if}
             {:else}
-              <div class="char-placeholder" aria-label="Word with {splitCharacters(currentWord.character).length} characters">
-                {#each splitCharacters(currentWord.character) as _, i (i)}
+              <div class="char-placeholder" aria-label="Word with {currentChars.length} characters">
+                {#each currentChars as _, i (i)}
                   <span class="char-block"></span>
                 {/each}
               </div>
             {/if}
           </div>
-          <button
-            class="listen-btn"
-            onclick={(e) => { e.stopPropagation(); handleAudio() }}
-            aria-label="Speak {currentWord.character}"
-          >
-            ♪ Listen
-          </button>
-          {#if !flipped}
+
+          <div class="card-front-actions">
+            <button
+              class="listen-btn"
+              onclick={(e) => { e.stopPropagation(); handleAudio() }}
+              aria-label="Speak {currentWord.character}"
+            >
+              ♪ Listen
+            </button>
+
+            {#if list.language === 'zh' && !flipped}
+              <button
+                class="quiz-toggle-btn"
+                class:active={quizMode}
+                onclick={toggleQuiz}
+              >
+                {quizMode ? '✕ Quit drawing' : '✎ Draw'}
+              </button>
+            {/if}
+          </div>
+
+          {#if !flipped && !quizMode}
             <p class="flip-hint">Tap to reveal</p>
           {/if}
         </div>
@@ -262,6 +318,57 @@
     flex-direction: column;
     align-items: center;
     gap: var(--size-2);
+    width: 100%;
+    min-height: 200px;
+    justify-content: center;
+  }
+
+  .quiz-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--size-2);
+  }
+
+  .quiz-progress {
+    font-size: var(--font-size-1);
+    color: var(--color-text-muted);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin: 0;
+  }
+
+  .card-front-actions {
+    display: flex;
+    gap: var(--size-2);
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .quiz-toggle-btn {
+    padding: var(--size-2) var(--size-4);
+    border: var(--border);
+    border-radius: 0;
+    font-size: var(--font-size-1);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    background: var(--color-surface);
+    color: var(--color-text);
+    box-shadow: var(--shadow-sm);
+    cursor: pointer;
+  }
+
+  .quiz-toggle-btn:hover {
+    transform: translate(-1px, -1px);
+    box-shadow: 2px 2px 0 var(--color-border);
+  }
+
+  .quiz-toggle-btn.active {
+    background: var(--color-rose);
+    color: var(--color-text);
   }
 
   .char-placeholder {

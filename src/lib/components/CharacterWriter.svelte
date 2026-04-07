@@ -2,11 +2,15 @@
   let {
     char,
     language = 'zh',
-    size = 100
+    size = 100,
+    mode = 'animate',
+    onComplete
   }: {
     char: string
     language?: string
     size?: number
+    mode?: 'animate' | 'quiz'
+    onComplete?: () => void
   } = $props()
 
   let writerError = $state(false)
@@ -28,13 +32,21 @@
       })
 
       function play() {
-        if (destroyed || animating) return
+        if (destroyed || animating || mode === 'quiz') return
         animating = true
         writer.animateCharacter().then(() => { animating = false })
       }
 
-      play()
-      node.addEventListener('click', play)
+      if (mode === 'quiz') {
+        writer.quiz({
+          onComplete: () => {
+            if (!destroyed && onComplete) onComplete()
+          }
+        })
+      } else {
+        play()
+        node.addEventListener('click', play)
+      }
     }).catch(() => { if (!destroyed) writerError = true })
 
     return {

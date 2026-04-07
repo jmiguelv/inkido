@@ -489,13 +489,6 @@
         font-size: var(--font-size-2);
     }
 
-    .header-actions {
-        display: flex;
-        align-items: center;
-        gap: var(--size-3);
-        flex-wrap: wrap;
-    }
-
     .edit-btn,
     .cancel-btn,
     .save-btn {

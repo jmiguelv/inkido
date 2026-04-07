@@ -1,5 +1,6 @@
 <script lang="ts">
     import { supabase } from "$lib/supabase";
+    import { goto } from "$app/navigation";
     import CharacterModal from "$lib/components/CharacterModal.svelte";
     import { SvelteMap } from "svelte/reactivity";
     import {
@@ -163,14 +164,16 @@
                 >
             </p>
         </div>
-        {#if searched && !searching}
-            <span class="result-count">
-                {results.length}{results.length === 60 ? "+" : ""} result{results.length ===
-                1
-                    ? ""
-                    : "s"}
-            </span>
-        {/if}
+        <div class="header-actions">
+            {#if searched && !searching}
+                <span class="result-count">
+                    {results.length}{results.length === 60 ? "+" : ""} result{results.length ===
+                    1
+                        ? ""
+                        : "s"}
+                </span>
+            {/if}
+        </div>
     </hgroup>
 
     <div class="search-bar">
@@ -207,7 +210,13 @@
                 <tbody>
                     {#each results as entry (entry.char)}
                         <tr
-                            onclick={() => (modalChar = entry.char)}
+                            onclick={() => {
+                                if (splitCharacters(entry.char).length > 1) {
+                                    goto(`/dictionary/word/${encodeURIComponent(entry.char)}`);
+                                } else {
+                                    modalChar = entry.char;
+                                }
+                            }}
                             class="clickable-row"
                         >
                             <td class="td-char">
@@ -219,7 +228,11 @@
                                             )}"
                                             onclick={(e) => {
                                                 e.stopPropagation();
-                                                modalChar = char;
+                                                if (splitCharacters(entry.char).length > 1) {
+                                                    goto(`/dictionary/word/${encodeURIComponent(entry.char)}`);
+                                                } else {
+                                                    modalChar = char;
+                                                }
                                             }}
                                             aria-label="Details for {char}"
                                             title={pinyin ?? undefined}

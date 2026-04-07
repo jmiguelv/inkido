@@ -103,14 +103,16 @@
                 >
             </p>
         </div>
-        {#if !loading}
-            <span class="word-count">
-                {filtered.length}{query.trim() ? ` of ${words.length}` : ""} word{words.length ===
-                1
-                    ? ""
-                    : "s"}
-            </span>
-        {/if}
+        <div class="header-actions">
+            {#if !loading}
+                <span class="word-count">
+                    {filtered.length}{query.trim() ? ` of ${words.length}` : ""} word{words.length ===
+                    1
+                        ? ""
+                        : "s"}
+                </span>
+            {/if}
+        </div>
     </hgroup>
 
     <div class="search-bar">

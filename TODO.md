@@ -10,6 +10,9 @@
 
 ## Done
 
+- [x] feat: Integrate the HanziWriter quizz functionalisty into the /practice cards
+- [x] fix: Now that the dictionary results can also return words, the click action should not open the character modal for words, but it should go to the word view
+- [x] fix: Mobile responsiveness is broken across the app, in particular in routes that have action buttons in the headers
 - [x] feat: Expand /dictionary search to search in the words data as well
 - [x] feat: Rename explore to Dictionary and the route to /dictionary
 - [x] refactor: The /about page feels out of place compared to the rest of the site, it is also missing the navbar
