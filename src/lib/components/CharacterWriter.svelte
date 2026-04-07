@@ -36,35 +36,32 @@
         showOutline: true,
         strokeAnimationSpeed: 1,
         delayBetweenStrokes: 300,
-        onLoadCharDataError: () => { if (!destroyed) writerError = true },
         onLoadCharDataSuccess: async () => {
           if (destroyed || !colorize) return
           try {
             const data = await dataPromise
-            console.log(`Colorizing "${char}":`, { 
-              hasFragments: !!data?.stroke_fragments, 
-              components: data?.components?.length 
-            })
             if (data?.stroke_fragments && data.components && !destroyed) {
-              for (let i = data.components.length - 1; i >= 0; i--) {
-                const comp = data.components[i]
-                const frags = data.stroke_fragments[i]
-                if (!frags) continue
+              // Small timeout to ensure internal SVG structure is ready
+              setTimeout(() => {
+                if (destroyed) return;
+                for (let i = data.components.length - 1; i >= 0; i--) {
+                  const comp = data.components[i]
+                  const frags = data.stroke_fragments[i]
+                  if (!frags) continue
 
-                let color = '#0A0A0A'
-                if (comp.type.includes('meaning') || comp.type.includes('radical')) {
-                  color = '#2ecc71' // Mint green
-                } else if (comp.type.includes('sound')) {
-                  color = '#3498db' // Sky blue
+                  let color = '#0A0A0A'
+                  if (comp.type.includes('meaning') || comp.type.includes('radical')) {
+                    color = '#2ecc71' // Mint green
+                  } else if (comp.type.includes('sound')) {
+                    color = '#3498db' // Sky blue
+                  }
+
+                  for (const strokeIdx of frags) {
+                    // @ts-ignore - strokeNum is supported but missing from types
+                    writer.updateColor('strokeColor', color, { strokeNum: strokeIdx })
+                  }
                 }
-
-                console.log(`  Component "${comp.character}" (${comp.type}): Color ${color}, Strokes ${frags.join(',')}`)
-
-                for (const strokeIdx of frags) {
-                  // @ts-ignore - strokeNum is supported but missing from types
-                  writer.updateColor('strokeColor', color, { strokeNum: strokeIdx })
-                }
-              }
+              }, 50);
             }
           } catch (e) {
             console.error("Colorize failed:", e)
