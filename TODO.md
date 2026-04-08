@@ -2,8 +2,12 @@
 
 ## Todo
 
-- [ ] feat: Add a new route, to practice tone listening, it should be very simple, play different words and give the user the choice of which tone it was
-- [ ] test: Ensure tests are relevant and there is enough coverage
+- [ ] fix: Characters/tones, there is an issue with the character mapping to pinyin/tones, for example the word 奶奶 (nǎi
+      nai) is showing as nǎi nǎi twice in the characters table. And I think a similar issue is happening in the tones view, where the correct tone does not match what is being played
+- [ ] feat: Record and display tone listening stats per profile
+- [ ] feat: Display the AI usage in the settings
+- [x] feat: Add a new route, to practice tone listening, it should be very simple, play different words and give the user the choice of which tone it was
+- [x] test: Ensure tests are relevant and there is enough coverage (Added tests for getTone)
 
 ## In progress
 

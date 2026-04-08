@@ -32,3 +32,23 @@ export function alignPinyin(character: string, pinyin: string | null | undefined
   
   return aligned
 }
+
+/** Tone diacritics mapping for Mandarin. */
+const toneMarks: Record<number, string> = {
+  1: 'āēīōūǖ',
+  2: 'áéíóúǘ',
+  3: 'ǎěǐǒǔǚ',
+  4: 'àèìòùǜ',
+}
+
+/** Extracts the Mandarin tone number (1-5) from a pinyin syllable. Returns 5 for neutral tone. */
+export function getTone(pinyin: string | null | undefined): number {
+  if (!pinyin) return 5
+  const cleanPinyin = pinyin.toLowerCase().normalize('NFC')
+  for (const [tone, marks] of Object.entries(toneMarks)) {
+    for (const mark of [...marks.normalize('NFC')]) {
+      if (cleanPinyin.includes(mark)) return parseInt(tone)
+    }
+  }
+  return 5 // Neutral
+}

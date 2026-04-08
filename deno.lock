@@ -27,13 +27,15 @@
     "packageJson": {
       "dependencies": [
         "npm:@fontsource/bricolage-grotesque@^5.2.10",
-        "npm:@fontsource/noto-sans@^5.2.10",
+        "npm:@fontsource/space-grotesk@^5.2.10",
         "npm:@playwright/test@^1.58.2",
         "npm:@supabase/supabase-js@^2.101.1",
         "npm:@sveltejs/adapter-static@^3.0.10",
+        "npm:@sveltejs/adapter-vercel@^6.3.3",
         "npm:@sveltejs/kit@^2.50.2",
         "npm:@sveltejs/vite-plugin-svelte@^6.2.4",
         "npm:hanzi-writer@^3.7.3",
+        "npm:mdsvex@~0.12.7",
         "npm:open-props@^1.7.23",
         "npm:supabase@^2.84.6",
         "npm:svelte-check@^4.4.2",

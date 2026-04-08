@@ -229,6 +229,9 @@
         <button class="relookup-btn" disabled={busy || words.length === 0} onclick={handleReEnrichAll} aria-label="Re-lookup words">
           ↻ Re-lookup
         </button>
+        {#if list.language === 'zh'}
+          <a href="/spellings/{list.id}/tones" class="tones-link" class:disabled={busy || words.length === 0} onclick={(e) => { if (busy || words.length === 0) e.preventDefault() }}>Tones →</a>
+        {/if}
         <a href="/spellings/{list.id}/practice" class="practice-link" class:disabled={busy || words.length === 0} onclick={(e) => { if (busy || words.length === 0) e.preventDefault() }}>Practice →</a>
       </div>
     </header>
@@ -373,6 +376,32 @@
   .relookup-btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+  }
+
+  .tones-link {
+    background: var(--color-surface);
+    color: var(--color-text);
+    padding: var(--size-2) var(--size-4);
+    border: var(--border);
+    text-decoration: none;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+    white-space: nowrap;
+    align-self: flex-start;
+  }
+
+  .tones-link:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 5px 5px 0 var(--color-border);
+    text-decoration: none;
+  }
+
+  .tones-link:active {
+    transform: translate(0, 0);
+    box-shadow: none;
   }
 
   .practice-link {
