@@ -158,7 +158,7 @@
                     {:else if i === quizCharIndex}
                       <CharacterWriter
                         char={currentChars[quizCharIndex]}
-                        size={100}
+                        size={80}
                         mode="quiz"
                         {showHint}
                         onComplete={handleQuizComplete}
@@ -219,10 +219,13 @@
 
           {#if quizMode}
             <div class="hint-toggle">
-              <label>
-                <input type="checkbox" bind:checked={showHint} />
-                Show hints
-              </label>
+              <button 
+                class="hint-btn" 
+                class:active={showHint} 
+                onclick={() => showHint = !showHint}
+              >
+                {showHint ? 'Disable Hints' : 'Enable Hints'}
+              </button>
             </div>
           {/if}
 
@@ -361,19 +364,19 @@
 
   .quiz-completed-char {
     font-family: var(--font-display);
-    font-size: var(--font-size-8);
+    font-size: var(--font-size-7);
     font-weight: 800;
     color: var(--color-text);
-    width: 100px;
-    height: 100px;
+    width: var(--size-10);
+    height: var(--size-10);
     display: flex;
     align-items: center;
     justify-content: center;
   }
 
   .quiz-char-block {
-    width: 100px;
-    height: 100px;
+    width: var(--size-10);
+    height: var(--size-10);
     background: var(--color-border);
     opacity: 0.15;
     border: var(--border);
@@ -382,16 +385,32 @@
 
   .hint-toggle {
     margin-top: var(--size-2);
-    font-size: var(--font-size-1);
-    color: var(--color-text-muted);
-    font-weight: 700;
   }
 
-  .hint-toggle label {
-    display: flex;
-    align-items: center;
-    gap: var(--size-2);
+  .hint-btn {
+    padding: var(--size-1) var(--size-3);
+    border: var(--border);
+    border-radius: 0;
+    font-size: var(--font-size-0);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    background: var(--color-surface);
+    color: var(--color-text-muted);
+    box-shadow: 2px 2px 0 var(--color-border);
     cursor: pointer;
+    transition: all var(--transition-speed);
+  }
+
+  .hint-btn:hover {
+    transform: translate(-1px, -1px);
+    box-shadow: 3px 3px 0 var(--color-border);
+    color: var(--color-text);
+  }
+
+  .hint-btn.active {
+    background: var(--color-lemon);
+    color: var(--color-text);
   }
 
   .quiz-progress {
