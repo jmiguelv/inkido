@@ -9,12 +9,26 @@
   let emailMsg = $state('')
   let loading = $state(false)
   let deleteConfirm = $state('')
+  let aiUsageToday = $state(0)
+  const AI_LIMIT = 20
 
   async function loadPreferences() {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
     const prefs = user.user_metadata as Partial<UserPreferences>
     if (prefs.speechRate !== undefined) speechRate = prefs.speechRate
+    
+    // Fetch AI usage for today
+    const today = new Date().toISOString().split('T')[0]
+    const { data: usageData } = await supabase
+      .from('ai_usage')
+      .select('usage_count')
+      .eq('day', today)
+      .maybeSingle()
+      
+    if (usageData) {
+      aiUsageToday = usageData.usage_count
+    }
   }
 
   async function handleSpeechRate() {
@@ -57,6 +71,18 @@
   </hgroup>
 
   <div class="settings-grid">
+    <article class="settings-card">
+      <h2>AI Usage</h2>
+      <p>Track your daily AI enrichment allowance.</p>
+      <div class="field usage-field">
+        <label for="ai-usage-progress">Today's usage</label>
+        <span class="usage-counter">
+          <strong class:warning={aiUsageToday >= AI_LIMIT}>{aiUsageToday}</strong> / {AI_LIMIT} used
+        </span>
+        <progress id="ai-usage-progress" value={aiUsageToday} max={AI_LIMIT}></progress>
+      </div>
+    </article>
+
     <article class="settings-card">
       <h2>Speech rate</h2>
       <p>Controls how fast the app reads words aloud.</p>
@@ -162,6 +188,47 @@
     justify-content: space-between;
     font-size: var(--font-size-0);
     color: var(--color-text-muted);
+  }
+
+  .usage-field {
+    margin-top: var(--size-2);
+  }
+
+  .usage-counter {
+    font-size: var(--font-size-3);
+    font-family: var(--font-display);
+    font-weight: 700;
+  }
+
+  .usage-counter strong {
+    font-size: var(--font-size-5);
+    font-weight: 800;
+  }
+
+  .usage-counter strong.warning {
+    color: var(--color-danger);
+  }
+
+  progress {
+    width: 100%;
+    height: var(--size-3);
+    border: var(--border);
+    border-radius: 0;
+    margin-top: var(--size-2);
+  }
+
+  progress::-webkit-progress-bar {
+    background-color: var(--color-surface);
+  }
+
+  progress::-webkit-progress-value {
+    background-color: var(--color-mint);
+    border-right: var(--border);
+  }
+
+  progress::-moz-progress-bar {
+    background-color: var(--color-mint);
+    border-right: var(--border);
   }
 
   input[type="email"],
