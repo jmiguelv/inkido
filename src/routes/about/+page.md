@@ -33,6 +33,15 @@ Open a set and tap **Practice →**.
 
 Search 94,000 characters by meaning, pinyin, or the character itself. See stroke count, components, and traditional variants.
 
+### 5. Character color-coding
+
+Inkido highlights the structure of characters using specific colors for their components:
+
+- **Green** strokes represent the **meaning** (semantic) component or the radical.
+- **Blue** strokes represent the **sound** (phonetic) component.
+
+Understanding these components helps you see the logic behind complex characters and makes them much easier to remember.
+
 ## Data
 
 Character data from the [Chinese Character Wiki](https://www.dong-chinese.com/wiki/home). Stroke animations by [Hanzi Writer](https://hanziwriter.org).
