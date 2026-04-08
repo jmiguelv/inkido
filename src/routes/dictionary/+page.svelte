@@ -1,6 +1,8 @@
 <script lang="ts">
     import { supabase } from "$lib/supabase";
     import { goto } from "$app/navigation";
+    import { page } from "$app/state";
+    import { onMount } from "svelte";
     import CharacterModal from "$lib/components/CharacterModal.svelte";
     import { SvelteMap } from "svelte/reactivity";
     import {
@@ -148,7 +150,23 @@
         }
     }
 
+    onMount(() => {
+        const initialQuery = page.url.searchParams.get("q");
+        if (initialQuery) {
+            query = initialQuery;
+            runSearch(query);
+        }
+    });
+
     function handleInput() {
+        const newUrl = new URL(page.url);
+        if (query.trim()) {
+            newUrl.searchParams.set("q", query.trim());
+        } else {
+            newUrl.searchParams.delete("q");
+        }
+        goto(newUrl.pathname + newUrl.search, { replaceState: true, keepFocus: true });
+
         if (debounceTimer) clearTimeout(debounceTimer);
         debounceTimer = setTimeout(() => runSearch(query), 300);
     }
