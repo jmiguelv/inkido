@@ -58,14 +58,26 @@
                         ) {
                             const fragsList = data.stroke_fragments;
                             const compsList = data.components;
+
+                            // Get computed style to fetch the current theme's stroke color
+                            const style = getComputedStyle(document.documentElement);
+                            const defaultStrokeColor = style.getPropertyValue('--color-writer-stroke').trim() || '#0A0A0A';
+                            const mintColor = style.getPropertyValue('--color-mint').trim() || '#2ecc71';
+                            const skyColor = style.getPropertyValue('--color-sky').trim() || '#3498db';
+
+                            console.log(`Debug Colorize "${char}":`, {
+                                components: compsList.map(c => `${c.character}(${c.type})`),
+                                fragments: fragsList
+                            });
+
                             // Wait for the SVG DOM to fully render
                             requestAnimationFrame(() => {
                                 requestAnimationFrame(() => {
                                     if (destroyed) return;
                                     for (
-                                        let i = compsList.length - 1;
-                                        i >= 0;
-                                        i--
+                                        let i = 0;
+                                        i < compsList.length;
+                                        i++
                                     ) {
                                         const comp = compsList[i];
                                         const frags = fragsList[i];
@@ -80,6 +92,8 @@
                                         } else if (comp.type.includes("sound")) {
                                             color = skyColor;
                                         }
+
+                                        console.log(`  Applying to ${comp.character} (index ${i}, strokes ${frags}): ${color}`);
 
                                         for (const strokeIdx of frags) {
                                             (writer as any).updateColor(
