@@ -6,6 +6,7 @@
   import { speak, unlockAudio } from '$lib/audio'
   import { onMount } from 'svelte'
   import { alignPinyin, getTone } from '$lib/characters'
+  import { getWordsData } from '$lib/dictionary'
   import type { Word, WordList } from '$lib/types'
 
   interface PracticeItem {
@@ -37,16 +38,30 @@
     if (wordsError) throw wordsError
     
     const words = (wordsData as Word[]).filter(w => w.phonetic_annotation)
-    const uniqueItems = new Map<string, PracticeItem>()
     
+    // First collect all unique characters
+    const charsSet = new Set<string>()
+    for (const word of words) {
+      const aligned = alignPinyin(word.character, word.phonetic_annotation)
+      for (const { char, pinyin } of aligned) {
+        if (pinyin) charsSet.add(char)
+      }
+    }
+    
+    // Fetch standalone dictionary definitions to match TTS isolated pronunciation
+    const charsArray = Array.from(charsSet)
+    const dictData = await getWordsData(charsArray)
+
+    const uniqueItems = new Map<string, PracticeItem>()
     for (const word of words) {
       const aligned = alignPinyin(word.character, word.phonetic_annotation)
       for (const { char, pinyin } of aligned) {
         if (pinyin && !uniqueItems.has(char)) {
+          const dictPinyin = dictData.get(char)?.pinyin ?? pinyin
           uniqueItems.set(char, {
             char,
-            pinyin,
-            tone: getTone(pinyin)
+            pinyin: dictPinyin,
+            tone: getTone(dictPinyin)
           })
         }
       }

@@ -395,7 +395,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {#each splitCharacters(word.character) as char, i (i)}
+                            {#each alignPinyin(word.character, word.phonetic_annotation) as {char, pinyin}, i (i)}
                                 {@const data = charDataMap.get(char)}
                                 <tr
                                     onclick={() => (modalChar = { char })}
@@ -423,7 +423,7 @@
                                         </button>
                                     </td>
                                     <td class="td-pinyin"
-                                        >{data?.phonetic ?? "-"}</td
+                                        >{pinyin ?? data?.phonetic ?? "-"}</td
                                     >
                                     <td class="td-translation"
                                         >{data?.translation ?? "-"}</td
