@@ -99,6 +99,36 @@ tr,
 th,
 td {
   border-radius: 0 !important;
+  background-color: inherit;
+  color: inherit;
+}
+
+/* Force standard table styling to use our variables strictly */
+table {
+  background-color: var(--color-surface);
+  color: var(--color-text);
+}
+
+:root[data-theme='dark'] .stroke-mint,
+:root[data-theme='dark'] .stroke-sky,
+:root[data-theme='dark'] .stroke-lavender,
+:root[data-theme='dark'] .stroke-rose,
+:root[data-theme='dark'] .stroke-lemon,
+:root[data-theme='dark'] .char-btn:hover,
+:root[data-theme='dark'] thead th,
+:root[data-theme='dark'] .save-btn,
+:root[data-theme='dark'] .listen-btn,
+:root[data-theme='dark'] .play-char-btn {
+  color: var(--color-bg) !important;
+}
+
+:root[data-theme='dark'] .play-char-btn {
+  background-color: var(--color-sky);
+}
+
+:root[data-theme='dark'] .clickable-row:hover {
+  background-color: var(--color-surface); /* Subtle hover instead of bright lemon */
+  filter: brightness(1.2);
 }
 
 hr {
