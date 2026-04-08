@@ -120,8 +120,14 @@ table {
 :root[data-theme='dark'] thead th,
 :root[data-theme='dark'] .save-btn,
 :root[data-theme='dark'] .listen-btn,
-:root[data-theme='dark'] .play-char-btn {
+:root[data-theme='dark'] .play-char-btn,
+:root[data-theme='dark'] .list-card {
   color: var(--color-bg) !important;
+}
+
+:root[data-theme='dark'] .list-card a,
+:root[data-theme='dark'] .list-card .list-meta {
+  color: inherit !important;
 }
 
 :root[data-theme='dark'] .play-char-btn {

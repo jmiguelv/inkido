@@ -223,9 +223,8 @@
     text-transform: uppercase;
     letter-spacing: 0.06em;
     text-decoration: none;
-    color: var(--color-text);
-    background: var(--color-text);
-    color: var(--color-lemon);
+    background: var(--color-accent);
+    color: var(--color-accent-fg);
     padding: var(--size-1) var(--size-3);
     border: var(--border);
     box-shadow: var(--shadow-sm);
@@ -234,7 +233,7 @@
 
   .practice-link:hover {
     transform: translate(-2px, -2px);
-    box-shadow: 5px 5px 0 var(--color-border);
+    box-shadow: 2px 2px 0 var(--color-border);
   }
 
   .practice-link:active {
