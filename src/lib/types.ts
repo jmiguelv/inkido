@@ -52,3 +52,13 @@ export interface ZHChar {
 export interface UserPreferences {
   speechRate: number    // 0.25 – 1.0
 }
+
+export interface ToneStat {
+  id: string
+  profile_id: string
+  character: string
+  expected_tone: number
+  selected_tone: number
+  correct: boolean
+  created_at: string
+}

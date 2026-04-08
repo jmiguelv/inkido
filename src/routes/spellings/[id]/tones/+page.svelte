@@ -89,6 +89,18 @@
     if (showResult) return
     selectedTone = tone
     showResult = true
+
+    if (activeProfile && currentItem) {
+      supabase.from('tone_stats').insert({
+        profile_id: activeProfile.id,
+        character: currentItem.char,
+        expected_tone: currentItem.tone,
+        selected_tone: tone,
+        correct: tone === currentItem.tone
+      }).then(({ error }) => {
+        if (error) console.error('Failed to save tone stat:', error)
+      })
+    }
   }
 
   function handleNext() {

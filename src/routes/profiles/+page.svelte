@@ -6,6 +6,7 @@
   import type { Profile } from '$lib/types'
 
   let profiles = $state<Profile[]>([])
+  let profileStats = $state<Record<string, { total: number, correct: number }>>({})
   let newProfileName = $state('')
   let errorMsg = $state('')
   let loading = $state(false)
@@ -15,9 +16,30 @@
   const activeProfile = $derived(getActiveProfile())
 
   async function loadProfiles() {
-    const { data, error } = await supabase.from('profiles').select('*').order('created_at')
-    if (error) throw error
-    profiles = data as Profile[]
+    const { data: pData, error: pError } = await supabase.from('profiles').select('*').order('created_at')
+    if (pError) throw pError
+    profiles = pData as Profile[]
+    
+    if (profiles.length > 0) {
+      const { data: sData, error: sError } = await supabase
+        .from('tone_stats')
+        .select('profile_id, correct')
+        .in('profile_id', profiles.map(p => p.id))
+      
+      if (!sError && sData) {
+        const stats: Record<string, { total: number, correct: number }> = {}
+        for (const p of profiles) {
+          stats[p.id] = { total: 0, correct: 0 }
+        }
+        for (const row of sData) {
+          if (stats[row.profile_id]) {
+            stats[row.profile_id].total++
+            if (row.correct) stats[row.profile_id].correct++
+          }
+        }
+        profileStats = stats
+      }
+    }
   }
 
   async function handleAddProfile() {
@@ -103,10 +125,25 @@
               class:active={activeProfile?.id === profile.id}
               onclick={() => handleSelectProfile(profile)}
             >
-              <span class="profile-name">{profile.name}</span>
-              {#if activeProfile?.id === profile.id}
-                <span class="active-badge">Active</span>
-              {/if}
+              <div class="profile-card-header">
+                <span class="profile-name">{profile.name}</span>
+                {#if activeProfile?.id === profile.id}
+                  <span class="active-badge">Active</span>
+                {/if}
+              </div>
+              
+              <div class="profile-stats">
+                {#if profileStats[profile.id] && profileStats[profile.id].total > 0}
+                  <span class="stat-label">Tones:</span>
+                  <span class="stat-value">
+                    {profileStats[profile.id].total} practiced 
+                    <span class="stat-pct">({Math.round((profileStats[profile.id].correct / profileStats[profile.id].total) * 100)}% correct)</span>
+                  </span>
+                {:else}
+                  <span class="stat-label">Tones:</span>
+                  <span class="stat-value empty">Not practiced yet</span>
+                {/if}
+              </div>
             </button>
             <button
               class="rename-btn"
@@ -202,6 +239,13 @@
     background: var(--color-lemon);
   }
 
+  .profile-card-header {
+    display: flex;
+    align-items: center;
+    gap: var(--size-2);
+    width: 100%;
+  }
+
   .profile-name {
     font-family: var(--font-display);
     font-weight: 800;
@@ -217,6 +261,37 @@
     text-transform: uppercase;
     letter-spacing: 0.08em;
     opacity: 0.6;
+  }
+
+  .profile-stats {
+    display: flex;
+    gap: var(--size-2);
+    font-size: var(--font-size-1);
+    color: var(--color-text-muted);
+    margin-top: var(--size-2);
+    padding-top: var(--size-2);
+    border-top: 1px dashed var(--color-border);
+    width: 100%;
+  }
+
+  .stat-label {
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .stat-value {
+    font-weight: 500;
+  }
+
+  .stat-value.empty {
+    font-style: italic;
+    opacity: 0.7;
+  }
+
+  .stat-pct {
+    font-weight: 700;
+    color: var(--color-text);
   }
 
   .rename-btn,
