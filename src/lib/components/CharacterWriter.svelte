@@ -5,6 +5,7 @@
         size = 100,
         mode = "animate",
         colorize = false,
+        showHint = true,
         onComplete,
     }: {
         char: string;
@@ -12,6 +13,7 @@
         size?: number;
         mode?: "animate" | "quiz";
         colorize?: boolean;
+        showHint?: boolean;
         onComplete?: () => void;
     } = $props();
 
@@ -59,6 +61,7 @@
 
             if (mode === "quiz") {
                 writer.quiz({
+                    showHintAfterMisses: showHint ? 3 : false,
                     onComplete: () => {
                         if (!destroyed && onComplete) onComplete();
                     },
@@ -91,13 +94,13 @@
         {char}
     </div>
 {:else}
-    {#key char + colorize}
+    {#key char + colorize + showHint}
         <div
             use:initWriter
             class="writer-box"
-            style="width: {size}px; height: {size}px;"
+            style="width: {size}px; height: {size}px; padding: 0;"
             role="button"
-            tabindex="0; padding: 0;"
+            tabindex="0"
             aria-label="Replay stroke order for {char}"
         ></div>
     {/key}

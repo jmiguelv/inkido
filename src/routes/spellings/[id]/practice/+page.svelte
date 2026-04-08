@@ -17,6 +17,7 @@
   let flipped = $state(false)
   let quizMode = $state(false)
   let quizCharIndex = $state(0)
+  let showHint = $state(true)
   let errorMsg = $state('')
   let speechRate = $state(0.75)
   let modalChar = $state<string | null>(null)
@@ -157,8 +158,9 @@
                     {:else if i === quizCharIndex}
                       <CharacterWriter
                         char={currentChars[quizCharIndex]}
-                        size={120}
+                        size={100}
                         mode="quiz"
+                        {showHint}
                         onComplete={handleQuizComplete}
                       />
                     {:else}
@@ -168,7 +170,7 @@
                 </div>
                 {#if currentChars.length > 1}
                   <p class="quiz-progress">
-                    Drawing {quizCharIndex + 1} of {currentChars.length}
+                    Writing {quizCharIndex + 1} of {currentChars.length}
                   </p>
                 {/if}
               </div>
@@ -210,10 +212,19 @@
                 class:active={quizMode}
                 onclick={toggleQuiz}
               >
-                {quizMode ? '✕ Quit drawing' : '✎ Draw'}
+                {quizMode ? '✕ Quit writing' : '✎ Write'}
               </button>
             {/if}
           </div>
+
+          {#if quizMode}
+            <div class="hint-toggle">
+              <label>
+                <input type="checkbox" bind:checked={showHint} />
+                Show hints
+              </label>
+            </div>
+          {/if}
 
           {#if !flipped && !quizMode}
             <p class="flip-hint">Tap to reveal</p>
@@ -353,20 +364,34 @@
     font-size: var(--font-size-8);
     font-weight: 800;
     color: var(--color-text);
-    width: 120px;
-    height: 120px;
+    width: 100px;
+    height: 100px;
     display: flex;
     align-items: center;
     justify-content: center;
   }
 
   .quiz-char-block {
-    width: 120px;
-    height: 120px;
+    width: 100px;
+    height: 100px;
     background: var(--color-border);
     opacity: 0.15;
     border: var(--border);
     flex-shrink: 0;
+  }
+
+  .hint-toggle {
+    margin-top: var(--size-2);
+    font-size: var(--font-size-1);
+    color: var(--color-text-muted);
+    font-weight: 700;
+  }
+
+  .hint-toggle label {
+    display: flex;
+    align-items: center;
+    gap: var(--size-2);
+    cursor: pointer;
   }
 
   .quiz-progress {

@@ -2,12 +2,16 @@
 
 ## Todo
 
+- [ ] feat: Add a new route, to practice tone listening, it should be very simple, play different words and give the user the choice of which tone it was
 - [ ] test: Ensure tests are relevant and there is enough coverage
 
 ## In progress
 
 ## Done
 
+- [x] refactor: In practice, draw, should be labelled write
+- [x] refactor: In practice, decrease the size of the placeholders for writing
+- [x] refactor: In practice, add an option to toggle the writing hint
 - [x] debug: Stroke colorization sometimes applies incorrectly or requires a delay; look into a more robust way to ensure SVG is ready in CharacterWriter.svelte
 - [x] feat: Add a ribbon or some other obvious marker to show when I am running the dev server
 - [x] refactor: Move the theme toggle button more towards the end of the nav, it is too prominent now
