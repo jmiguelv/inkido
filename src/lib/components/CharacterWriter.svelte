@@ -88,12 +88,12 @@
                                             comp.type.includes("meaning") ||
                                             comp.type.includes("radical")
                                         ) {
-                                            color = mintColor;
+                                            color = "#FF3333"; // Vibrant Red for Meaning
                                         } else if (comp.type.includes("sound")) {
-                                            color = skyColor;
+                                            color = "#3333FF"; // Vibrant Blue for Sound
                                         }
 
-                                        console.log(`  Applying to ${comp.character} (index ${i}, strokes ${frags}): ${color}`);
+                                        console.log(`  Targeting ${comp.character} (${comp.type}): Color ${color}, Strokes ${frags}`);
 
                                         for (const strokeIdx of frags) {
                                             (writer as any).updateColor(
