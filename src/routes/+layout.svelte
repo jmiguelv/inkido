@@ -1,5 +1,6 @@
 <script lang="ts">
     import "../app.css";
+    import { dev } from "$app/environment";
     import { supabase } from "$lib/supabase";
     import { goto } from "$app/navigation";
     import { page } from "$app/state";
@@ -145,13 +146,6 @@
                     aria-expanded={menuOpen}>{menuOpen ? "✕" : "☰"}</button
                 >
                 <div class="nav-right" class:open={menuOpen}>
-                    <button
-                        class="theme-toggle"
-                        onclick={toggleTheme}
-                        aria-label="Toggle theme"
-                    >
-                        {activeTheme === "light" ? "🌙" : "☀️"}
-                    </button>
                     {#if session}
                         <a href="/spellings" class:active={activeSection === "lists"}
                             >Spellings</a
@@ -221,6 +215,13 @@
                         <a href="/auth/login">Log in</a>
                         <a href="/auth/signup" class="nav-signup">Sign up</a>
                     {/if}
+                    <button
+                        class="theme-toggle"
+                        onclick={toggleTheme}
+                        aria-label="Toggle theme"
+                    >
+                        {activeTheme === "light" ? "🌙" : "☀️"}
+                    </button>
                 </div>
             </nav>
         </header>
@@ -241,9 +242,29 @@
         <img height="36" style="border:0;height:36px;" src="https://storage.ko-fi.com/cdn/kofi2.png?v=6" alt="Buy Me a Coffee at ko-fi.com" />
     </a>
 </footer>
+
+{#if dev}
+    <div class="dev-ribbon">DEV</div>
+{/if}
 </div>
 
 <style>
+    .dev-ribbon {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        background-color: var(--color-danger);
+        color: var(--color-danger-fg);
+        font-family: var(--font-display);
+        font-weight: 800;
+        font-size: var(--font-size-1);
+        padding: var(--size-1) var(--size-4);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        z-index: 1000;
+        pointer-events: none;
+    }
+
     header {
         background-color: var(--color-lemon);
         border-bottom: var(--border);

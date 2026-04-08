@@ -150,12 +150,22 @@
           <div class="card-character">
             {#if quizMode}
               <div class="quiz-container">
-                <CharacterWriter
-                  char={currentChars[quizCharIndex]}
-                  size={200}
-                  mode="quiz"
-                  onComplete={handleQuizComplete}
-                />
+                <div class="quiz-char-row" lang={list.language}>
+                  {#each currentChars as char, i (i)}
+                    {#if i < quizCharIndex}
+                      <span class="quiz-completed-char">{char}</span>
+                    {:else if i === quizCharIndex}
+                      <CharacterWriter
+                        char={currentChars[quizCharIndex]}
+                        size={120}
+                        mode="quiz"
+                        onComplete={handleQuizComplete}
+                      />
+                    {:else}
+                      <span class="quiz-char-block"></span>
+                    {/if}
+                  {/each}
+                </div>
                 {#if currentChars.length > 1}
                   <p class="quiz-progress">
                     Drawing {quizCharIndex + 1} of {currentChars.length}
@@ -327,7 +337,36 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: var(--size-4);
+  }
+
+  .quiz-char-row {
+    display: flex;
+    flex-wrap: wrap;
     gap: var(--size-2);
+    align-items: center;
+    justify-content: center;
+  }
+
+  .quiz-completed-char {
+    font-family: var(--font-display);
+    font-size: var(--font-size-8);
+    font-weight: 800;
+    color: var(--color-text);
+    width: 120px;
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .quiz-char-block {
+    width: 120px;
+    height: 120px;
+    background: var(--color-border);
+    opacity: 0.15;
+    border: var(--border);
+    flex-shrink: 0;
   }
 
   .quiz-progress {

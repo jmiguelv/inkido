@@ -58,37 +58,39 @@
                         ) {
                             const fragsList = data.stroke_fragments;
                             const compsList = data.components;
-                            // Small timeout to ensure internal SVG structure is ready
-                            setTimeout(() => {
-                                if (destroyed) return;
-                                for (
-                                    let i = compsList.length - 1;
-                                    i >= 0;
-                                    i--
-                                ) {
-                                    const comp = compsList[i];
-                                    const frags = fragsList[i];
-                                    if (!frags) continue;
-
-                                    let color = defaultStrokeColor;
-                                    if (
-                                        comp.type.includes("meaning") ||
-                                        comp.type.includes("radical")
+                            // Wait for the SVG DOM to fully render
+                            requestAnimationFrame(() => {
+                                requestAnimationFrame(() => {
+                                    if (destroyed) return;
+                                    for (
+                                        let i = compsList.length - 1;
+                                        i >= 0;
+                                        i--
                                     ) {
-                                        color = mintColor;
-                                    } else if (comp.type.includes("sound")) {
-                                        color = skyColor;
-                                    }
+                                        const comp = compsList[i];
+                                        const frags = fragsList[i];
+                                        if (!frags) continue;
 
-                                    for (const strokeIdx of frags) {
-                                        (writer as any).updateColor(
-                                            "strokeColor",
-                                            color,
-                                            { strokeNum: strokeIdx },
-                                        );
+                                        let color = defaultStrokeColor;
+                                        if (
+                                            comp.type.includes("meaning") ||
+                                            comp.type.includes("radical")
+                                        ) {
+                                            color = mintColor;
+                                        } else if (comp.type.includes("sound")) {
+                                            color = skyColor;
+                                        }
+
+                                        for (const strokeIdx of frags) {
+                                            (writer as any).updateColor(
+                                                "strokeColor",
+                                                color,
+                                                { strokeNum: strokeIdx },
+                                            );
+                                        }
                                     }
-                                }
-                            }, 50);
+                                });
+                            });
                         }
                     } catch (e) {
                         console.error("Colorize failed:", e);

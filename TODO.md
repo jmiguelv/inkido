@@ -2,16 +2,16 @@
 
 ## Todo
 
-- [ ] debug: Stroke colorization sometimes applies incorrectly or requires a delay; look into a more robust way to ensure SVG is ready in CharacterWriter.svelte
-- [ ] refactor: Move the theme toggle button more towards the end of the nav, it is too prominent now
-- [ ] fix: OpenProps seems to have an auto dark-mode for tables, making them unreadable at night time
-- [ ] refactor: Character draw feature in practice, it whould show the placeholder to draw all the characters, not just one at a time
 - [ ] test: Ensure tests are relevant and there is enough coverage
 
 ## In progress
 
 ## Done
 
+- [x] debug: Stroke colorization sometimes applies incorrectly or requires a delay; look into a more robust way to ensure SVG is ready in CharacterWriter.svelte
+- [x] feat: Add a ribbon or some other obvious marker to show when I am running the dev server
+- [x] refactor: Move the theme toggle button more towards the end of the nav, it is too prominent now
+- [x] refactor: Character draw feature in practice, it whould show the placeholder to draw all the characters, not just one at a time
 - [x] feat: Persist the search query in the /dictionary url
 - [x] fix: OpenProps seems to have an auto dark-mode for tables, making them unreadable at night time (Added dedicated Brutalist Dark Mode)
 - [x] fix: Colorize failed: Error: Invalid color: var(--color-text)
