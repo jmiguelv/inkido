@@ -40,7 +40,7 @@
                 width: size,
                 height: size,
                 padding: Math.round(size * 0.05),
-                showOutline: true,
+                showOutline: mode !== "quiz",
                 strokeColor: colorize ? skyColor : defaultStrokeColor,
                 radicalColor: colorize ? mintColor : undefined,
                 outlineColor: defaultOutlineColor,
