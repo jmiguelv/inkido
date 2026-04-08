@@ -46,6 +46,9 @@
 
   /* Motion */
   --transition-speed:   120ms;
+
+  /* Writer default stroke */
+  --color-writer-stroke: #0A0A0A;
 }
 
 :root[data-theme='dark'] {
@@ -53,21 +56,24 @@
   --color-bg:           #0A0A0A;
   --color-surface:      #1A1A1A;
   --color-text:         #FFFBF0;
-  --color-text-muted:   #A0A0A0;
+  --color-text-muted:   #B0B0B0;
   --color-border:       #FFFBF0;
 
-  /* Neon family for Dark Mode */
-  --color-mint:         #00FF66;
-  --color-rose:         #FF0066;
-  --color-sky:          #00CCFF;
-  --color-lavender:     #CC66FF;
-  --color-lemon:        #FFFF00;
+  /* Deep Pastels for Dark Mode (accessible and atmospheric) */
+  --color-mint:         #2D5A43;
+  --color-rose:         #7A3E48;
+  --color-sky:          #344E7A;
+  --color-lavender:     #5A437A;
+  --color-lemon:        #7A7A34;
 
   /* Semantic aliases (Dark) */
   --color-accent:       #FFFBF0;
   --color-accent-fg:    #0A0A0A;
-  --color-accent-2:     #0066CC;
-  --color-accent-3:     #CC0033;
+  --color-accent-2:     #344E7A;
+  --color-accent-3:     #7A3E48;
+
+  /* Writer default stroke (Light in dark mode) */
+  --color-writer-stroke: #FFFBF0;
 }
 
 *,

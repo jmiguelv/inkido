@@ -31,11 +31,18 @@
                 ? getCharData(char)
                 : Promise.resolve(null);
 
+            // Get computed style to fetch the current theme's stroke color
+            const style = getComputedStyle(document.documentElement);
+            const defaultStrokeColor = style.getPropertyValue('--color-writer-stroke').trim() || '#0A0A0A';
+            const mintColor = style.getPropertyValue('--color-mint').trim() || '#2ecc71';
+            const skyColor = style.getPropertyValue('--color-sky').trim() || '#3498db';
+
             const writer = HanziWriter.create(node, char, {
                 width: size,
                 height: size,
                 padding: Math.round(size * 0.05),
                 showOutline: true,
+                strokeColor: defaultStrokeColor,
                 strokeAnimationSpeed: 1,
                 delayBetweenStrokes: 300,
                 onLoadCharDataSuccess: async () => {
@@ -61,14 +68,14 @@
                                     const frags = fragsList[i];
                                     if (!frags) continue;
 
-                                    let color = "#0A0A0A";
+                                    let color = defaultStrokeColor;
                                     if (
                                         comp.type.includes("meaning") ||
                                         comp.type.includes("radical")
                                     ) {
-                                        color = "#2ecc71"; // Mint green
+                                        color = mintColor;
                                     } else if (comp.type.includes("sound")) {
-                                        color = "#3498db"; // Sky blue
+                                        color = skyColor;
                                     }
 
                                     for (const strokeIdx of frags) {
