@@ -34,6 +34,7 @@
             // Get computed style to fetch the current theme's stroke color
             const style = getComputedStyle(document.documentElement);
             const defaultStrokeColor = style.getPropertyValue('--color-writer-stroke').trim() || '#0A0A0A';
+            const defaultOutlineColor = style.getPropertyValue('--color-writer-outline').trim() || '#DDD';
             const mintColor = style.getPropertyValue('--color-mint').trim() || '#2ecc71';
             const skyColor = style.getPropertyValue('--color-sky').trim() || '#3498db';
 
@@ -43,6 +44,7 @@
                 padding: Math.round(size * 0.05),
                 showOutline: true,
                 strokeColor: defaultStrokeColor,
+                outlineColor: defaultOutlineColor,
                 strokeAnimationSpeed: 1,
                 delayBetweenStrokes: 300,
                 onLoadCharDataSuccess: async () => {

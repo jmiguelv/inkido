@@ -47,8 +47,9 @@
   /* Motion */
   --transition-speed:   120ms;
 
-  /* Writer default stroke */
+  /* Writer default stroke and outline */
   --color-writer-stroke: #0A0A0A;
+  --color-writer-outline: #E0E0E0;
 }
 
 :root[data-theme='dark'] {
@@ -72,8 +73,9 @@
   --color-accent-2:     #344E7A;
   --color-accent-3:     #7A3E48;
 
-  /* Writer default stroke (Light in dark mode) */
+  /* Writer default stroke and outline (Light in dark mode) */
   --color-writer-stroke: #FFFBF0;
+  --color-writer-outline: #333333;
 }
 
 *,
