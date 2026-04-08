@@ -18,6 +18,7 @@
     } = $props();
 
     let writerError = $state(false);
+    let writerInstance = $state<any>(null);
 
     function initWriter(node: HTMLDivElement) {
         let destroyed = false;
@@ -40,7 +41,7 @@
                 width: size,
                 height: size,
                 padding: Math.round(size * 0.05),
-                showOutline: mode !== "quiz",
+                showOutline: mode !== "quiz" || showHint,
                 strokeColor: colorize ? skyColor : defaultStrokeColor,
                 radicalColor: colorize ? mintColor : undefined,
                 outlineColor: defaultOutlineColor,
@@ -50,6 +51,8 @@
                     if (!destroyed) writerError = true;
                 },
             });
+
+            writerInstance = writer;
 
             function play() {
                 if (destroyed || animating || mode === "quiz") return;
@@ -61,7 +64,7 @@
 
             if (mode === "quiz") {
                 writer.quiz({
-                    showHintAfterMisses: showHint ? 3 : false,
+                    showHintAfterMisses: 3, // Keep the automatic hint on misses
                     onComplete: () => {
                         if (!destroyed && onComplete) onComplete();
                     },
@@ -79,9 +82,20 @@
         return {
             destroy() {
                 destroyed = true;
+                writerInstance = null;
             },
         };
     }
+
+    $effect(() => {
+        if (writerInstance && mode === 'quiz') {
+            if (showHint) {
+                writerInstance.showOutline();
+            } else {
+                writerInstance.hideOutline();
+            }
+        }
+    });
 </script>
 
 {#if language !== "zh" || writerError}
@@ -94,7 +108,7 @@
         {char}
     </div>
 {:else}
-    {#key char + colorize + showHint}
+    {#key char + colorize}
         <div
             use:initWriter
             class="writer-box"

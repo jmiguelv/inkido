@@ -17,7 +17,7 @@
   let flipped = $state(false)
   let quizMode = $state(false)
   let quizCharIndex = $state(0)
-  let showHint = $state(true)
+  let showHint = $state(false)
   let errorMsg = $state('')
   let speechRate = $state(0.75)
   let modalChar = $state<string | null>(null)
@@ -221,10 +221,16 @@
             <div class="hint-toggle">
               <button 
                 class="hint-btn" 
-                class:active={showHint} 
-                onclick={() => showHint = !showHint}
+                onmousedown={() => (showHint = true)}
+                onmouseup={() => (showHint = false)}
+                onmouseleave={() => (showHint = false)}
+                ontouchstart={(e) => {
+                    e.preventDefault();
+                    showHint = true;
+                }}
+                ontouchend={() => (showHint = false)}
               >
-                {showHint ? 'Disable Hints' : 'Enable Hints'}
+                Peek Hint
               </button>
             </div>
           {/if}
@@ -405,11 +411,6 @@
   .hint-btn:hover {
     transform: translate(-1px, -1px);
     box-shadow: 3px 3px 0 var(--color-border);
-    color: var(--color-text);
-  }
-
-  .hint-btn.active {
-    background: var(--color-lemon);
     color: var(--color-text);
   }
 
