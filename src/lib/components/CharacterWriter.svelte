@@ -27,17 +27,16 @@
             const { default: HanziWriter } = await import("hanzi-writer");
             if (destroyed) return;
 
-            const dataPromise = colorize
-                ? getCharData(char)
-                : Promise.resolve(null);
-
-            // Get computed style to fetch the current theme's stroke color
+            // 1. Get current theme colors
             const style = getComputedStyle(document.documentElement);
             const defaultStrokeColor = style.getPropertyValue('--color-writer-stroke').trim() || '#0A0A0A';
             const defaultOutlineColor = style.getPropertyValue('--color-writer-outline').trim() || '#DDD';
-            const mintColor = style.getPropertyValue('--color-mint').trim() || '#2ecc71';
-            const skyColor = style.getPropertyValue('--color-sky').trim() || '#3498db';
+            
+            // "Deep Pastels" for the strokes
+            const mintColor = '#2ecc71'; // Meaning
+            const skyColor = '#3498db';  // Sound
 
+            // 2. Initialize writer
             const writer = HanziWriter.create(node, char, {
                 width: size,
                 height: size,
@@ -47,70 +46,39 @@
                 outlineColor: defaultOutlineColor,
                 strokeAnimationSpeed: 1,
                 delayBetweenStrokes: 300,
-                onLoadCharDataSuccess: async () => {
-                    if (destroyed || !colorize) return;
-                    try {
-                        const data = await dataPromise;
-                        if (
-                            data?.stroke_fragments &&
-                            data.components &&
-                            !destroyed
-                        ) {
-                            const fragsList = data.stroke_fragments;
-                            const compsList = data.components;
-
-                            // Get computed style to fetch the current theme's stroke color
-                            const style = getComputedStyle(document.documentElement);
-                            const defaultStrokeColor = style.getPropertyValue('--color-writer-stroke').trim() || '#0A0A0A';
-                            const mintColor = style.getPropertyValue('--color-mint').trim() || '#2ecc71';
-                            const skyColor = style.getPropertyValue('--color-sky').trim() || '#3498db';
-
-                            console.log(`Debug Colorize "${char}":`, {
-                                components: compsList.map(c => `${c.character}(${c.type})`),
-                                fragments: fragsList
-                            });
-
-                            // Wait for the SVG DOM to fully render
-                            requestAnimationFrame(() => {
-                                requestAnimationFrame(() => {
-                                    if (destroyed) return;
-                                    for (
-                                        let i = 0;
-                                        i < compsList.length;
-                                        i++
-                                    ) {
-                                        const comp = compsList[i];
-                                        const frags = fragsList[i];
-                                        if (!frags) continue;
-
-                                        let color = defaultStrokeColor;
-                                        if (
-                                            comp.type.includes("meaning") ||
-                                            comp.type.includes("radical")
-                                        ) {
-                                            color = "#FF3333"; // Vibrant Red for Meaning
-                                        } else if (comp.type.includes("sound")) {
-                                            color = "#3333FF"; // Vibrant Blue for Sound
-                                        }
-
-                                        console.log(`  Targeting ${comp.character} (${comp.type}): Color ${color}, Strokes ${frags}`);
-
-                                        for (const strokeIdx of frags) {
-                                            (writer as any).updateColor(
-                                                "strokeColor",
-                                                color,
-                                                { strokeNum: strokeIdx },
-                                            );
-                                        }
-                                    }
-                                });
-                            });
-                        }
-                    } catch (e) {
-                        console.error("Colorize failed:", e);
-                    }
-                },
+                onLoadCharDataError: () => { if (!destroyed) writerError = true }
             });
+
+            // 3. Apply colorization if needed
+            if (colorize) {
+                try {
+                    const data = await dataPromise;
+                    if (data?.stroke_fragments && data.components) {
+                        // setCharacter returns a promise that resolves when the character is rendered
+                        await writer.setCharacter(char);
+                        if (destroyed) return;
+
+                        for (let i = 0; i < data.components.length; i++) {
+                            const comp = data.components[i];
+                            const frags = data.stroke_fragments[i];
+                            if (!frags) continue;
+
+                            let color = defaultStrokeColor;
+                            if (comp.type.includes("meaning") || comp.type.includes("radical")) {
+                                color = mintColor;
+                            } else if (comp.type.includes("sound")) {
+                                color = skyColor;
+                            }
+
+                            for (const strokeIdx of frags) {
+                                (writer as any).updateColor("strokeColor", color, { strokeNum: strokeIdx });
+                            }
+                        }
+                    }
+                } catch (e) {
+                    console.error("Colorize failed:", e);
+                }
+            }
 
             function play() {
                 if (destroyed || animating || mode === "quiz") return;
