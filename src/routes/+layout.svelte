@@ -251,6 +251,10 @@
         position: relative;
     }
 
+    :root[data-theme='dark'] header {
+        background-color: var(--color-bg);
+    }
+
     nav {
         display: flex;
         align-items: center;
@@ -357,6 +361,11 @@
         background: var(--color-text);
         color: var(--color-lemon);
         padding: var(--size-1) var(--size-2);
+    }
+
+    :root[data-theme='dark'] nav a.active {
+        color: var(--color-bg);
+        background: var(--color-mint);
     }
 
     .nav-signup {

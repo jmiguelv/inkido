@@ -57,25 +57,25 @@
   --color-bg:           #0A0A0A;
   --color-surface:      #1A1A1A;
   --color-text:         #FFFBF0;
-  --color-text-muted:   #B0B0B0;
+  --color-text-muted:   #A0A0A0;
   --color-border:       #FFFBF0;
 
-  /* Deep Pastels for Dark Mode (accessible and atmospheric) */
-  --color-mint:         #2D5A43;
-  --color-rose:         #7A3E48;
-  --color-sky:          #344E7A;
-  --color-lavender:     #5A437A;
-  --color-lemon:        #7A7A34;
+  /* Deep Pastels for Dark Mode (Atmospheric and readable with light text) */
+  --color-mint:         #1A3D2E;
+  --color-rose:         #4D1F27;
+  --color-sky:          #1F334D;
+  --color-lavender:     #331F4D;
+  --color-lemon:        #4D4D1A;
 
   /* Semantic aliases (Dark) */
   --color-accent:       #FFFBF0;
   --color-accent-fg:    #0A0A0A;
-  --color-accent-2:     #344E7A;
-  --color-accent-3:     #7A3E48;
+  --color-accent-2:     #1F334D;
+  --color-accent-3:     #4D1F27;
 
   /* Writer default stroke and outline (Light in dark mode) */
   --color-writer-stroke: #FFFBF0;
-  --color-writer-outline: #333333;
+  --color-writer-outline: #2A2A2A;
 }
 
 *,
@@ -111,23 +111,9 @@ table {
   color: var(--color-text);
 }
 
-:root[data-theme='dark'] .stroke-mint,
-:root[data-theme='dark'] .stroke-sky,
-:root[data-theme='dark'] .stroke-lavender,
-:root[data-theme='dark'] .stroke-rose,
-:root[data-theme='dark'] .stroke-lemon,
 :root[data-theme='dark'] .char-btn:hover,
-:root[data-theme='dark'] thead th,
-:root[data-theme='dark'] .save-btn,
-:root[data-theme='dark'] .listen-btn,
-:root[data-theme='dark'] .play-char-btn,
-:root[data-theme='dark'] .list-card {
+:root[data-theme='dark'] .play-char-btn {
   color: var(--color-bg) !important;
-}
-
-:root[data-theme='dark'] .list-card a,
-:root[data-theme='dark'] .list-card .list-meta {
-  color: inherit !important;
 }
 
 :root[data-theme='dark'] .play-char-btn {
@@ -135,8 +121,8 @@ table {
 }
 
 :root[data-theme='dark'] .clickable-row:hover {
-  background-color: var(--color-surface); /* Subtle hover instead of bright lemon */
-  filter: brightness(1.2);
+  background-color: var(--color-surface);
+  filter: brightness(1.4);
 }
 
 hr {
