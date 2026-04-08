@@ -364,7 +364,7 @@
     }
 
     :root[data-theme='dark'] nav a.active {
-        color: var(--color-bg);
+        color: var(--color-text);
         background: var(--color-mint);
     }
 
