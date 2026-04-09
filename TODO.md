@@ -6,6 +6,9 @@
 
 ## Done
 
+- [x] fix: `setTimeout(handleAudio, 300)` in `handleNext` in tones practice has no cleanup — inconsistent with the `$effect` fix; store the return value and cancel it if the component is destroyed
+- [x] refactor: `AI_DAILY_LIMIT = 20` in `supabase/functions/enrich-words/index.ts` cannot import from `src/lib/constants.ts` (different runtime) — add a comment cross-referencing the frontend constant so the two values don't silently drift
+- [x] test: New `alignPinyin` and `isChineseCharacter` tests use plain prose names instead of the project convention `<unit>_<scenario>_<expected>` — align with existing test naming style
 - [x] fix: `showHint` is not reset in `handlePrev`, `handleNext`, or `toggleQuiz` in spelling practice — peek state can linger across word navigation
 - [x] fix: `setActiveProfile` called with `null as unknown as Profile` when deleting the active profile in profiles page — update the function signature to accept `null`
 - [x] perf: Missing FK indexes — Postgres does not auto-index FK columns; add indexes on `profiles.parent_id` (every RLS check in the app), `word_lists.profile_id` (spellings page + RLS), `words.list_id` (every practice/spelling page + RLS), and `tone_stats.profile_id` (stats query + RLS)

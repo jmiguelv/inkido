@@ -5,6 +5,8 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type'
 }
 
+// Keep this in sync with AI_LIMIT in src/lib/constants.ts
+// Cannot import directly due to different runtimes (Deno vs Node/Browser)
 const AI_DAILY_LIMIT = 20
 
 export async function handler(req: Request): Promise<Response> {

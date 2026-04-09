@@ -22,6 +22,7 @@
   let selectedTone = $state<number | null>(null)
   let errorMsg = $state('')
   let speechRate = $state(0.75)
+  let nextAudioTimeout: ReturnType<typeof setTimeout> | null = null
 
   const activeProfile = $derived(getActiveProfile())
   const listId = $derived(page.params.id)
