@@ -14,7 +14,8 @@
 		"test:functions": "cd supabase/functions && deno test --allow-env .",
 		"test": "pnpm test:unit && pnpm test:functions && pnpm test:e2e",
 		"test:e2e": "playwright test",
-		"supabase": "supabase"
+		"supabase": "supabase",
+		"deploy:functions": "supabase functions deploy --no-verify-jwt"
 	},
 	"devDependencies": {
 		"@playwright/test": "^1.58.2",
