@@ -137,7 +137,7 @@
                 >
                 <div class="nav-right" class:open={menuOpen}>
                     {#if session}
-                        <a href="/spellings" class:active={activeSection === "lists"}
+                        <a href="/spellings" class:active={activeSection === "spellings"}
                             >Spellings</a
                         >
                         <a href="/words" class:active={activeSection === "words"}
