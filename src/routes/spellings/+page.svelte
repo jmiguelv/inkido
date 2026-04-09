@@ -119,10 +119,13 @@
               </span>
               <div class="list-footer">
                 <a href="/spellings/{list.id}/practice" class="practice-link">Practice →</a>
-                <div class="list-actions">
-                  <button onclick={() => startRename(list)} aria-label="Rename {list.name}">Rename</button>
-                  <button class="danger" onclick={() => handleDeleteList(list.id)} aria-label="Delete {list.name}">×</button>
-                </div>
+                {#if list.language === 'zh'}
+                  <a href="/spellings/{list.id}/tones" class="tones-link">Tones →</a>
+                {/if}
+              </div>
+              <div class="list-actions">
+                <button onclick={() => startRename(list)} aria-label="Rename {list.name}">✎</button>
+                <button class="danger" onclick={() => handleDeleteList(list.id)} aria-label="Delete {list.name}">×</button>
               </div>
             {/if}
           </article>
@@ -181,6 +184,7 @@
     flex-direction: column;
     gap: var(--size-2);
     box-shadow: var(--shadow-sm);
+    position: relative;
   }
 
   li:nth-child(5n+1) .list-card { background: var(--color-mint); }
@@ -212,12 +216,12 @@
   .list-footer {
     display: flex;
     align-items: center;
-    justify-content: space-between;
     gap: var(--size-2);
     margin-top: var(--size-3);
   }
 
-  .practice-link {
+  .practice-link,
+  .tones-link {
     font-size: var(--font-size-1);
     font-weight: 700;
     text-transform: uppercase;
@@ -231,22 +235,54 @@
     transition: transform var(--transition-speed), box-shadow var(--transition-speed);
   }
 
-  .practice-link:hover {
+  .practice-link:hover,
+  .tones-link:hover {
     transform: translate(-2px, -2px);
     box-shadow: 2px 2px 0 var(--color-border);
   }
 
-  .practice-link:active {
+  .practice-link:active,
+  .tones-link:active {
     transform: translate(0, 0);
     box-shadow: none;
   }
 
+  .tones-link {
+    background: var(--color-surface);
+    color: var(--color-text);
+  }
+
   .list-actions {
+    position: absolute;
+    top: var(--size-2);
+    right: var(--size-2);
     display: flex;
     gap: var(--size-1);
   }
 
-  .list-actions button, .rename-form button {
+  .list-actions button {
+    background: none;
+    border: none;
+    box-shadow: none;
+    font-size: var(--font-size-3);
+    line-height: 1;
+    padding: var(--size-1);
+    color: var(--color-text);
+    opacity: 0.25;
+    cursor: pointer;
+  }
+
+  .list-actions button:hover {
+    opacity: 1;
+    transform: none;
+    box-shadow: none;
+  }
+
+  .list-actions button.danger:hover {
+    color: var(--color-danger);
+  }
+
+  .rename-form button {
     padding: var(--size-1) var(--size-2);
     border-radius: 0;
     font-size: var(--font-size-1);
@@ -257,21 +293,14 @@
     box-shadow: var(--shadow-sm);
   }
 
-  .list-actions button:hover:not(:disabled),
   .rename-form button:hover:not(:disabled) {
     transform: translate(-2px, -2px);
     box-shadow: 2px 2px 0 var(--color-border);
   }
 
-  .list-actions button:active:not(:disabled),
   .rename-form button:active:not(:disabled) {
     transform: translate(0, 0);
     box-shadow: none;
-  }
-
-  .list-actions button.danger:hover {
-    background: var(--color-danger);
-    color: var(--color-danger-fg);
   }
 
   .rename-form {
