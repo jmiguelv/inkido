@@ -1,4 +1,6 @@
 <script lang="ts">
+    import type HanziWriter from "hanzi-writer";
+
     let {
         char,
         language = "zh",
@@ -18,7 +20,7 @@
     } = $props();
 
     let writerError = $state(false);
-    let writerInstance = $state<any>(null);
+    let writerInstance = $state<HanziWriter | null>(null);
 
     function initWriter(node: HTMLDivElement) {
         let destroyed = false;

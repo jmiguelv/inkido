@@ -17,9 +17,13 @@ export function getActiveProfile(): Profile | null {
   return activeProfile
 }
 
-export function setActiveProfile(profile: Profile): void {
+export function setActiveProfile(profile: Profile | null): void {
   activeProfile = profile
-  sessionStorage.setItem(STORAGE_KEY, JSON.stringify(profile))
+  if (profile) {
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(profile))
+  } else {
+    sessionStorage.removeItem(STORAGE_KEY)
+  }
 }
 
 export function clearActiveProfile(): void {

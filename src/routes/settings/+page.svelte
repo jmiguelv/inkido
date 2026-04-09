@@ -3,14 +3,15 @@
   import { goto } from '$app/navigation'
   import { onMount } from 'svelte'
   import type { UserPreferences } from '$lib/types'
+  import { AI_LIMIT } from '$lib/constants'
 
   let speechRate = $state(0.75)
   let newEmail = $state('')
   let emailMsg = $state('')
+  let emailError = $state(false)
   let loading = $state(false)
   let deleteConfirm = $state('')
   let aiUsageToday = $state(0)
-  const AI_LIMIT = 20
 
   async function loadPreferences() {
     const { data: { user } } = await supabase.auth.getUser()
@@ -20,13 +21,15 @@
     
     // Fetch AI usage for today
     const today = new Date().toISOString().split('T')[0]
-    const { data: usageData } = await supabase
+    const { data: usageData, error: usageError } = await supabase
       .from('ai_usage')
       .select('usage_count')
       .eq('day', today)
       .maybeSingle()
       
-    if (usageData) {
+    if (usageError) {
+      console.error('Error fetching ai_usage:', usageError)
+    } else if (usageData) {
       aiUsageToday = usageData.usage_count
     }
   }
@@ -38,6 +41,7 @@
 
   async function handleChangeEmail() {
     emailMsg = ''
+    emailError = false
     loading = true
     try {
       const { error } = await supabase.auth.updateUser({ email: newEmail })
@@ -45,6 +49,7 @@
       emailMsg = 'Confirmation email sent to new address.'
       newEmail = ''
     } catch (e) {
+      emailError = true
       emailMsg = e instanceof Error ? e.message : 'Failed'
     } finally {
       loading = false
@@ -114,7 +119,7 @@
           <input id="new-email" type="email" bind:value={newEmail} required autocomplete="email" />
         </div>
         {#if emailMsg}
-          <output role="alert" class:error={emailMsg.startsWith('F')} class:success={!emailMsg.startsWith('F')}>
+          <output role="alert" class:error={emailError} class:success={!emailError}>
             {emailMsg}
           </output>
         {/if}

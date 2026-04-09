@@ -121,8 +121,16 @@
     }
   }
 
+  function handleKeydown(e: KeyboardEvent) {
+    if (e.key === 'ArrowLeft') handlePrev()
+    else if (e.key === 'ArrowRight' && showResult) handleNext()
+    else if (['1', '2', '3', '4', '5'].includes(e.key) && !showResult) handleToneSelect(parseInt(e.key))
+  }
+
   onMount(() => {
     if (!activeProfile) { goto('/profiles'); return }
+    window.addEventListener('keydown', handleKeydown)
+    return () => window.removeEventListener('keydown', handleKeydown)
   })
 
   $effect(() => {
@@ -134,7 +142,8 @@
   // Auto play first item when loaded
   $effect(() => {
     if (items.length > 0 && currentIndex === 0 && !showResult) {
-      setTimeout(handleAudio, 500)
+      const t = setTimeout(handleAudio, 500)
+      return () => clearTimeout(t)
     }
   })
 </script>

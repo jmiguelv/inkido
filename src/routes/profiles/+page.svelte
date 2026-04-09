@@ -63,7 +63,7 @@
   async function handleDeleteProfile(id: string) {
     const { error } = await supabase.from('profiles').delete().eq('id', id)
     if (error) throw error
-    if (activeProfile?.id === id) setActiveProfile(profiles.find(p => p.id !== id) ?? null as unknown as Profile)
+    if (activeProfile?.id === id) setActiveProfile(null)
     await loadProfiles()
   }
 

@@ -2,22 +2,27 @@
 
 ## Todo
 
-- [x] feat: Display the AI usage in the settings
-
 ## In progress
 
 ## Done
 
+- [x] fix: `showHint` is not reset in `handlePrev`, `handleNext`, or `toggleQuiz` in spelling practice — peek state can linger across word navigation
+- [x] fix: `setActiveProfile` called with `null as unknown as Profile` when deleting the active profile in profiles page — update the function signature to accept `null`
+- [x] perf: Missing FK indexes — Postgres does not auto-index FK columns; add indexes on `profiles.parent_id` (every RLS check in the app), `word_lists.profile_id` (spellings page + RLS), `words.list_id` (every practice/spelling page + RLS), and `tone_stats.profile_id` (stats query + RLS)
+- [x] fix: `setTimeout` inside `$effect` in tones practice has no cleanup — if the component is destroyed before the timeout fires, `handleAudio` runs against a stale closure; return `() => clearTimeout(t)`
+- [x] fix: `ai_usage` query error is silently discarded in settings — add at minimum a `console.error` so broken RLS or missing table is visible
+- [x] test: `alignPinyin` and `isChineseCharacter` have no unit tests — `alignPinyin` is the function at the centre of the tone/pinyin mapping bug fix
+- [x] perf: `zh_words.translation` and `zh_chars.gloss` have no indexes but are searched with `ilike.%q%` in the dictionary — add GIN trigram indexes (pg_trgm already enabled)
+- [x] refactor: `AI_LIMIT = 20` is hardcoded in `settings/+page.svelte` — extract to `$lib/constants.ts` and import wherever the limit is referenced
+- [x] refactor: Keyboard navigation (arrow keys) missing from tones practice — inconsistent with spelling practice which binds `ArrowLeft`/`ArrowRight`
+- [x] refactor: `writerInstance` typed as `any` in `CharacterWriter.svelte` — use the HanziWriter TypeScript type
+- [x] refactor: Email error detection in settings uses `emailMsg.startsWith('F')` — replace with a dedicated `emailError` boolean state
+- [x] feat: Display the AI usage in the settings
 - [x] feat: Record and display tone listening stats per profile
 - [x] fix: Characters/tones, there is an issue with the character mapping to pinyin/tones, for example the word 奶奶 (nǎi
       nai) is showing as nǎi nǎi twice in the characters table. And I think a similar issue is happening in the tones view, where the correct tone does not match what is being played
 - [x] feat: Add a new route, to practice tone listening, it should be very simple, play different words and give the user the choice of which tone it was
 - [x] test: Ensure tests are relevant and there is enough coverage (Added tests for getTone)
-
-## In progress
-
-## Done
-
 - [x] refactor: In practice, draw, should be labelled write
 - [x] refactor: In practice, decrease the size of the placeholders for writing
 - [x] refactor: In practice, add an option to toggle the writing hint

@@ -62,6 +62,7 @@
     quizMode = !quizMode
     quizCharIndex = 0
     flipped = false
+    showHint = false
   }
 
   function handleQuizComplete() {
@@ -89,6 +90,7 @@
       flipped = false
       quizMode = false
       quizCharIndex = 0
+      showHint = false
     }
   }
 
@@ -98,6 +100,7 @@
       flipped = false
       quizMode = false
       quizCharIndex = 0
+      showHint = false
     }
   }
 

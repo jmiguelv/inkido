@@ -1,5 +1,54 @@
 import { describe, it, expect } from 'vitest'
-import { splitCharacters, stripDiacritics, getTone } from '../../src/lib/characters'
+import { splitCharacters, stripDiacritics, getTone, isChineseCharacter, alignPinyin } from '../../src/lib/characters'
+
+describe('isChineseCharacter', () => {
+  it('returns true for Chinese characters', () => {
+    expect(isChineseCharacter('学')).toBe(true)
+    expect(isChineseCharacter('习')).toBe(true)
+    expect(isChineseCharacter('𠀋')).toBe(true)
+  })
+
+  it('returns false for non-Chinese characters', () => {
+    expect(isChineseCharacter('a')).toBe(false)
+    expect(isChineseCharacter('1')).toBe(false)
+    expect(isChineseCharacter('，')).toBe(false)
+    expect(isChineseCharacter('。')).toBe(false)
+    expect(isChineseCharacter(' ')).toBe(false)
+  })
+})
+
+describe('alignPinyin', () => {
+  it('aligns characters with pinyin syllables', () => {
+    expect(alignPinyin('学习', 'xué xí')).toEqual([
+      { char: '学', pinyin: 'xué' },
+      { char: '习', pinyin: 'xí' }
+    ])
+  })
+
+  it('skips non-Chinese characters when assigning pinyin', () => {
+    expect(alignPinyin('你好，世界', 'nǐ hǎo shì jiè')).toEqual([
+      { char: '你', pinyin: 'nǐ' },
+      { char: '好', pinyin: 'hǎo' },
+      { char: '，', pinyin: null },
+      { char: '世', pinyin: 'shì' },
+      { char: '界', pinyin: 'jiè' }
+    ])
+  })
+
+  it('handles missing pinyin syllables gracefully', () => {
+    expect(alignPinyin('你好', 'nǐ')).toEqual([
+      { char: '你', pinyin: 'nǐ' },
+      { char: '好', pinyin: null }
+    ])
+  })
+
+  it('handles null or undefined pinyin', () => {
+    expect(alignPinyin('你好', null)).toEqual([
+      { char: '你', pinyin: null },
+      { char: '好', pinyin: null }
+    ])
+  })
+})
 
 describe('splitCharacters', () => {
   it('splitCharacters_singleChar_returnsOneElement', () => {
