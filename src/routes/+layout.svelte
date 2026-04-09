@@ -24,7 +24,7 @@
         "/auth/reset",
     ];
 
-    let { children } = $props();
+    let { data, children } = $props();
 
     let session =
         $state<
@@ -115,19 +115,7 @@
 
     const activeProfile = $derived(getActiveProfile());
     const isAuthRoute = $derived(AUTH_ROUTES.includes(page.url.pathname));
-    const activeSection = $derived(
-        page.url.pathname.startsWith("/spellings")
-            ? "lists"
-            : page.url.pathname.startsWith("/words")
-              ? "words"
-              : page.url.pathname.startsWith("/dictionary")
-                ? "dictionary"
-                : page.url.pathname.startsWith("/homework")
-                  ? "homework"
-                  : page.url.pathname === "/about"
-                    ? "about"
-                    : "",
-    );
+    const activeSection = $derived(data.activeSection);
 </script>
 
 <div class="page-shell">
