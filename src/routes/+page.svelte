@@ -1,6 +1,5 @@
 <script lang="ts">
   import { supabase } from '$lib/supabase'
-  import { goto } from '$app/navigation'
   import { onMount } from 'svelte'
 
   let loggedIn = $state(false)
@@ -17,85 +16,136 @@
 
 <div class="landing">
   <section class="hero">
-    <hgroup>
-      <h1 class="logo">Inkido</h1>
-      <p class="tagline"><small>Mandarin Chinese spelling practice</small></p>
-    </hgroup>
-    <p class="sub">Build vocabulary in Mandarin Chinese. Create practice sets, practise spelling with stroke-by-stroke animation, and track progress across profiles.</p>
-    {#if loggedIn}
-      <a href="/spellings" class="cta cta-primary">Go to app →</a>
-    {:else}
-      <div class="cta-group">
-        <a href="/auth/signup" class="cta cta-primary">Get started — Free</a>
-        <a href="/auth/login" class="cta cta-secondary">Log in</a>
+    <div class="hero-inner">
+      <div class="hero-text">
+        <h1 class="wordmark">Inkido</h1>
+        <p class="tagline">Learn Mandarin characters, stroke by stroke</p>
+        {#if loggedIn}
+          <a href="/spellings" class="cta cta-primary">Go to app →</a>
+        {:else}
+          <div class="cta-group">
+            <a href="/auth/signup" class="cta cta-primary">Get started — Free</a>
+            <a href="/auth/login" class="cta cta-secondary">Log in</a>
+          </div>
+        {/if}
       </div>
-    {/if}
-    </section>
+      <div class="hero-char-box" aria-hidden="true">
+        <span class="hero-char">墨</span>
+      </div>
+    </div>
+  </section>
 
-    <section class="features">
-    <article class="feature-card">
-      <span class="feature-icon" aria-hidden="true">📋</span>
-      <h2>Spelling sets</h2>
-      <p>Organise vocabulary into practice sets per topic or week. Colour-coded by stroke complexity so you can see difficulty at a glance.</p>
-    </article>
-    <div class="feature-card">
-      <span class="feature-icon">練</span>
-      <h2>Practice mode</h2>
-      <p>Flashcard-style practice with stroke-by-stroke animation. Keyboard and touch friendly.</p>
+  <section class="features">
+    <div class="feature-row feature-mint">
+      <div class="feature-inner">
+        <div class="feature-char" aria-hidden="true">写</div>
+        <div class="feature-body">
+          <h2>Write to learn</h2>
+          <p>Flashcard-style practice with stroke-by-stroke animation. Practise each character until the strokes are second nature.</p>
+        </div>
+      </div>
     </div>
-    <div class="feature-card">
-      <span class="feature-icon">掃</span>
-      <h2>Photo scan</h2>
-      <p>Photograph a worksheet and the app extracts the characters automatically — no typing required.</p>
+
+    <div class="feature-row feature-sky">
+      <div class="feature-inner feature-inner-reverse">
+        <div class="feature-body">
+          <h2>Train your ear</h2>
+          <p>Listen to a character and identify its tone. Instant right/wrong feedback with a running score. Four tones, no guessing.</p>
+        </div>
+        <div class="feature-char" aria-hidden="true">音</div>
+      </div>
     </div>
-    <div class="feature-card">
-      <span class="feature-icon">探</span>
-      <h2>Dictionary</h2>
-      <p>Search 94,000 Chinese characters by meaning, pinyin or stroke count. Tap any character for full detail.</p>
+
+    <div class="feature-row feature-lavender">
+      <div class="feature-inner">
+        <div class="feature-char" aria-hidden="true">字</div>
+        <div class="feature-body">
+          <h2>94,000 characters</h2>
+          <p>Search the full dictionary by meaning, pinyin, or stroke count. Photograph a worksheet and the characters are imported automatically.</p>
+        </div>
+      </div>
     </div>
   </section>
 </div>
 
 <style>
+  /* Full-bleed: escape the constrained main container */
   .landing {
-    padding: var(--size-4) 0 var(--size-8);
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+    margin-top: calc(var(--size-6) * -1);
+    margin-bottom: calc(var(--size-8) * -1);
   }
 
+  /* ── Hero ───────────────────────────────────────────── */
   .hero {
-    text-align: center;
-    padding: var(--size-10) 0 var(--size-10);
+    background: var(--color-lemon);
     border-bottom: var(--border);
-    margin-bottom: var(--size-10);
+    padding: var(--size-10) var(--size-6);
   }
 
-  .logo {
+  .hero-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--size-8);
+  }
+
+  .hero-text {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .wordmark {
     font-family: var(--font-display);
-    font-size: clamp(3.5rem, 12vw, 8rem);
+    font-size: clamp(3rem, 10vw, 7rem);
     font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.04em;
     line-height: 1;
-    margin: 0 0 var(--size-4);
+    margin: 0 0 var(--size-3);
   }
 
   .tagline {
-    font-size: var(--font-size-5);
+    font-size: clamp(var(--font-size-2), 2.5vw, var(--font-size-4));
     font-weight: 700;
-    margin: 0 0 var(--size-4);
+    color: var(--color-text);
+    margin: 0 0 var(--size-7);
+    max-width: 26ch;
+    line-height: 1.3;
   }
 
-  .sub {
-    max-width: 560px;
-    margin: 0 auto var(--size-8);
-    color: var(--color-text-muted);
-    font-size: var(--font-size-2);
-    line-height: 1.6;
+  .hero-char-box {
+    flex-shrink: 0;
+    border: var(--border);
+    box-shadow: var(--shadow-lg);
+    background: var(--color-surface);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--size-6);
+    gap: var(--size-2);
+    width: clamp(130px, 18vw, 210px);
+    aspect-ratio: 1;
   }
 
+  .hero-char {
+    font-family: var(--font-display);
+    font-size: clamp(3.5rem, 10vw, 6.5rem);
+    font-weight: 800;
+    line-height: 1;
+    color: var(--color-text);
+    display: block;
+  }
+
+  /* ── CTAs ───────────────────────────────────────────── */
   .cta-group {
     display: flex;
     gap: var(--size-3);
-    justify-content: center;
     flex-wrap: wrap;
   }
 
@@ -133,36 +183,122 @@
     color: var(--color-text);
   }
 
+  /* ── Feature rows ───────────────────────────────────── */
   .features {
-    display: grid;
-    gap: var(--size-4);
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    display: flex;
+    flex-direction: column;
   }
 
-  .feature-card {
-    background: var(--color-surface);
-    border: var(--border);
-    padding: var(--size-6);
-    box-shadow: var(--shadow-sm);
+  .feature-row {
+    border-bottom: var(--border);
+    padding: 0 var(--size-6);
   }
 
-  .feature-icon {
-    display: block;
-    font-size: var(--font-size-8);
+  .feature-row:last-child {
+    border-bottom: none;
+  }
+
+  .feature-mint     { background: var(--color-mint); }
+  .feature-sky      { background: var(--color-sky); }
+  .feature-lavender { background: var(--color-lavender); }
+
+  .feature-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    align-items: stretch;
+  }
+
+  .feature-inner-reverse {
+    flex-direction: row-reverse;
+  }
+
+  .feature-char {
+    flex-shrink: 0;
+    width: clamp(100px, 16vw, 200px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-size: clamp(3.5rem, 9vw, 6rem);
+    font-weight: 800;
     line-height: 1;
-    margin-bottom: var(--size-3);
-    color: var(--color-text-muted);
+    color: var(--color-text);
+    border-right: var(--border);
+    padding: var(--size-8) 0;
   }
 
-  .feature-card h2 {
-    font-size: var(--font-size-3);
-    margin: 0 0 var(--size-2);
+  .feature-inner-reverse .feature-char {
+    border-right: none;
+    border-left: var(--border);
   }
 
-  .feature-card p {
-    font-size: var(--font-size-1);
-    color: var(--color-text-muted);
+  .feature-body {
+    flex: 1;
+    padding: var(--size-8) var(--size-8);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .feature-body h2 {
+    font-size: clamp(var(--font-size-5), 3.5vw, var(--font-size-7));
+    font-weight: 800;
+    margin: 0 0 var(--size-3);
+    line-height: 1.05;
+  }
+
+  .feature-body p {
+    font-size: var(--font-size-2);
+    color: var(--color-text);
+    max-width: 44ch;
+    line-height: 1.6;
     margin: 0;
-    line-height: 1.5;
+    opacity: 0.7;
+  }
+
+  /* ── Mobile ─────────────────────────────────────────── */
+  @media (max-width: 600px) {
+    .hero {
+      padding: var(--size-7) var(--size-4);
+    }
+
+    .hero-inner {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--size-5);
+    }
+
+    .hero-char-box {
+      width: 110px;
+      align-self: flex-end;
+    }
+
+    .feature-row {
+      padding: 0 var(--size-4);
+    }
+
+    .feature-inner,
+    .feature-inner-reverse {
+      flex-direction: column;
+    }
+
+    .feature-char {
+      width: 100%;
+      border-right: none;
+      border-bottom: var(--border);
+      padding: var(--size-5) 0;
+      justify-content: flex-start;
+      font-size: var(--font-size-8);
+    }
+
+    .feature-inner-reverse .feature-char {
+      border-left: none;
+      border-bottom: var(--border);
+    }
+
+    .feature-body {
+      padding: var(--size-5) 0;
+    }
   }
 </style>
