@@ -3,7 +3,7 @@
   import { supabase } from '$lib/supabase'
   import { goto } from '$app/navigation'
   import { getActiveProfile } from '$lib/stores.svelte'
-  import { speak, unlockAudio } from '$lib/audio'
+  import { speak } from '$lib/audio'
   import { onMount } from 'svelte'
   import { alignPinyin, getTone } from '$lib/characters'
   import { getWordsData } from '$lib/dictionary'
@@ -20,6 +20,8 @@
   let currentIndex = $state(0)
   let showResult = $state(false)
   let selectedTone = $state<number | null>(null)
+  let correctCount = $state(0)
+  let answeredCount = $state(0)
   let errorMsg = $state('')
   let speechRate = $state(0.75)
   let nextAudioTimeout: ReturnType<typeof setTimeout> | null = null
@@ -90,6 +92,8 @@
     if (showResult) return
     selectedTone = tone
     showResult = true
+    answeredCount++
+    if (tone === currentItem?.tone) correctCount++
 
     if (activeProfile && currentItem) {
       supabase.from('tone_stats').insert({
@@ -161,6 +165,11 @@
         <p><small>Listen to the character and identify its tone.</small></p>
       </div>
       <div class="header-actions">
+        {#if answeredCount > 0}
+          <span class="score" aria-label="Score: {correctCount} correct out of {answeredCount} answered">
+            {correctCount} / {answeredCount}
+          </span>
+        {/if}
         <span class="progress">{currentIndex + 1} / {items.length}</span>
       </div>
     </hgroup>
@@ -200,7 +209,7 @@
             >
               <div class="tone-mark-container">
                 <span class="tone-mark">
-                  {#if tone === 1}¯{:else if tone === 2}´{:else if tone === 3}ˇ{:else if tone === 4}`{:else}•{/if}
+                  {#if tone === 1}ā{:else if tone === 2}á{:else if tone === 3}ǎ{:else if tone === 4}à{:else}a{/if}
                 </span>
               </div>
               <span class="tone-number">{tone}</span>
@@ -258,6 +267,18 @@
     margin-bottom: var(--size-1);
   }
 
+  .score {
+    font-size: var(--font-size-2);
+    font-weight: 800;
+    font-family: var(--font-display);
+    color: var(--color-text);
+    align-self: flex-end;
+    margin-bottom: var(--size-1);
+    background: var(--color-mint);
+    padding: var(--size-1) var(--size-3);
+    border: var(--border);
+  }
+
   .card-container {
     margin-bottom: var(--size-6);
   }
@@ -313,9 +334,9 @@
     width: 100%;
   }
 
-  @media (max-width: 600px) {
+  @media (max-width: 450px) {
     .tone-grid {
-      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
     }
   }
 

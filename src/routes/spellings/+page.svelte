@@ -118,7 +118,12 @@
                 {/if}
               </span>
               <div class="list-footer">
-                <a href="/spellings/{list.id}/practice" class="practice-link">Practice →</a>
+                <div class="practice-links">
+                  <a href="/spellings/{list.id}/practice" class="practice-link">Practice →</a>
+                  {#if list.language === 'zh'}
+                    <a href="/spellings/{list.id}/tones" class="tones-link">Tones →</a>
+                  {/if}
+                </div>
                 <div class="list-actions">
                   <button onclick={() => startRename(list)} aria-label="Rename {list.name}">Rename</button>
                   <button class="danger" onclick={() => handleDeleteList(list.id)} aria-label="Delete {list.name}">×</button>
@@ -217,7 +222,14 @@
     margin-top: var(--size-3);
   }
 
-  .practice-link {
+  .practice-links {
+    display: flex;
+    gap: var(--size-2);
+    flex-wrap: wrap;
+  }
+
+  .practice-link,
+  .tones-link {
     font-size: var(--font-size-1);
     font-weight: 700;
     text-transform: uppercase;
@@ -231,14 +243,21 @@
     transition: transform var(--transition-speed), box-shadow var(--transition-speed);
   }
 
-  .practice-link:hover {
+  .practice-link:hover,
+  .tones-link:hover {
     transform: translate(-2px, -2px);
     box-shadow: 2px 2px 0 var(--color-border);
   }
 
-  .practice-link:active {
+  .practice-link:active,
+  .tones-link:active {
     transform: translate(0, 0);
     box-shadow: none;
+  }
+
+  .tones-link {
+    background: var(--color-surface);
+    color: var(--color-text);
   }
 
   .list-actions {

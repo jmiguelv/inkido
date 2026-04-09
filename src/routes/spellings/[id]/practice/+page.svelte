@@ -206,7 +206,7 @@
               onclick={(e) => { e.stopPropagation(); handleAudio() }}
               aria-label="Speak {currentWord.character}"
             >
-              ♪ Listen
+              {quizMode ? '♪ Word' : '♪ Listen'}
             </button>
 
             {#if list.language === 'zh' && !flipped}
@@ -239,7 +239,13 @@
           {/if}
 
           {#if !flipped && !quizMode}
-            <p class="flip-hint">Tap to reveal</p>
+            <button
+              class="reveal-btn"
+              onclick={(e) => { e.stopPropagation(); handleFlip() }}
+              aria-label="Reveal word details"
+            >
+              Reveal
+            </button>
           {/if}
         </div>
 
@@ -298,15 +304,6 @@
     color: var(--color-text-muted);
     align-self: flex-end;
     margin-bottom: var(--size-1);
-  }
-
-  .flip-hint {
-    font-size: var(--font-size-0);
-    color: var(--color-text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    margin: var(--size-2) 0 0;
-    opacity: 0.6;
   }
 
   .error {
@@ -376,16 +373,16 @@
     font-size: var(--font-size-7);
     font-weight: 800;
     color: var(--color-text);
-    width: var(--size-10);
-    height: var(--size-10);
+    width: 80px;
+    height: 80px;
     display: flex;
     align-items: center;
     justify-content: center;
   }
 
   .quiz-char-block {
-    width: var(--size-10);
-    height: var(--size-10);
+    width: 80px;
+    height: 80px;
     background: var(--color-border);
     opacity: 0.15;
     border: var(--border);
@@ -468,12 +465,37 @@
   }
 
   .char-block {
-    width: var(--size-10);
-    height: var(--size-10);
+    width: 80px;
+    height: 80px;
     background: var(--color-border);
     opacity: 0.15;
     border: var(--border);
     flex-shrink: 0;
+  }
+
+  .reveal-btn {
+    padding: var(--size-2) var(--size-6);
+    border: var(--border);
+    border-radius: 0;
+    font-size: var(--font-size-2);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    background: var(--color-accent);
+    color: var(--color-accent-fg);
+    box-shadow: var(--shadow-sm);
+    cursor: pointer;
+    transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+  }
+
+  .reveal-btn:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 2px 2px 0 var(--color-border);
+  }
+
+  .reveal-btn:active {
+    transform: translate(0, 0);
+    box-shadow: none;
   }
 
   .phonetic {

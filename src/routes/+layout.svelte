@@ -273,7 +273,7 @@
     }
 
     :root[data-theme='dark'] header {
-        background-color: var(--color-bg);
+        background-color: var(--color-lemon);
     }
 
     nav {
