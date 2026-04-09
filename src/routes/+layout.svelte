@@ -250,7 +250,7 @@
 </footer>
 
 {#if dev}
-    <div class="dev-ribbon">DEV</div>
+    <div class="dev-ribbon">DEV ({__GIT_BRANCH__})</div>
 {/if}
 </div>
 

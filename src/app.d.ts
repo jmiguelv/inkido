@@ -2,6 +2,7 @@ import type { Session, SupabaseClient } from '@supabase/supabase-js'
 
 declare global {
 	const __APP_VERSION__: string
+	const __GIT_BRANCH__: string
 	namespace App {
 		interface Locals {
 			supabase: SupabaseClient
