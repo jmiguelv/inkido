@@ -37,10 +37,10 @@ Search 94,000 characters by meaning, pinyin, or the character itself. See stroke
 
 Inkido highlights the structure of characters using specific colors for their components:
 
-- **Green** strokes represent the **meaning** (semantic) component or the radical.
-- **Blue** strokes represent the **sound** (phonetic) component.
+- **Green** strokes represent one component used to build the character.
+- **Blue** strokes represent another component used to build the character.
 
-Understanding these components helps you see the logic behind complex characters and makes them much easier to remember.
+Seeing these parts separately helps you break down complex characters and remember them more easily.
 
 ## Data
 

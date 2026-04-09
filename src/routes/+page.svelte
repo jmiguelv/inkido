@@ -21,7 +21,7 @@
         <h1 class="wordmark">Inkido</h1>
         <p class="tagline">Learn Mandarin characters, stroke by stroke</p>
         {#if loggedIn}
-          <a href="/spellings" class="cta cta-primary">Go to app →</a>
+          <a href="/profiles" class="cta cta-primary">Go to app →</a>
         {:else}
           <div class="cta-group">
             <a href="/auth/signup" class="cta cta-primary">Get started — Free</a>
