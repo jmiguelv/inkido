@@ -7,17 +7,20 @@
 
   let scans = $state<HomeworkScan[]>([])
   let scanning = $state(false)
+  let isLoading = $state(true)
   let errorMsg = $state('')
 
   const activeProfile = $derived(getActiveProfile())
 
   async function loadScans() {
     if (!activeProfile) return
+    isLoading = true
     const { data, error } = await supabase
       .from('homework_scans')
       .select('*')
       .eq('profile_id', activeProfile.id)
       .order('created_at', { ascending: false })
+    isLoading = false
     if (error) throw error
     scans = data as HomeworkScan[]
   }
@@ -87,15 +90,20 @@
     <output role="alert" class="error">{errorMsg}</output>
   {/if}
 
-  {#if scans.length === 0}
+  {#if isLoading}
+    <p>Loading…</p>
+  {:else if scans.length === 0}
     <p>No scans yet. Upload a worksheet below.</p>
   {:else}
     <ul class="list-grid">
       {#each scans as scan (scan.id)}
         <li>
           <article class="list-card">
-            <span class="list-name">{new Date(scan.created_at).toLocaleDateString()}</span>
-            <span class="list-meta">{scan.summary}</span>
+            <span class="list-name">{scan.analysis.title || 'Worksheet'}</span>
+            <span class="list-meta">
+              <strong>{new Date(scan.created_at).toLocaleDateString()}</strong><br />
+              {scan.summary}
+            </span>
             <div class="list-footer">
               <a href="/homework/{scan.id}" class="view-btn">View →</a>
             </div>

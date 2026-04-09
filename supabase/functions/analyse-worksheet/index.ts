@@ -73,6 +73,7 @@ export async function handler(req: Request): Promise<Response> {
 Return ONLY valid JSON matching this exact schema — no markdown, no explanation:
 {
   "summary": "One sentence in the imperative describing what to do (e.g. 'Read the passage and answer the questions.').",
+  "title": "A short 3-4 word title for this worksheet based on the task (e.g. 'Fill in the Blanks' or 'Translation Exercise').",
   "worksheetType": "translation|circle-words|fill-in-blank|mixed",
   "questions": [
     {
@@ -125,8 +126,8 @@ Return ONLY valid JSON matching this exact schema — no markdown, no explanatio
 
   try {
     const cleaned = raw.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '').trim()
-    const { summary, worksheetType, questions } = JSON.parse(cleaned)
-    return new Response(JSON.stringify({ summary, analysis: { worksheetType, questions } }), {
+    const { summary, title, worksheetType, questions } = JSON.parse(cleaned)
+    return new Response(JSON.stringify({ summary, analysis: { title, worksheetType, questions } }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     })
   } catch (e) {

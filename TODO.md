@@ -6,6 +6,19 @@
 
 ## Done
 
+- [x] Homework card titles — the date alone isn't descriptive. Auto-generate a 3–4 word title
+      from the summary (e.g. "Fill in the Blanks") so cards are scannable at a glance.
+- [x] Audio on homework detail — those who can't pronounce the Chinese sample answers. Adding a ♪
+      button (reusing the existing speak() utility from $lib/audio.ts) would be immediately
+      useful.
+- [x] enrich-words has no tests — the other two functions do. Low-risk to add, and it's the
+      most-called function in the app.
+- [x] Delete from the detail page — currently you can only delete a scan from the list. Adding
+      a delete button on /homework/[id] with a redirect back to /homework would match how other
+      detail pages work.
+- [x] Loading states — most pages show nothing until the Supabase query resolves. A skeleton or
+      "Loading…" state on the card grids would improve perceived performance, especially on
+      mobile.
 - [x] fix: `nextAudioTimeout` variable declared in tones practice but never assigned — `setTimeout(handleAudio, 300)` on line 113 of `tones/+page.svelte` is still a raw leak; assign to the variable and cancel it in the `onMount` cleanup alongside the `keydown` listener
 - [x] fix: `setTimeout(handleAudio, 300)` in `handleNext` in tones practice has no cleanup — inconsistent with the `$effect` fix; store the return value and cancel it if the component is destroyed
 - [x] refactor: `AI_DAILY_LIMIT = 20` in `supabase/functions/enrich-words/index.ts` cannot import from `src/lib/constants.ts` (different runtime) — add a comment cross-referencing the frontend constant so the two values don't silently drift

@@ -125,7 +125,8 @@ ${JSON.stringify(phrases)}`
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     })
   } catch (e) {
-    return new Response(JSON.stringify({ error: `Failed to parse LLM response: ${e.message}`, raw }), {
+    const msg = e instanceof Error ? e.message : String(e)
+    return new Response(JSON.stringify({ error: `Failed to parse LLM response: ${msg}`, raw }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     })

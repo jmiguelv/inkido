@@ -4,26 +4,59 @@
   import { goto } from '$app/navigation'
   import { getActiveProfile } from '$lib/stores.svelte'
   import { onMount } from 'svelte'
-  import type { HomeworkScan } from '$lib/types'
+  import { speak } from '$lib/audio'
+  import type { HomeworkScan, UserPreferences } from '$lib/types'
 
   let scan = $state<HomeworkScan | null>(null)
+  let isLoading = $state(true)
   let errorMsg = $state('')
+  let speechRate = $state(0.75)
 
   const activeProfile = $derived(getActiveProfile())
   const scanId = $derived(page.params.id)
 
+  async function loadPreferences() {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (user) {
+      const prefs = user.user_metadata as Partial<UserPreferences>
+      if (prefs.speechRate !== undefined) speechRate = prefs.speechRate
+    }
+  }
+
   async function loadScan() {
+    isLoading = true
     const { data, error } = await supabase
       .from('homework_scans')
       .select('*')
       .eq('id', scanId)
       .single()
+    isLoading = false
     if (error) throw error
     scan = data as HomeworkScan
   }
 
+  async function handleDelete() {
+    if (!scan) return
+    if (!confirm('Are you sure you want to delete this scan?')) return
+    const { error } = await supabase.from('homework_scans').delete().eq('id', scan.id)
+    if (error) {
+      errorMsg = error.message
+    } else {
+      goto('/homework')
+    }
+  }
+
+  function handleAudio(text: string) {
+    try {
+      speak(text, 'zh', speechRate)
+    } catch (e) {
+      errorMsg = e instanceof Error ? e.message : 'Audio unavailable'
+    }
+  }
+
   onMount(() => {
     if (!activeProfile) { goto('/profiles'); return }
+    loadPreferences()
   })
 
   $effect(() => {
@@ -38,11 +71,13 @@
     <hgroup class="page-header">
       <div class="title-group">
         <a href="/homework" class="back-link">← Homework</a>
-        <h1>{new Date(scan.created_at).toLocaleDateString()}</h1>
+        <h1>{scan.analysis.title || 'Worksheet Details'}</h1>
         <p><small>{scan.summary}</small></p>
+        <p class="meta-date">{new Date(scan.created_at).toLocaleDateString()}</p>
       </div>
       <div class="header-actions">
         <span class="worksheet-type">{scan.analysis.worksheetType}</span>
+        <button class="danger" onclick={handleDelete} aria-label="Delete scan">Delete</button>
       </div>
     </hgroup>
 
@@ -57,7 +92,10 @@
           <div class="question-translation">{q.translation}</div>
           <div class="answer-row">
             <div class="answer-block">
-              <span class="answer-label">Chinese</span>
+              <div class="answer-header">
+                <span class="answer-label">Chinese</span>
+                <button class="icon-btn" onclick={() => handleAudio(q.sampleAnswer.chinese)} aria-label="Listen to answer">♪</button>
+              </div>
               <span class="answer-text answer-zh">{q.sampleAnswer.chinese}</span>
             </div>
             <div class="answer-block">
@@ -69,8 +107,10 @@
       {/each}
     </ol>
   </section>
-{:else}
+{:else if isLoading}
   <p>Loading…</p>
+{:else}
+  <p>Scan not found.</p>
 {/if}
 
 <style>
@@ -169,6 +209,72 @@
     text-transform: uppercase;
     letter-spacing: 0.07em;
     color: var(--color-text-muted);
+  }
+
+  .meta-date {
+    font-size: var(--font-size-1);
+    color: var(--color-text-muted);
+    font-weight: 700;
+  }
+
+  .header-actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--size-2);
+    align-items: flex-end;
+  }
+
+  .header-actions button {
+    padding: var(--size-1) var(--size-3);
+    font-size: var(--font-size-1);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    background: none;
+    color: var(--color-danger);
+    border: 2px solid var(--color-danger);
+    box-shadow: none;
+    cursor: pointer;
+    transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+  }
+
+  .header-actions button:hover {
+    background: var(--color-danger);
+    color: var(--color-danger-fg);
+    transform: translate(-2px, -2px);
+    box-shadow: 2px 2px 0 var(--color-border);
+  }
+
+  .header-actions button:active {
+    transform: translate(0, 0);
+    box-shadow: none;
+  }
+
+  .answer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .icon-btn {
+    background: none;
+    border: none;
+    box-shadow: none;
+    padding: 0 var(--size-2);
+    font-size: var(--font-size-3);
+    color: var(--color-text);
+    cursor: pointer;
+    opacity: 0.5;
+    transition: opacity var(--transition-speed), transform var(--transition-speed);
+  }
+
+  .icon-btn:hover {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+
+  .icon-btn:active {
+    transform: scale(0.95);
   }
 
   .answer-text {
