@@ -67,12 +67,12 @@ export async function handler(req: Request): Promise<Response> {
   const prompt = `You are helping a parent understand their child's homework worksheet written in "${language}".
 
 1. Identify the worksheet type: "translation", "circle-words", "fill-in-blank", or "mixed".
-2. Write a single plain-English sentence summarising what the child is being asked to do.
-3. For each question or task, extract the original text, translate the instruction into English, and provide a sample answer in both the original language and English.
+2. Write a single plain-English sentence summarising the task in the imperative — as a direct instruction (e.g. "Read the passage and fill in the blanks." not "The child is asked to read...").
+3. For each question or task, extract the original text, translate the instruction into English using the imperative, and provide a sample answer in both the original language and English.
 
 Return ONLY valid JSON matching this exact schema — no markdown, no explanation:
 {
-  "summary": "One sentence describing what the worksheet asks the child to do.",
+  "summary": "One sentence in the imperative describing what to do (e.g. 'Read the passage and answer the questions.').",
   "worksheetType": "translation|circle-words|fill-in-blank|mixed",
   "questions": [
     {
