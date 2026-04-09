@@ -60,12 +60,8 @@
     <hgroup class="page-header">
       <div class="title-group">
         <a href="/homework" class="back-link">← Homework</a>
-        <h1>{scan.analysis.title || 'Worksheet Details'}</h1>
-        <p><small>{scan.summary}</small></p>
-        <p class="meta-date">{new Date(scan.created_at).toLocaleDateString()}</p>
-      </div>
-      <div class="header-actions">
-        <span class="worksheet-type">{scan.analysis.worksheetType}</span>
+        <h1>{scan.analysis.title || 'Worksheet'} <span class="worksheet-type">{scan.analysis.worksheetType}</span></h1>
+        <p><small>{scan.summary} · {new Date(scan.created_at).toLocaleDateString()}</small></p>
       </div>
     </hgroup>
 
@@ -199,19 +195,6 @@
     color: var(--color-text-muted);
   }
 
-  .meta-date {
-    font-size: var(--font-size-1);
-    color: var(--color-text-muted);
-    font-weight: 700;
-  }
-
-  .header-actions {
-    display: flex;
-    flex-direction: column;
-    gap: var(--size-2);
-    align-items: flex-end;
-  }
-
   .answer-header {
     display: flex;
     justify-content: space-between;
@@ -232,11 +215,11 @@
 
   .icon-btn:hover {
     opacity: 1;
-    transform: scale(1.1);
+    transform: translate(-2px, -2px);
   }
 
   .icon-btn:active {
-    transform: scale(0.95);
+    transform: translate(0, 0);
   }
 
   .answer-text {
@@ -249,5 +232,9 @@
   .answer-zh {
     font-family: var(--font-display);
     font-size: var(--font-size-3);
+  }
+
+  .answer-block:nth-child(2) {
+    background: var(--color-sky);
   }
 </style>

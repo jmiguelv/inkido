@@ -13,7 +13,7 @@
   const activeProfile = $derived(getActiveProfile())
 
   async function loadScans() {
-    if (!activeProfile) return
+    if (!activeProfile) { isLoading = false; return }
     isLoading = true
     const { data, error } = await supabase
       .from('homework_scans')
@@ -28,19 +28,21 @@
   async function handleScan(event: Event) {
     if (!activeProfile) return
     const input = event.target as HTMLInputElement
-    const file = input.files?.[0]
-    if (!file) return
+    const files = Array.from(input.files || [])
+    if (files.length === 0) return
     scanning = true
     errorMsg = ''
     try {
-      const base64Image = await new Promise<string>((resolve, reject) => {
-        const reader = new FileReader()
-        reader.onload = () => resolve(reader.result as string)
-        reader.onerror = reject
-        reader.readAsDataURL(file)
-      })
+      const base64Images = await Promise.all(files.map(file => {
+        return new Promise<string>((resolve, reject) => {
+          const reader = new FileReader()
+          reader.onload = () => resolve(reader.result as string)
+          reader.onerror = reject
+          reader.readAsDataURL(file)
+        })
+      }))
       const res = await supabase.functions.invoke('analyse-worksheet', {
-        body: { base64Image, language: 'zh' }
+        body: { base64Images, language: 'zh' }
       })
       if (res.error) throw new Error(res.error.message)
       const { summary, analysis } = res.data as { summary: string; analysis: HomeworkScan['analysis'] }

@@ -6,6 +6,19 @@
 
 ## Done
 
+- [x] fix: Multiple image upload is half-wired — `handleScan` in `homework/+page.svelte` reads only `input.files?.[0]` and sends `base64Image` (singular), but the input has `multiple` and the edge function accepts `base64Images[]`. Iterate `input.files` and send the full array so multi-page worksheets are processed correctly.
+- [x] fix: `errorMsg` renders twice in `homework/+page.svelte` — one `<output role="alert">` sits above the grid (line ~87) and a second one inside the scan form. An error during scanning shows in both places simultaneously. Remove the one above the grid and keep only the one near the trigger.
+- [x] fix: `isLoading` never resets to `false` if `activeProfile` is absent in `homework/+page.svelte` — `loadScans` guards with `if (!activeProfile) return` without setting `isLoading = false`, so the page is permanently stuck on "Loading…" if the redirect in `onMount` is slow or blocked.
+- [x] fix: Audio button on homework detail uses `scale(1.1)` on hover — all other interactive elements in the app use `translate(-2px, -2px)`. Update `.icon-btn:hover` in `homework/[id]/+page.svelte` to match.
+- [x] fix: `.scan-detail` in `homework/[id]/+page.svelte` has no `max-width` — question cards stretch to the full ~1200px container on wide screens. Add `max-width: 800px; margin: 0 auto` to match other constrained pages.
+- [x] fix: Inconsistent title fallback text — list card uses `|| 'Worksheet'`, detail page uses `|| 'Worksheet Details'`. Align to the same string.
+- [x] refactor: `list-meta` in homework cards uses `<strong>` and `<br />` — all other list cards (spellings) use plain inline text with `·` separators. Change to `{new Date(scan.created_at).toLocaleDateString()} · {scan.summary}` matching the spellings card pattern.
+- [x] refactor: `worksheet-type` badge is placed inside `.header-actions` in `homework/[id]/+page.svelte` — that slot is reserved for action buttons or counters. Move it into `.title-group` alongside the description `<p>`, or inline it as a tag next to the h1.
+- [x] refactor: `.header-actions` in `homework/[id]/+page.svelte` is locally overridden to `flex-direction: column` — the only instance in the app; the global rule is a row. Remove the local override and let the global style apply.
+- [x] refactor: `meta-date` is a second `<p>` inside `.title-group` in `homework/[id]/+page.svelte` — the global `.title-group p` adds top margin to every `<p>`, creating double spacing. Merge the date into the existing description paragraph (e.g. `<small>{scan.summary} · {date}</small>`).
+- [x] refactor: Scan form in `homework/+page.svelte` uses `<div class="scan-form">` — the spellings create panel uses `<form>`. Wrap in `<form>` for semantic correctness and keyboard accessibility.
+- [x] refactor: Both `answer-block` elements in `homework/[id]/+page.svelte` use `background: var(--color-mint)` — they are visually identical. Use a different pastel (e.g. `--color-sky`) for the English block to visually distinguish the two columns.
+
 - [x] Homework card titles — the date alone isn't descriptive. Auto-generate a 3–4 word title
       from the summary (e.g. "Fill in the Blanks") so cards are scannable at a glance.
 - [x] Audio on homework detail — those who can't pronounce the Chinese sample answers. Adding a ♪
