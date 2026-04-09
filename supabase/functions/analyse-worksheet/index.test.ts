@@ -150,11 +150,30 @@ Deno.test('OpenRouter non-ok response propagates error', TEST_OPTS, async () => 
   assertEquals((await res.json()).error.startsWith('OpenRouter error:'), true)
 })
 
-Deno.test('OPENROUTER_MODEL env var is forwarded to API', TEST_OPTS, async () => {
+Deno.test('defaults to llama vision model when OPENROUTER_VISION_MODEL unset', TEST_OPTS, async () => {
   let sentModel = ''
   using _env = stub(Deno.env, 'get', (key: string) => {
     if (key === 'OPENROUTER_API_KEY') return 'test-key'
-    if (key === 'OPENROUTER_MODEL') return 'anthropic/claude-3.5-haiku'
+    if (key === 'SUPABASE_URL') return 'https://example.supabase.co'
+    if (key === 'SUPABASE_ANON_KEY') return 'anon-key'
+    return undefined
+  })
+  using _fetch = stub(globalThis, 'fetch', async (_input: unknown, init?: RequestInit) => {
+    const url = typeof _input === 'string' ? _input : (_input as Request).url
+    if (url.includes('rpc/increment_ai_usage')) return new Response('1', { status: 200 })
+    sentModel = JSON.parse(init?.body as string).model
+    return new Response(JSON.stringify({ choices: [{ message: { content: JSON.stringify(VALID_ANALYSIS) } }] }), { status: 200 })
+  })
+
+  await handler(makeRequest())
+  assertEquals(sentModel, 'google/gemma-4-26b-a4b-it:free')
+})
+
+Deno.test('OPENROUTER_VISION_MODEL env var is forwarded to API', TEST_OPTS, async () => {
+  let sentModel = ''
+  using _env = stub(Deno.env, 'get', (key: string) => {
+    if (key === 'OPENROUTER_API_KEY') return 'test-key'
+    if (key === 'OPENROUTER_VISION_MODEL') return 'anthropic/claude-3.5-haiku'
     if (key === 'SUPABASE_URL') return 'https://example.supabase.co'
     if (key === 'SUPABASE_ANON_KEY') return 'anon-key'
     return undefined

@@ -60,7 +60,9 @@ export async function handler(req: Request): Promise<Response> {
     })
   }
 
-  const model = Deno.env.get('OPENROUTER_MODEL') ?? 'google/gemma-3-27b-it:free'
+  // Vision tasks need a model that reliably supports image inputs.
+  // OPENROUTER_VISION_MODEL overrides; falls back to a free vision-capable model.
+  const model = Deno.env.get('OPENROUTER_VISION_MODEL') ?? 'google/gemma-4-26b-a4b-it:free'
 
   const prompt = `You are helping a parent understand their child's homework worksheet written in "${language}".
 
