@@ -122,9 +122,11 @@
               ? "words"
               : page.url.pathname.startsWith("/dictionary")
                 ? "dictionary"
-                : page.url.pathname === "/about"
-                  ? "about"
-                  : "",
+                : page.url.pathname.startsWith("/homework")
+                  ? "homework"
+                  : page.url.pathname === "/about"
+                    ? "about"
+                    : "",
     );
 </script>
 
@@ -156,6 +158,10 @@
                         <a
                             href="/dictionary"
                             class:active={activeSection === "dictionary"}>Dictionary</a
+                        >
+                        <a
+                            href="/homework"
+                            class:active={activeSection === "homework"}>Homework</a
                         >
                         {#if activeProfile}
                             <div class="profile-dropdown">

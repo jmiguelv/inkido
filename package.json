@@ -11,7 +11,7 @@
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"test:unit": "vitest run",
-		"test:functions": "deno test --allow-env supabase/functions/",
+		"test:functions": "cd supabase/functions && deno test --allow-env .",
 		"test": "pnpm test:unit && pnpm test:functions && pnpm test:e2e",
 		"test:e2e": "playwright test",
 		"supabase": "supabase"

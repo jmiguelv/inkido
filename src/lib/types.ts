@@ -62,3 +62,18 @@ export interface ToneStat {
   correct: boolean
   created_at: string
 }
+
+export interface HomeworkScan {
+  id: string
+  profile_id: string
+  summary: string
+  analysis: {
+    worksheetType: 'translation' | 'circle-words' | 'fill-in-blank' | 'mixed'
+    questions: {
+      original: string
+      translation: string
+      sampleAnswer: { chinese: string; english: string }
+    }[]
+  }
+  created_at: string
+}
