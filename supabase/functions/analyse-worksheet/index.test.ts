@@ -3,7 +3,7 @@ import { stub } from 'jsr:@std/testing/mock'
 import { handler } from './index.ts'
 
 const BASE_URL = 'http://localhost/analyse-worksheet'
-const VALID_BODY = { base64Image: 'data:image/jpeg;base64,abc123', language: 'zh' }
+const VALID_BODY = { base64Images: ['data:image/jpeg;base64,abc123'], language: 'zh' }
 const AUTH_HEADER: Record<string, string> = { 'Content-Type': 'application/json', 'Authorization': 'Bearer test-jwt' }
 
 const VALID_ANALYSIS = {
@@ -63,9 +63,9 @@ Deno.test('missing base64Image returns 400', TEST_OPTS, async () => {
   })
   using _fetch = stub(globalThis, 'fetch', mockFetch({ choices: [{ message: { content: JSON.stringify(VALID_ANALYSIS) } }] }))
 
-  const res = await handler(makeRequest({ base64Image: '', language: 'zh' }))
+  const res = await handler(makeRequest({ base64Images: [], language: 'zh' }))
   assertEquals(res.status, 400)
-  assertEquals((await res.json()).error, 'Missing base64Image')
+  assertEquals((await res.json()).error, 'Missing base64Images')
 })
 
 Deno.test('rate limit exceeded returns 429', TEST_OPTS, async () => {

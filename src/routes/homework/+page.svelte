@@ -130,9 +130,10 @@
         type="file"
         accept="image/*"
         capture="environment"
+        multiple
         disabled={scanning}
         onchange={handleScan}
-        aria-label="Upload worksheet image"
+        aria-label="Upload worksheet images"
         class="visually-hidden"
       />
     </label>

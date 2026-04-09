@@ -21,10 +21,15 @@ export async function handler(req: Request): Promise<Response> {
     })
   }
 
-  const { base64Image, language }: { base64Image: string; language: string } = await req.json()
+  const body = await req.json()
+  const { language } = body
+  let base64Images: string[] = body.base64Images || []
+  if (body.base64Image) {
+    base64Images.push(body.base64Image)
+  }
 
-  if (!base64Image) {
-    return new Response(JSON.stringify({ error: 'Missing base64Image' }), {
+  if (base64Images.length === 0) {
+    return new Response(JSON.stringify({ error: 'Missing base64Images' }), {
       status: 400,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     })
@@ -87,6 +92,8 @@ Return ONLY valid JSON matching this exact schema — no markdown, no explanatio
   ]
 }`
 
+  const imageContents = base64Images.map((img: string) => ({ type: 'image_url', image_url: { url: img } }))
+
   const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
     method: 'POST',
     headers: {
@@ -101,7 +108,7 @@ Return ONLY valid JSON matching this exact schema — no markdown, no explanatio
         role: 'user',
         content: [
           { type: 'text', text: prompt },
-          { type: 'image_url', image_url: { url: base64Image } }
+          ...imageContents
         ]
       }]
     })
