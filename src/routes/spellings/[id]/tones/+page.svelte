@@ -165,11 +165,6 @@
         <p><small>Listen to the character and identify its tone.</small></p>
       </div>
       <div class="header-actions">
-        {#if answeredCount > 0}
-          <span class="score" aria-label="Score: {correctCount} correct out of {answeredCount} answered">
-            {correctCount} / {answeredCount}
-          </span>
-        {/if}
         <span class="progress">{currentIndex + 1} / {items.length}</span>
       </div>
     </hgroup>
@@ -224,6 +219,12 @@
           {/each}
         </div>
 
+        {#if answeredCount > 0}
+          <p class="score" aria-label="Score: {correctCount} correct out of {answeredCount} answered">
+            {correctCount} / {answeredCount} correct
+          </p>
+        {/if}
+
         {#if showResult}
           <div class="result-actions">
             {#if currentIndex < items.length - 1}
@@ -268,15 +269,13 @@
   }
 
   .score {
-    font-size: var(--font-size-2);
-    font-weight: 800;
+    font-size: var(--font-size-1);
+    font-weight: 700;
     font-family: var(--font-display);
-    color: var(--color-text);
-    align-self: flex-end;
-    margin-bottom: var(--size-1);
-    background: var(--color-mint);
-    padding: var(--size-1) var(--size-3);
-    border: var(--border);
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin: 0;
   }
 
   .card-container {
