@@ -13,9 +13,6 @@
       useful.
 - [x] enrich-words has no tests — the other two functions do. Low-risk to add, and it's the
       most-called function in the app.
-- [x] Delete from the detail page — currently you can only delete a scan from the list. Adding
-      a delete button on /homework/[id] with a redirect back to /homework would match how other
-      detail pages work.
 - [x] Loading states — most pages show nothing until the Supabase query resolves. A skeleton or
       "Loading…" state on the card grids would improve perceived performance, especially on
       mobile.

@@ -35,17 +35,6 @@
     scan = data as HomeworkScan
   }
 
-  async function handleDelete() {
-    if (!scan) return
-    if (!confirm('Are you sure you want to delete this scan?')) return
-    const { error } = await supabase.from('homework_scans').delete().eq('id', scan.id)
-    if (error) {
-      errorMsg = error.message
-    } else {
-      goto('/homework')
-    }
-  }
-
   function handleAudio(text: string) {
     try {
       speak(text, 'zh', speechRate)
@@ -77,7 +66,6 @@
       </div>
       <div class="header-actions">
         <span class="worksheet-type">{scan.analysis.worksheetType}</span>
-        <button class="danger" onclick={handleDelete} aria-label="Delete scan">Delete</button>
       </div>
     </hgroup>
 
@@ -222,32 +210,6 @@
     flex-direction: column;
     gap: var(--size-2);
     align-items: flex-end;
-  }
-
-  .header-actions button {
-    padding: var(--size-1) var(--size-3);
-    font-size: var(--font-size-1);
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    background: none;
-    color: var(--color-danger);
-    border: 2px solid var(--color-danger);
-    box-shadow: none;
-    cursor: pointer;
-    transition: transform var(--transition-speed), box-shadow var(--transition-speed);
-  }
-
-  .header-actions button:hover {
-    background: var(--color-danger);
-    color: var(--color-danger-fg);
-    transform: translate(-2px, -2px);
-    box-shadow: 2px 2px 0 var(--color-border);
-  }
-
-  .header-actions button:active {
-    transform: translate(0, 0);
-    box-shadow: none;
   }
 
   .answer-header {
