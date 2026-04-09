@@ -8,10 +8,8 @@
   let scans = $state<HomeworkScan[]>([])
   let scanning = $state(false)
   let errorMsg = $state('')
-  let selectedId = $state<string | null>(null)
 
   const activeProfile = $derived(getActiveProfile())
-  const selectedScan = $derived(scans.find(s => s.id === selectedId) ?? null)
 
   async function loadScans() {
     if (!activeProfile) return
@@ -52,7 +50,6 @@
       if (insertError) throw insertError
 
       await loadScans()
-      selectedId = scans[0]?.id ?? null
     } catch (e) {
       errorMsg = e instanceof Error ? e.message : 'Failed to analyse worksheet'
     } finally {
@@ -64,7 +61,6 @@
   async function handleDelete(id: string) {
     const { error } = await supabase.from('homework_scans').delete().eq('id', id)
     if (error) throw error
-    if (selectedId === id) selectedId = null
     await loadScans()
   }
 
@@ -101,13 +97,7 @@
             <span class="list-name">{new Date(scan.created_at).toLocaleDateString()}</span>
             <span class="list-meta">{scan.summary}</span>
             <div class="list-footer">
-              <button
-                class="view-btn"
-                onclick={() => selectedId = selectedId === scan.id ? null : scan.id}
-                aria-expanded={selectedId === scan.id}
-              >
-                {selectedId === scan.id ? 'Hide ▲' : 'View →'}
-              </button>
+              <a href="/homework/{scan.id}" class="view-btn">View →</a>
             </div>
             <div class="list-actions">
               <button class="danger" onclick={() => handleDelete(scan.id)} aria-label="Delete scan">×</button>
@@ -116,29 +106,6 @@
         </li>
       {/each}
     </ul>
-  {/if}
-
-  {#if selectedScan}
-    <div class="scan-detail">
-      <ol class="question-list">
-        {#each selectedScan.analysis.questions as q, i (i)}
-          <li class="question-card">
-            <div class="question-original">{q.original}</div>
-            <div class="question-translation">{q.translation}</div>
-            <div class="answer-row">
-              <div class="answer-block">
-                <span class="answer-label">Chinese</span>
-                <span class="answer-text answer-zh">{q.sampleAnswer.chinese}</span>
-              </div>
-              <div class="answer-block">
-                <span class="answer-label">English</span>
-                <span class="answer-text">{q.sampleAnswer.english}</span>
-              </div>
-            </div>
-          </li>
-        {/each}
-      </ol>
-    </div>
   {/if}
 
   <hr />
@@ -229,6 +196,8 @@
   }
 
   .view-btn {
+    display: inline-block;
+    text-decoration: none;
     font-size: var(--font-size-1);
     font-weight: 700;
     text-transform: uppercase;
@@ -280,95 +249,6 @@
 
   .list-actions button.danger:hover {
     color: var(--color-danger);
-  }
-
-  /* ── Scan detail ─────────────────────────────────────── */
-  .scan-detail {
-    margin-bottom: var(--size-6);
-  }
-
-  .question-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: var(--size-3);
-    counter-reset: question;
-  }
-
-  .question-card {
-    border: var(--border);
-    padding: var(--size-4);
-    background: var(--color-surface);
-    box-shadow: var(--shadow-sm);
-    counter-increment: question;
-    position: relative;
-    padding-left: calc(var(--size-4) + 2ch + var(--size-3));
-  }
-
-  .question-card::before {
-    content: counter(question);
-    position: absolute;
-    left: var(--size-4);
-    top: var(--size-4);
-    font-family: var(--font-display);
-    font-weight: 800;
-    font-size: var(--font-size-2);
-    color: var(--color-text-muted);
-    line-height: 1.4;
-  }
-
-  .question-original {
-    font-family: var(--font-display);
-    font-size: var(--font-size-5);
-    font-weight: 800;
-    line-height: 1.2;
-    margin-bottom: var(--size-2);
-  }
-
-  .question-translation {
-    font-size: var(--font-size-2);
-    color: var(--color-text-muted);
-    margin-bottom: var(--size-4);
-    line-height: 1.4;
-  }
-
-  .answer-row {
-    display: flex;
-    gap: var(--size-4);
-    flex-wrap: wrap;
-  }
-
-  .answer-block {
-    flex: 1;
-    min-width: 140px;
-    display: flex;
-    flex-direction: column;
-    gap: var(--size-1);
-    background: var(--color-mint);
-    border: var(--border);
-    padding: var(--size-3);
-  }
-
-  .answer-label {
-    font-size: var(--font-size-0);
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.07em;
-    color: var(--color-text-muted);
-  }
-
-  .answer-text {
-    font-size: var(--font-size-2);
-    font-weight: 700;
-    color: var(--color-text);
-    line-height: 1.4;
-  }
-
-  .answer-zh {
-    font-family: var(--font-display);
-    font-size: var(--font-size-3);
   }
 
   /* ── Scan form ───────────────────────────────────────── */
