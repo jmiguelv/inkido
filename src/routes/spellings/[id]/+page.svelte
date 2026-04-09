@@ -226,9 +226,6 @@
         <p><small>Update words, add new ones manually, or scan from a photo.</small></p>
       </div>
       <div class="header-actions">
-        <button class="relookup-btn" disabled={busy || words.length === 0} onclick={handleReEnrichAll} aria-label="Re-lookup words">
-          ↻ Re-lookup
-        </button>
         {#if list.language === 'zh'}
           <a href="/spellings/{list.id}/tones" class="tones-link" class:disabled={busy || words.length === 0} onclick={(e) => { if (busy || words.length === 0) e.preventDefault() }}>Tones →</a>
         {/if}
@@ -299,6 +296,14 @@
   {/if}
 
   <div class="add-section">
+    {#if words.length > 0}
+      <div class="relookup-row">
+        <button class="relookup-btn" disabled={busy} onclick={handleReEnrichAll} aria-label="Re-lookup words">
+          ↻ Re-lookup all words
+        </button>
+        <p class="relookup-hint">Re-fetches pinyin and translations from the dictionary.</p>
+      </div>
+    {/if}
     <form onsubmit={(e) => { e.preventDefault(); handleAddWords() }} class="add-form">
       <h2>Add words</h2>
       <div class="field">
@@ -345,6 +350,20 @@
     font-weight: 700;
     letter-spacing: 0.1em;
     color: var(--color-text-muted);
+  }
+
+  .relookup-row {
+    display: flex;
+    align-items: center;
+    gap: var(--size-4);
+    margin-bottom: var(--size-5);
+    flex-wrap: wrap;
+  }
+
+  .relookup-hint {
+    font-size: var(--font-size-1);
+    color: var(--color-text-muted);
+    margin: 0;
   }
 
   .relookup-btn {
