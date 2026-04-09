@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.2.0] — 2026-04-08
+
+### Added
+- Tone Listening practice mode for Mandarin sets
+- Tone practice statistics recorded and displayed per profile (Accuracy % and count)
+- AI Usage tracking displayed in Settings with progress indicator and daily limit warning
+- Unique character extraction for focused tone practice
+- Keyboard navigation for Tone practice (Arrow keys + 1-5 for tones)
+
+### Performance
+- Added database indexes for all Foreign Key columns to optimize RLS checks
+- Added GIN Trigram indexes for dictionary translation/gloss searches
+
+### Fixed
+- Mapping: Repeated characters in words (e.g. 奶奶) now correctly show contextual pinyin in tables
+- Mapping: Tone practice now uses isolated dictionary pinyin to match TTS engine pronunciation
+- Bug: `showHint` now correctly resets during spelling practice navigation
+- Bug: Fixed potential memory leaks by cleaning up `setTimeout` in practice components
+- Typing: Standardized `setActiveProfile` and `CharacterWriter` TypeScript definitions
+
 ## [0.1.1] — 2026-04-04
 
 ### Changed

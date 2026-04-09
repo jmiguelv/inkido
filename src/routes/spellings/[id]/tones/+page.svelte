@@ -110,7 +110,7 @@
       selectedTone = null
       showResult = false
       // Play audio automatically after a small delay for the next character
-      setTimeout(handleAudio, 300)
+      nextAudioTimeout = setTimeout(handleAudio, 300)
     }
   }
 
@@ -131,7 +131,10 @@
   onMount(() => {
     if (!activeProfile) { goto('/profiles'); return }
     window.addEventListener('keydown', handleKeydown)
-    return () => window.removeEventListener('keydown', handleKeydown)
+    return () => {
+      window.removeEventListener('keydown', handleKeydown)
+      if (nextAudioTimeout) clearTimeout(nextAudioTimeout)
+    }
   })
 
   $effect(() => {
