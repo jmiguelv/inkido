@@ -57,13 +57,16 @@
 
 {#if scan}
   <section class="scan-detail">
-    <hgroup class="page-header">
+    <header class="page-header">
       <div class="title-group">
         <a href="/homework" class="back-link">← Homework</a>
-        <h1>{scan.analysis.title || 'Worksheet'} <span class="worksheet-type">{scan.analysis.worksheetType}</span></h1>
+        <h1>{scan.analysis.title || 'Worksheet'}</h1>
         <p><small>{scan.summary} · {new Date(scan.created_at).toLocaleDateString()}</small></p>
       </div>
-    </hgroup>
+      <div class="header-actions">
+        <span class="worksheet-type">{scan.analysis.worksheetType}</span>
+      </div>
+    </header>
 
     {#if errorMsg}
       <output role="alert" class="error">{errorMsg}</output>
@@ -100,10 +103,10 @@
 <style>
   .scan-detail {
     width: 100%;
-    margin: 0 auto;
   }
 
   .worksheet-type {
+    display: inline-block;
     font-size: var(--font-size-1);
     font-weight: 700;
     text-transform: uppercase;
@@ -112,8 +115,6 @@
     background: var(--color-lemon);
     border: var(--border);
     color: var(--color-text);
-    align-self: flex-end;
-    margin-bottom: var(--size-1);
   }
 
   .error {
@@ -127,10 +128,14 @@
     list-style: none;
     padding: 0;
     margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: var(--size-3);
+    columns: 2 340px;
+    column-gap: var(--size-3);
     counter-reset: question;
+  }
+
+  .question-list li {
+    break-inside: avoid;
+    margin-bottom: var(--size-3);
   }
 
   .question-card {
