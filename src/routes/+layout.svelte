@@ -140,16 +140,16 @@
                         <a href="/spellings" class:active={activeSection === "spellings"}
                             >Spellings</a
                         >
+                        <a
+                            href="/homework"
+                            class:active={activeSection === "homework"}>Homework</a
+                        >
                         <a href="/words" class:active={activeSection === "words"}
                             >My Words</a
                         >
                         <a
                             href="/dictionary"
                             class:active={activeSection === "dictionary"}>Dictionary</a
-                        >
-                        <a
-                            href="/homework"
-                            class:active={activeSection === "homework"}>Homework</a
                         >
                         {#if activeProfile}
                             <div class="profile-dropdown">

@@ -2,9 +2,18 @@
 
 ## Todo
 
+- [ ] feat: Chinese characters in `homework/[id]/+page.svelte` `q.original` are plain text — split using `splitCharacters` from `src/lib/characters.ts` and render each as a clickable element opening `CharacterModal` (same pattern as `spellings/[id]/practice/+page.svelte`)
+- [ ] fix: `CharacterModal.svelte` is too narrow on desktop — increase `max-width` on wider viewports
+- [ ] refactor: Gloss and meaning fields in `CharacterModal.svelte` should be visually grouped — move them adjacent in the layout
+- [ ] feat: Add optional context field to homework scan form in `homework/+page.svelte` — short textarea ("Describe the homework, e.g. topic or grade level") passed as `context` to `analyse-worksheet` edge function and injected into the prompt before the structured instructions
+- [ ] feat: Mark AI-generated answers in `homework/[id]/+page.svelte` — add a visible disclaimer on each answer block (e.g. small ✦ badge with tooltip "AI-generated — verify and write your own answers"), matching the `llm-badge` pattern used in spellings practice
+- [ ] feat: Inline translation on homework answer blocks — each answer block in `homework/[id]/+page.svelte` gets an edit button; user types a replacement in English, clicks translate, app calls MyMemory API (`https://api.mymemory.translated.net/get?q=...&langpair=en|zh&de={userEmail}`) using the authenticated user's email for the 10k words/day free tier, result replaces the stored answer via a PATCH to `homework_scans.analysis`
+
 ## In progress
 
 ## Done
+
+- [x] refactor: Homework should follow Spellings in the nav — swap order in `src/routes/+layout.svelte` so nav reads Spellings → Homework
 
 - [x] fix: Multiple image upload is half-wired — `handleScan` in `homework/+page.svelte` reads only `input.files?.[0]` and sends `base64Image` (singular), but the input has `multiple` and the edge function accepts `base64Images[]`. Iterate `input.files` and send the full array so multi-page worksheets are processed correctly.
 - [x] fix: `errorMsg` renders twice in `homework/+page.svelte` — one `<output role="alert">` sits above the grid (line ~87) and a second one inside the scan form. An error during scanning shows in both places simultaneously. Remove the one above the grid and keep only the one near the trigger.
