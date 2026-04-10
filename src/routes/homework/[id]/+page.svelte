@@ -57,17 +57,16 @@
 
 {#if scan}
   <section class="scan-detail">
-    <hgroup class="page-header">
+    <header class="page-header">
       <div class="title-group">
         <a href="/homework" class="back-link">← Homework</a>
-        <h1>{scan.analysis.title || 'Worksheet Details'}</h1>
-        <p><small>{scan.summary}</small></p>
-        <p class="meta-date">{new Date(scan.created_at).toLocaleDateString()}</p>
+        <h1>{scan.analysis.title || 'Worksheet'}</h1>
+        <p><small>{scan.summary} · {new Date(scan.created_at).toLocaleDateString()}</small></p>
       </div>
       <div class="header-actions">
         <span class="worksheet-type">{scan.analysis.worksheetType}</span>
       </div>
-    </hgroup>
+    </header>
 
     {#if errorMsg}
       <output role="alert" class="error">{errorMsg}</output>
@@ -104,10 +103,10 @@
 <style>
   .scan-detail {
     width: 100%;
-    margin: 0 auto;
   }
 
   .worksheet-type {
+    display: inline-block;
     font-size: var(--font-size-1);
     font-weight: 700;
     text-transform: uppercase;
@@ -116,8 +115,6 @@
     background: var(--color-lemon);
     border: var(--border);
     color: var(--color-text);
-    align-self: flex-end;
-    margin-bottom: var(--size-1);
   }
 
   .error {
@@ -131,10 +128,14 @@
     list-style: none;
     padding: 0;
     margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: var(--size-3);
+    columns: 2 340px;
+    column-gap: var(--size-3);
     counter-reset: question;
+  }
+
+  .question-list li {
+    break-inside: avoid;
+    margin-bottom: var(--size-3);
   }
 
   .question-card {
@@ -199,19 +200,6 @@
     color: var(--color-text-muted);
   }
 
-  .meta-date {
-    font-size: var(--font-size-1);
-    color: var(--color-text-muted);
-    font-weight: 700;
-  }
-
-  .header-actions {
-    display: flex;
-    flex-direction: column;
-    gap: var(--size-2);
-    align-items: flex-end;
-  }
-
   .answer-header {
     display: flex;
     justify-content: space-between;
@@ -232,11 +220,11 @@
 
   .icon-btn:hover {
     opacity: 1;
-    transform: scale(1.1);
+    transform: translate(-2px, -2px);
   }
 
   .icon-btn:active {
-    transform: scale(0.95);
+    transform: translate(0, 0);
   }
 
   .answer-text {
@@ -249,5 +237,9 @@
   .answer-zh {
     font-family: var(--font-display);
     font-size: var(--font-size-3);
+  }
+
+  .answer-block:nth-child(2) {
+    background: var(--color-sky);
   }
 </style>

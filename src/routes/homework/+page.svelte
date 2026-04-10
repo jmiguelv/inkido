@@ -13,7 +13,7 @@
   const activeProfile = $derived(getActiveProfile())
 
   async function loadScans() {
-    if (!activeProfile) return
+    if (!activeProfile) { isLoading = false; return }
     isLoading = true
     const { data, error } = await supabase
       .from('homework_scans')
@@ -28,19 +28,21 @@
   async function handleScan(event: Event) {
     if (!activeProfile) return
     const input = event.target as HTMLInputElement
-    const file = input.files?.[0]
-    if (!file) return
+    const files = Array.from(input.files || [])
+    if (files.length === 0) return
     scanning = true
     errorMsg = ''
     try {
-      const base64Image = await new Promise<string>((resolve, reject) => {
-        const reader = new FileReader()
-        reader.onload = () => resolve(reader.result as string)
-        reader.onerror = reject
-        reader.readAsDataURL(file)
-      })
+      const base64Images = await Promise.all(files.map(file => {
+        return new Promise<string>((resolve, reject) => {
+          const reader = new FileReader()
+          reader.onload = () => resolve(reader.result as string)
+          reader.onerror = reject
+          reader.readAsDataURL(file)
+        })
+      }))
       const res = await supabase.functions.invoke('analyse-worksheet', {
-        body: { base64Image, language: 'zh' }
+        body: { base64Images, language: 'zh' }
       })
       if (res.error) throw new Error(res.error.message)
       const { summary, analysis } = res.data as { summary: string; analysis: HomeworkScan['analysis'] }
@@ -86,10 +88,6 @@
     </div>
   </hgroup>
 
-  {#if errorMsg}
-    <output role="alert" class="error">{errorMsg}</output>
-  {/if}
-
   {#if isLoading}
     <p>Loading…</p>
   {:else if scans.length === 0}
@@ -99,11 +97,9 @@
       {#each scans as scan (scan.id)}
         <li>
           <article class="list-card">
-            <span class="list-name">{scan.analysis.title || 'Worksheet'}</span>
-            <span class="list-meta">
-              <strong>{new Date(scan.created_at).toLocaleDateString()}</strong><br />
-              {scan.summary}
-            </span>
+            <a href="/homework/{scan.id}" class="list-name">{scan.analysis.title || `Worksheet · ${new Date(scan.created_at).toLocaleDateString()}`}</a>
+            <span class="list-tag">{scan.analysis.worksheetType}</span>
+            <span class="list-meta">{new Date(scan.created_at).toLocaleDateString()} · {scan.summary}</span>
             <div class="list-footer">
               <a href="/homework/{scan.id}" class="view-btn">View →</a>
             </div>
@@ -183,11 +179,34 @@
   li:nth-child(5n+4) .list-card { background: var(--color-lavender); }
   li:nth-child(5n+5) .list-card { background: var(--color-lemon); }
 
+  li {
+    display: flex;
+  }
+
+  .list-card {
+    flex: 1;
+  }
+
   .list-name {
     font-weight: 800;
     font-family: var(--font-display);
     font-size: var(--font-size-4);
     color: var(--color-text);
+    text-decoration: none;
+  }
+
+  .list-name:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 3px;
+  }
+
+  .list-tag {
+    font-size: var(--font-size-0);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-text-muted);
   }
 
   .list-meta {
