@@ -5,12 +5,16 @@
   import { getActiveProfile } from '$lib/stores.svelte'
   import { onMount } from 'svelte'
   import { speak } from '$lib/audio'
+  import { splitCharacters, isChineseCharacter } from '$lib/characters'
+  import { getCharsData, getHoverStrokeClass } from '$lib/dictionary'
+  import CharacterModal from '$lib/components/CharacterModal.svelte'
   import type { HomeworkScan, UserPreferences } from '$lib/types'
 
   let scan = $state<HomeworkScan | null>(null)
   let isLoading = $state(true)
   let errorMsg = $state('')
   let speechRate = $state(0.75)
+  let modalChar = $state<string | null>(null)
 
   const activeProfile = $derived(getActiveProfile())
   const scanId = $derived(page.params.id)
@@ -30,9 +34,25 @@
       .select('*')
       .eq('id', scanId)
       .single()
+    
+    if (error) {
+      isLoading = false
+      throw error
+    }
+
+    const scanData = data as HomeworkScan
+    
+    // Pre-fetch character data for clickable characters
+    const allChars = [...new Set(scanData.analysis.questions.flatMap(q => 
+      splitCharacters(q.original).filter(isChineseCharacter)
+    ))]
+    
+    if (allChars.length > 0) {
+      await getCharsData(allChars)
+    }
+
+    scan = scanData
     isLoading = false
-    if (error) throw error
-    scan = data as HomeworkScan
   }
 
   function handleAudio(text: string) {
@@ -75,7 +95,18 @@
     <ol class="question-list">
       {#each scan.analysis.questions as q, i (i)}
         <li class="question-card">
-          <div class="question-original">{q.original}</div>
+          <div class="question-original">
+            {#each splitCharacters(q.original) as char}
+              {#if isChineseCharacter(char)}
+                <button 
+                  class="char-btn {getHoverStrokeClass(char)}"
+                  onclick={() => modalChar = char}
+                >{char}</button>
+              {:else}
+                {char}
+              {/if}
+            {/each}
+          </div>
           <div class="question-translation">{q.translation}</div>
           <div class="answer-row">
             <div class="answer-block">
@@ -94,6 +125,10 @@
       {/each}
     </ol>
   </section>
+
+  {#if modalChar}
+    <CharacterModal character={modalChar} onclose={() => modalChar = null} />
+  {/if}
 {:else if isLoading}
   <p>Loading…</p>
 {:else}

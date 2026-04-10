@@ -2,7 +2,6 @@
 
 ## Todo
 
-- [ ] feat: Chinese characters in `homework/[id]/+page.svelte` `q.original` are plain text — split using `splitCharacters` from `src/lib/characters.ts` and render each as a clickable element opening `CharacterModal` (same pattern as `spellings/[id]/practice/+page.svelte`)
 - [ ] fix: `CharacterModal.svelte` is too narrow on desktop — increase `max-width` on wider viewports
 - [ ] refactor: Gloss and meaning fields in `CharacterModal.svelte` should be visually grouped — move them adjacent in the layout
 - [ ] feat: Add optional context field to homework scan form in `homework/+page.svelte` — short textarea ("Describe the homework, e.g. topic or grade level") passed as `context` to `analyse-worksheet` edge function and injected into the prompt before the structured instructions
@@ -13,6 +12,7 @@
 
 ## Done
 
+- [x] feat: Chinese characters in `homework/[id]/+page.svelte` `q.original` are plain text — split using `splitCharacters` from `src/lib/characters.ts` and render each as a clickable element opening `CharacterModal` (same pattern as `spellings/[id]/practice/+page.svelte`)
 - [x] refactor: Homework should follow Spellings in the nav — swap order in `src/routes/+layout.svelte` so nav reads Spellings → Homework
 
 - [x] fix: Multiple image upload is half-wired — `handleScan` in `homework/+page.svelte` reads only `input.files?.[0]` and sends `base64Image` (singular), but the input has `multiple` and the edge function accepts `base64Images[]`. Iterate `input.files` and send the full array so multi-page worksheets are processed correctly.
