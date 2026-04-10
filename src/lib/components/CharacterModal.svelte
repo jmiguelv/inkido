@@ -112,6 +112,9 @@
     {#if charData.translation}
       <p class="detail-translation">{charData.translation}</p>
     {/if}
+    {#if charData.gloss}
+      <p class="detail-note">{charData.gloss}</p>
+    {/if}
     {#if charData.components?.length}
       <div class="components">
         <span class="components-label">Made of</span>
@@ -131,9 +134,6 @@
     {#if charData.hint}
       <p class="detail-hint">{charData.hint}</p>
     {/if}
-    {#if charData.gloss}
-      <p class="detail-note">{charData.gloss}</p>
-    {/if}
   {:else}
     <p class="detail-loading" aria-live="polite">Loading…</p>
   {/if}
@@ -146,7 +146,7 @@
     border-radius: 0;
     box-shadow: var(--shadow-lg);
     padding: var(--size-6);
-    width: min(320px, 90vw);
+    width: min(480px, 90vw);
     display: flex;
     flex-direction: column;
     gap: var(--size-4);
