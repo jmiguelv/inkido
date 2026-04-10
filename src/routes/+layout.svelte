@@ -24,7 +24,7 @@
         "/auth/reset",
     ];
 
-    let { children } = $props();
+    let { data, children } = $props();
 
     let session =
         $state<
@@ -115,17 +115,7 @@
 
     const activeProfile = $derived(getActiveProfile());
     const isAuthRoute = $derived(AUTH_ROUTES.includes(page.url.pathname));
-    const activeSection = $derived(
-        page.url.pathname.startsWith("/spellings")
-            ? "lists"
-            : page.url.pathname.startsWith("/words")
-              ? "words"
-              : page.url.pathname.startsWith("/dictionary")
-                ? "dictionary"
-                : page.url.pathname === "/about"
-                  ? "about"
-                  : "",
-    );
+    const activeSection = $derived(data.activeSection);
 </script>
 
 <div class="page-shell">
@@ -147,7 +137,7 @@
                 >
                 <div class="nav-right" class:open={menuOpen}>
                     {#if session}
-                        <a href="/spellings" class:active={activeSection === "lists"}
+                        <a href="/spellings" class:active={activeSection === "spellings"}
                             >Spellings</a
                         >
                         <a href="/words" class:active={activeSection === "words"}
@@ -156,6 +146,10 @@
                         <a
                             href="/dictionary"
                             class:active={activeSection === "dictionary"}>Dictionary</a
+                        >
+                        <a
+                            href="/homework"
+                            class:active={activeSection === "homework"}>Homework</a
                         >
                         {#if activeProfile}
                             <div class="profile-dropdown">
@@ -244,7 +238,7 @@
 </footer>
 
 {#if dev}
-    <div class="dev-ribbon">DEV</div>
+    <div class="dev-ribbon">DEV ({__GIT_BRANCH__})</div>
 {/if}
 </div>
 

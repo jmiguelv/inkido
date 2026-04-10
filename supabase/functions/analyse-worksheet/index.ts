@@ -6,7 +6,6 @@ const corsHeaders = {
 }
 
 // Keep this in sync with AI_LIMIT in src/lib/constants.ts
-// Cannot import directly due to different runtimes (Deno vs Node/Browser)
 const AI_DAILY_LIMIT = 20
 
 export async function handler(req: Request): Promise<Response> {
@@ -22,24 +21,28 @@ export async function handler(req: Request): Promise<Response> {
     })
   }
 
-  const { phrases, language }: { phrases: string[]; language: string } = await req.json()
+  const body = await req.json()
+  const { language } = body
+  let base64Images: string[] = body.base64Images || []
+  if (body.base64Image) {
+    base64Images.push(body.base64Image)
+  }
 
-  if (!phrases || phrases.length === 0) {
-    return new Response(JSON.stringify({ results: [] }), {
+  if (base64Images.length === 0) {
+    return new Response(JSON.stringify({ error: 'Missing base64Images' }), {
+      status: 400,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     })
   }
 
-  // Initialize Supabase client with the user's JWT to use RPC
   const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? ''
   const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY') ?? ''
   const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     global: { headers: { Authorization: authHeader } }
   })
 
-  // 1. Increment and check usage count
   const { data: usageCount, error: usageError } = await supabase.rpc('increment_ai_usage')
-  
+
   if (usageError) {
     return new Response(JSON.stringify({ error: `Usage check failed: ${usageError.message}` }), {
       status: 500,
@@ -62,27 +65,35 @@ export async function handler(req: Request): Promise<Response> {
     })
   }
 
-  // Use a faster, cheaper model for simple translation tasks
-  const model = Deno.env.get('OPENROUTER_MODEL') ?? 'google/gemma-3-27b-it:free'
+  // Vision tasks need a model that reliably supports image inputs.
+  // OPENROUTER_VISION_MODEL overrides; falls back to a free vision-capable model.
+  const model = Deno.env.get('OPENROUTER_VISION_MODEL') ?? 'google/gemma-4-26b-a4b-it:free'
 
-  const prompt = `You are a dictionary API for a language learning app.
-The target language is "${language}" (e.g., if "zh", assume Mandarin Chinese).
-I will provide a JSON array of words or phrases.
-You must return a JSON array of objects with the exact following structure for each item:
+  const prompt = `You are helping a parent understand their child's homework worksheet written in "${language}". 
+You may be provided with one or more images representing different pages or sections of the same homework assignment.
+
+1. Identify the worksheet type: "translation", "circle-words", "fill-in-blank", or "mixed".
+2. Write a single plain-English sentence summarising the task in the imperative — as a direct instruction (e.g. "Read the passage and fill in the blanks." not "The child is asked to read...").
+3. Process ALL provided images. For each question or task across all images, extract the original text, translate the instruction into English using the imperative, and provide a sample answer in both the original language and English.
+
+Return ONLY valid JSON matching this exact schema — no markdown, no explanation:
 {
-  "word": "The original phrase provided",
-  "pinyin": "The phonetic annotation (e.g., pinyin with tone marks for Chinese) using correct spacing",
-  "translation": "A concise, natural English translation"
-}
+  "summary": "One sentence in the imperative describing what to do (e.g. 'Read the passage and answer the questions.').",
+  "title": "A short 3-4 word title for this worksheet based on the task (e.g. 'Fill in the Blanks' or 'Translation Exercise').",
+  "worksheetType": "translation|circle-words|fill-in-blank|mixed",
+  "questions": [
+    {
+      "original": "Original text of the question/task as it appears on the worksheet",
+      "translation": "English translation of the question or instruction",
+      "sampleAnswer": {
+        "chinese": "Sample answer in the original language",
+        "english": "Sample answer in English"
+      }
+    }
+  ]
+}`
 
-IMPORTANT:
-- The "pinyin" field MUST provide a phonetic value for EVERY character in the input "word" in the exact same order, even if the input has typos or duplicate characters (e.g., if input is "杰出的的人才", return pinyin for ALL 6 characters: "jié chū de de rén cái").
-- Do NOT auto-correct the "word" in your pinyin or translation; translate the intended meaning but ensure the pinyin matches the exact character string provided.
-
-Return ONLY the JSON array, no markdown formatting (\`\`\`json etc.), no explanations.
-
-Input phrases:
-${JSON.stringify(phrases)}`
+  const imageContents = base64Images.map((img: string) => ({ type: 'image_url', image_url: { url: img } }))
 
   const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
     method: 'POST',
@@ -96,7 +107,10 @@ ${JSON.stringify(phrases)}`
       model,
       messages: [{
         role: 'user',
-        content: prompt
+        content: [
+          { type: 'text', text: prompt },
+          ...imageContents
+        ]
       }]
     })
   })
@@ -120,8 +134,8 @@ ${JSON.stringify(phrases)}`
 
   try {
     const cleaned = raw.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '').trim()
-    const results = JSON.parse(cleaned)
-    return new Response(JSON.stringify({ results }), {
+    const { summary, title, worksheetType, questions } = JSON.parse(cleaned)
+    return new Response(JSON.stringify({ summary, analysis: { title, worksheetType, questions } }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     })
   } catch (e) {

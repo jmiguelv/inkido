@@ -1,7 +1,7 @@
 {
 	"name": "inkido",
 	"private": true,
-	"version": "0.3.0",
+	"version": "0.3.1",
 	"type": "module",
 	"scripts": {
 		"dev": "vite dev",
@@ -11,10 +11,11 @@
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"test:unit": "vitest run",
-		"test:functions": "deno test --allow-env supabase/functions/",
+		"test:functions": "cd supabase/functions && deno test --allow-env .",
 		"test": "pnpm test:unit && pnpm test:functions && pnpm test:e2e",
 		"test:e2e": "playwright test",
-		"supabase": "supabase"
+		"supabase": "supabase",
+		"deploy:functions": "supabase functions deploy --no-verify-jwt"
 	},
 	"devDependencies": {
 		"@playwright/test": "^1.58.2",
