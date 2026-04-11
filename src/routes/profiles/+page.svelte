@@ -94,7 +94,7 @@
 <section>
   <hgroup class="page-header">
     <div class="title-group">
-      <h1>Who's learning today?</h1>
+      <h1>PROFILES</h1>
       <p><small>Switch between learner profiles to track individual progress.</small></p>
     </div>
   </hgroup>

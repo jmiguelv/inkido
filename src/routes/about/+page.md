@@ -1,6 +1,6 @@
 <hgroup class="page-header">
   <div class="title-group">
-    <h1>About Inkido</h1>
+    <h1>ABOUT</h1>
     <p><small>What it is and how it works.</small></p>
   </div>
 </hgroup>

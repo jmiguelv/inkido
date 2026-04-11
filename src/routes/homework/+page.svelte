@@ -86,7 +86,7 @@
 <section>
   <hgroup class="page-header">
     <div class="title-group">
-      <h1>Homework</h1>
+      <h1>HOMEWORK</h1>
       <p><small>Photograph a worksheet to get a translation and sample answers.</small></p>
     </div>
   </hgroup>

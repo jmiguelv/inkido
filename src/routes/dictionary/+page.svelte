@@ -175,7 +175,7 @@
 <section>
     <hgroup class="page-header">
         <div class="title-group">
-            <h1>Dictionary</h1>
+            <h1>DICTIONARY</h1>
             <p>
                 <small
                     >Search the dictionary by character, pinyin or meaning.</small

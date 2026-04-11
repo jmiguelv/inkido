@@ -70,7 +70,7 @@
 <section>
   <hgroup class="page-header">
     <div class="title-group">
-      <h1>Settings</h1>
+      <h1>SETTINGS</h1>
       <p><small>Manage your account and app preferences.</small></p>
     </div>
   </hgroup>

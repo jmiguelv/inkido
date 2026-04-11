@@ -138,18 +138,18 @@
                 <div class="nav-right" class:open={menuOpen}>
                     {#if session}
                         <a href="/spellings" class:active={activeSection === "spellings"}
-                            >Spellings</a
+                            >SPELLINGS</a
                         >
                         <a
                             href="/homework"
-                            class:active={activeSection === "homework"}>Homework</a
+                            class:active={activeSection === "homework"}>HOMEWORK</a
                         >
                         <a href="/words" class:active={activeSection === "words"}
-                            >My Words</a
+                            >MY WORDS</a
                         >
                         <a
                             href="/dictionary"
-                            class:active={activeSection === "dictionary"}>Dictionary</a
+                            class:active={activeSection === "dictionary"}>DICTIONARY</a
                         >
                         {#if activeProfile}
                             <div class="profile-dropdown">
@@ -187,27 +187,18 @@
                                                 class="profile-manage"
                                                 onclick={() => (dropdownOpen = false)}
                                             >
-                                                Manage profiles
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a
-                                                href="/settings"
-                                                class="profile-manage"
-                                                onclick={() => (dropdownOpen = false)}
-                                            >
-                                                Settings
+                                                MANAGE PROFILES
                                             </a>
                                         </li>
                                     </ul>
                                 {/if}
                             </div>
                         {/if}
-                        <button onclick={handleLogout}>Log out</button>
+                        <button onclick={handleLogout}>LOG OUT</button>
                     {:else}
-                        <a href="/about" class:active={activeSection === "about"}>About</a>
-                        <a href="/auth/login">Log in</a>
-                        <a href="/auth/signup" class="nav-signup">Sign up</a>
+                        <a href="/about" class:active={activeSection === "about"}>ABOUT</a>
+                        <a href="/auth/login">LOG IN</a>
+                        <a href="/auth/signup" class="nav-signup">SIGN UP</a>
                     {/if}
                     <button
                         class="theme-toggle"
