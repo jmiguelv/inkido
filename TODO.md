@@ -1,26 +1,23 @@
+# Inkido TODO.md
+
 ## Todo
-
-- [ ] refactor: Remove profile name from Spellings page heading (`src/routes/spellings/+page.svelte`) — only section in the app that includes the profile name in the h1; inconsistent with all other section headings
-...
-## Done
-
-- [x] perf: Reduce AI daily limit from 20 to 10 — update `AI_LIMIT` in `src/lib/constants.ts`, `AI_DAILY_LIMIT` in `supabase/functions/enrich-words/index.ts`, and `supabase/functions/analyse-worksheet/index.ts`
-- [ ] refactor: Footer needs more breathing space — increase padding/margin in footer styles
-- [ ] feat: Add `capture="environment"` to the spellings scan input in `spellings/[id]/+page.svelte` so tapping it on mobile opens the camera directly, matching the homework scan behaviour
-- [ ] refactor: Remove character data stats from footer and add them to the `/about` page instead
-- [ ] feat: Add a disclaimer to the site (footer or `/about`) — personal project, free to use, no guarantees; contact email is inkido.foyer772@passinbox.com
-- [ ] refactor: Standardise heading casing across the app — use ALL CAPS for section headings and nav items, Sentence case for subtitles and descriptions; eliminate Title Case
-- [ ] refactor: Update `/about` page to cover the Homework section and mark it as a work in progress
-- [ ] feat: Show pinyin as a tooltip when hovering over interactive characters throughout the app — consistent with existing hover behaviour but surface the phonetic annotation visually
-- [ ] feat: Add a `/privacy` page — what data is stored (email, profiles, word lists, homework scans), no third-party analytics, how to request deletion; link from footer
-- [ ] feat: Store a thumbnail of each homework scan — add a `thumbnail text` column to `homework_scans`; on the client, resize the first image to ~400px wide using a canvas element before insert (images are already base64 from `readAsDataURL`); display the thumbnail on the list card; no Storage bucket needed (lower priority)
 
 ## In progress
 
 ## Done
 
+- [x] feat: Store a thumbnail of each homework scan — add a `thumbnail text` column to `homework_scans`; on the client, resize the first image to ~400px wide using a canvas element before insert (images are already base64 from `readAsDataURL`); display the thumbnail on the list card; no Storage bucket needed (lower priority)
+- [x] feat: Add a `/privacy` page — what data is stored (email, profiles, word lists, homework scans), no third-party analytics, how to request deletion; link from footer
+- [x] feat: Show pinyin as a tooltip when hovering over interactive characters throughout the app — consistent with existing hover behaviour but surface the phonetic annotation visually
+- [x] refactor: Update `/about` page to cover the Homework section and mark it as a work in progress
+- [x] refactor: Standardise heading casing across the app — use ALL CAPS for section headings and nav items, Sentence case for subtitles and descriptions; eliminate Title Case
+- [x] feat: Add a disclaimer to the site (footer or `/about`) — personal project, free to use, no guarantees; contact email is inkido.foyer772@passinbox.com
+- [x] refactor: Remove character data stats from footer and add them to the `/about` page instead
+- [x] feat: Add `capture="environment"` to the spellings scan input in `spellings/[id]/+page.svelte` so tapping it on mobile opens the camera directly, matching the homework scan behaviour
+- [x] refactor: Footer needs more breathing space — increase padding/margin in footer styles
+- [x] refactor: Remove profile name from Spellings page heading (`src/routes/spellings/+page.svelte`) — only section in the app that includes the profile name in the h1; inconsistent with all other section headings
+- [x] perf: Reduce AI daily limit from 20 to 10 — update `AI_LIMIT` in `src/lib/constants.ts`, `AI_DAILY_LIMIT` in `supabase/functions/enrich-words/index.ts`, and `supabase/functions/analyse-worksheet/index.ts`
 - [x] feat: Redesign the home page (`src/routes/+page.svelte`) as a scrolly narrative — walk the user through the full journey: photograph worksheet → words detected → list created → pinyin + translation enriched → audio playback → spelling practice → character meanings → component breakdown; emphasise that the app combines multiple services (OCR, dictionary lookup, TTS, AI enrichment) into one seamless experience; each step revealed as they scroll, replacing the current static feature list
-
 - [x] feat: Inline translation on homework answer blocks — each answer block in `homework/[id]/+page.svelte` gets an edit button; user types a replacement in English, clicks translate, app calls MyMemory API (`https://api.mymemory.translated.net/get?q=...&langpair=en|zh&de={userEmail}`) using the authenticated user's email for the 10k words/day free tier, result replaces the stored answer via a PATCH to `homework_scans.analysis`
 - [x] feat: Mark AI-generated answers in `homework/[id]/+page.svelte` — add a visible disclaimer on each answer block (e.g. small ✦ badge with tooltip "AI-generated — verify and write your own answers"), matching the `llm-badge` pattern used in spellings practice
 - [x] feat: Add optional context field to homework scan form in `homework/+page.svelte` — short textarea ("Describe the homework, e.g. topic or grade level") passed as `context` to `analyse-worksheet` edge function and injected into the prompt before the structured instructions
@@ -28,7 +25,6 @@
 - [x] refactor: Gloss and meaning fields in `CharacterModal.svelte` should be visually grouped — move them adjacent in the layout
 - [x] feat: Chinese characters in `homework/[id]/+page.svelte` `q.original` are plain text — split using `splitCharacters` from `src/lib/characters.ts` and render each as a clickable element opening `CharacterModal` (same pattern as `spellings/[id]/practice/+page.svelte`)
 - [x] refactor: Homework should follow Spellings in the nav — swap order in `src/routes/+layout.svelte` so nav reads Spellings → Homework
-
 - [x] fix: Multiple image upload is half-wired — `handleScan` in `homework/+page.svelte` reads only `input.files?.[0]` and sends `base64Image` (singular), but the input has `multiple` and the edge function accepts `base64Images[]`. Iterate `input.files` and send the full array so multi-page worksheets are processed correctly.
 - [x] fix: `errorMsg` renders twice in `homework/+page.svelte` — one `<output role="alert">` sits above the grid (line ~87) and a second one inside the scan form. An error during scanning shows in both places simultaneously. Remove the one above the grid and keep only the one near the trigger.
 - [x] fix: `isLoading` never resets to `false` if `activeProfile` is absent in `homework/+page.svelte` — `loadScans` guards with `if (!activeProfile) return` without setting `isLoading = false`, so the page is permanently stuck on "Loading…" if the redirect in `onMount` is slow or blocked.
@@ -41,7 +37,6 @@
 - [x] refactor: `meta-date` is a second `<p>` inside `.title-group` in `homework/[id]/+page.svelte` — the global `.title-group p` adds top margin to every `<p>`, creating double spacing. Merge the date into the existing description paragraph (e.g. `<small>{scan.summary} · {date}</small>`).
 - [x] refactor: Scan form in `homework/+page.svelte` uses `<div class="scan-form">` — the spellings create panel uses `<form>`. Wrap in `<form>` for semantic correctness and keyboard accessibility.
 - [x] refactor: Both `answer-block` elements in `homework/[id]/+page.svelte` use `background: var(--color-mint)` — they are visually identical. Use a different pastel (e.g. `--color-sky`) for the English block to visually distinguish the two columns.
-
 - [x] Homework card titles — the date alone isn't descriptive. Auto-generate a 3–4 word title
       from the summary (e.g. "Fill in the Blanks") so cards are scannable at a glance.
 - [x] Audio on homework detail — those who can't pronounce the Chinese sample answers. Adding a ♪

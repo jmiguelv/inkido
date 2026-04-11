@@ -18,6 +18,7 @@
   let modalChar = $state<string | null>(null)
   let editingIndex = $state<number | null>(null)
   let editValue = $state('')
+  let editDialog = $state<HTMLDialogElement | null>(null)
   let userEmail = $state('')
 
   const activeProfile = $derived(getActiveProfile())
@@ -113,6 +114,12 @@
   function startEdit(index: number, value: string) {
     editingIndex = index
     editValue = value
+    setTimeout(() => editDialog?.showModal(), 0)
+  }
+
+  function closeEdit() {
+    editingIndex = null
+    editDialog?.close()
   }
 
   function handleAudio(text: string) {
@@ -183,9 +190,7 @@
                   <span class="llm-badge" title="AI-generated — verify and write your own answers" aria-label="AI-generated">&#10022;</span>
                 </span>
                 <div class="header-btns">
-                  {#if editingIndex !== i}
-                    <button class="icon-btn edit-btn" onclick={() => startEdit(i, q.sampleAnswer.english)} aria-label="Edit answer">✎</button>
-                  {/if}
+                  <button class="icon-btn edit-btn" onclick={() => startEdit(i, q.sampleAnswer.english)} aria-label="Edit answer">✎</button>
                   <button class="icon-btn" onclick={() => handleAudio(q.sampleAnswer.chinese)} aria-label="Listen to answer">♪</button>
                 </div>
               </div>
@@ -197,28 +202,11 @@
                   English
                   <span class="llm-badge" title="AI-generated — verify and write your own answers" aria-label="AI-generated">&#10022;</span>
                 </span>
-                {#if editingIndex !== i}
+                <div class="header-btns">
                   <button class="icon-btn edit-btn" onclick={() => startEdit(i, q.sampleAnswer.english)} aria-label="Edit answer">✎</button>
-                {/if}
-              </div>
-              {#if editingIndex === i}
-                <div class="edit-area">
-                  <textarea 
-                    bind:value={editValue} 
-                    disabled={isTranslating}
-                    placeholder="Type replacement in English..."
-                    rows="2"
-                  ></textarea>
-                  <div class="edit-actions">
-                    <button class="save-btn" onclick={() => handleTranslate(i)} disabled={isTranslating || !editValue}>
-                      {isTranslating ? 'Translating...' : 'Translate & Save'}
-                    </button>
-                    <button class="cancel-btn" onclick={() => editingIndex = null} disabled={isTranslating}>Cancel</button>
-                  </div>
                 </div>
-              {:else}
-                <span class="answer-text">{q.sampleAnswer.english}</span>
-              {/if}
+              </div>
+              <span class="answer-text">{q.sampleAnswer.english}</span>
             </div>
           </div>
         </li>
@@ -229,6 +217,27 @@
   {#if modalChar}
     <CharacterModal character={modalChar} onclose={() => modalChar = null} />
   {/if}
+
+  <dialog bind:this={editDialog} class="edit-modal" onclose={() => { editingIndex = null; editValue = '' }}>
+    {#if editingIndex !== null}
+      <div class="edit-area">
+        <label for="english-edit" class="edit-label">Update English Answer</label>
+        <textarea 
+          id="english-edit"
+          bind:value={editValue} 
+          disabled={isTranslating}
+          placeholder="Type replacement in English..."
+          rows="3"
+        ></textarea>
+        <div class="edit-actions">
+          <button class="save-btn" onclick={() => handleTranslate(editingIndex!)} disabled={isTranslating || !editValue.trim()}>
+            {isTranslating ? 'Translating...' : 'Translate & Save'}
+          </button>
+          <button class="cancel-btn" onclick={closeEdit} disabled={isTranslating}>Cancel</button>
+        </div>
+      </div>
+    {/if}
+  </dialog>
 {:else if isLoading}
   <p>Loading…</p>
 {:else}
@@ -401,17 +410,38 @@
     background: var(--color-sky);
   }
 
+  .edit-modal {
+    background: var(--color-surface);
+    border: var(--border);
+    border-radius: 0;
+    box-shadow: var(--shadow-lg);
+    padding: var(--size-6);
+    width: min(480px, 90vw);
+  }
+
+  .edit-modal::backdrop {
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(2px);
+  }
+
   .edit-area {
     display: flex;
     flex-direction: column;
-    gap: var(--size-2);
+    gap: var(--size-3);
     width: 100%;
+  }
+
+  .edit-label {
+    font-size: var(--font-size-2);
+    font-weight: 700;
+    color: var(--color-text);
+    margin: 0;
   }
 
   .edit-area textarea {
     width: 100%;
     font-size: var(--font-size-1);
-    padding: var(--size-2);
+    padding: var(--size-3);
     border: var(--border);
     resize: vertical;
   }
@@ -419,6 +449,7 @@
   .edit-actions {
     display: flex;
     gap: var(--size-2);
+    justify-content: flex-end;
   }
 
   .edit-actions button {
