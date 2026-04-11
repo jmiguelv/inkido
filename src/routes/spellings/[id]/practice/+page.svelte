@@ -2,13 +2,14 @@
   import { page } from '$app/state'
   import { supabase } from '$lib/supabase'
   import { goto } from '$app/navigation'
-  import { getActiveProfile } from '$lib/stores.svelte'
+  import { getActiveProfile, setPetMood } from '$lib/stores.svelte'
   import { speak, unlockAudio } from '$lib/audio'
   import { onMount } from 'svelte'
   import { splitCharacters, alignPinyin } from '$lib/characters'
   import { getCharsData, getStrokeClass, getHoverStrokeClass } from '$lib/dictionary'
   import CharacterModal from '$lib/components/CharacterModal.svelte'
   import CharacterWriter from '$lib/components/CharacterWriter.svelte'
+  import { fireConfetti } from '$lib/confetti'
   import type { Word, WordList } from '$lib/types'
 
   let list = $state<WordList | null>(null)
@@ -66,10 +67,12 @@
   }
 
   function handleQuizComplete() {
+    setPetMood('happy')
     if (quizCharIndex < currentChars.length - 1) {
       quizCharIndex++
     } else {
-      // Word complete! Flip to show details
+      // Word complete!
+      fireConfetti()
       quizMode = false
       flipped = true
     }

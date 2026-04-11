@@ -15,6 +15,7 @@
     } from "$lib/stores.svelte";
     import { onMount } from "svelte";
     import type { Profile } from "$lib/types";
+    import PixelPet from "$lib/components/PixelPet.svelte";
 
     const AUTH_ROUTES = [
         "/auth/login",
@@ -36,6 +37,7 @@
     let profiles = $state<Profile[]>([]);
     let dropdownOpen = $state(false);
     let menuOpen = $state(false);
+    let petVisible = $state(true);
 
     async function loadProfiles() {
         const { data } = await supabase
@@ -210,6 +212,13 @@
                         <a href="/auth/signup" class="nav-signup">SIGN UP</a>
                     {/if}
                     <button
+                        class="pet-toggle"
+                        class:pet-off={!petVisible}
+                        onclick={() => (petVisible = !petVisible)}
+                        aria-label="Toggle pet"
+                        aria-pressed={petVisible}
+                    >🐼</button>
+                    <button
                         class="theme-toggle"
                         onclick={toggleTheme}
                         aria-label="Toggle theme"
@@ -239,6 +248,9 @@
 
 {#if dev}
     <div class="dev-ribbon">DEV ({__GIT_BRANCH__})</div>
+{/if}
+{#if petVisible}
+    <PixelPet />
 {/if}
 </div>
 
@@ -537,5 +549,9 @@
     footer a {
         color: var(--color-text-muted);
         text-underline-offset: 2px;
+    }
+
+    .pet-off {
+        opacity: 0.35;
     }
 </style>
