@@ -508,11 +508,11 @@
 
     footer {
         border-top: var(--border);
-        padding: var(--size-8) var(--size-4);
+        padding: var(--size-12) var(--size-4);
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: var(--size-3);
+        gap: var(--size-4);
         font-size: var(--font-size-0);
         color: var(--color-text-muted);
         text-align: center;
