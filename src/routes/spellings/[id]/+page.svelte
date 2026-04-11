@@ -327,6 +327,7 @@
           <input
             type="file"
             accept="image/*"
+            capture="environment"
             onchange={handlePhotoScan}
             disabled={scanLoading}
             class="visually-hidden"
