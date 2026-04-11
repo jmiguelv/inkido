@@ -35,6 +35,13 @@ export function getHoverStrokeClass(character: string): string {
 }
 
 /**
+ * Get pinyin for a character or word from cache if available.
+ */
+export function getCachedPinyin(text: string): string | null {
+  return wordCache.get(text)?.pinyin ?? null
+}
+
+/**
  * Fetch character data with caching.
  */
 export async function getCharData(char: string): Promise<ZHChar | null> {

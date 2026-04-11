@@ -6,7 +6,7 @@
   import { onMount } from 'svelte'
   import { speak } from '$lib/audio'
   import { splitCharacters, isChineseCharacter } from '$lib/characters'
-  import { getCharsData, getHoverStrokeClass } from '$lib/dictionary'
+  import { getCharsData, getWordsData, getHoverStrokeClass, getCachedPinyin } from '$lib/dictionary'
   import CharacterModal from '$lib/components/CharacterModal.svelte'
   import type { HomeworkScan, UserPreferences } from '$lib/types'
 
@@ -53,7 +53,10 @@
     ))]
     
     if (allChars.length > 0) {
-      await getCharsData(allChars)
+      await Promise.all([
+        getCharsData(allChars),
+        getWordsData(allChars)
+      ])
     }
 
     scan = scanData
@@ -160,6 +163,7 @@
                 <button 
                   class="char-btn {getHoverStrokeClass(char)}"
                   onclick={() => modalChar = char}
+                  title={getCachedPinyin(char) ?? undefined}
                 >{char}</button>
               {:else}
                 {char}

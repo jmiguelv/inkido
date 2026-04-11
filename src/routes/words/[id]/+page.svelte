@@ -13,6 +13,7 @@
         getCharsData,
         getWordsData,
         getHoverStrokeClass,
+        getCachedPinyin,
     } from "$lib/dictionary";
     import type { Word, WordList, ZHChar } from "$lib/types";
     import CharacterWriter from "$lib/components/CharacterWriter.svelte";
@@ -201,6 +202,12 @@
                             translation: w?.translation ?? null,
                         });
                     }
+                }
+
+                // Pre-fetch component pinyin for tooltips
+                const allCompChars = [...charDataMap.values()].flatMap(c => c.components?.map(comp => comp.character) || [])
+                if (allCompChars.length > 0) {
+                    await getWordsData(allCompChars);
                 }
             }
         } catch (e) {
@@ -445,10 +452,10 @@
                                                             };
                                                         }}
                                                         aria-label="Details for component {comp.character}"
+                                                        title={getCachedPinyin(comp.character) ?? undefined}
                                                     >
                                                         {comp.character}
-                                                    </button>
-                                                {/each}
+                                                    </button>                                                {/each}
                                             </div>
                                         {:else}
                                             -

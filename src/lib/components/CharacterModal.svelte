@@ -1,7 +1,7 @@
 <script lang="ts">
   import { speak } from '$lib/audio'
   import CharacterWriter from '$lib/components/CharacterWriter.svelte'
-  import { getCharData, getWordData, getHoverStrokeClass } from '$lib/dictionary'
+  import { getCharData, getWordData, getWordsData, getHoverStrokeClass, getCachedPinyin } from '$lib/dictionary'
   import type { ZHChar } from '$lib/types'
 
   const {
@@ -48,6 +48,12 @@
       const wordComponents = (charCount > 1) 
         ? [...char].map(cc => ({ character: cc, type: [] }))
         : (c?.components || [])
+
+      // Pre-fetch word data for components to get their pinyin
+      if (wordComponents.length > 0) {
+        const compChars = wordComponents.map(wc => wc.character)
+        await getWordsData(compChars)
+      }
 
       charData = {
         char: c?.char || w?.word || char,
@@ -126,6 +132,7 @@
               lang={language}
               onclick={() => _viewChar = comp.character}
               aria-label="Explore component {comp.character}"
+              title={getCachedPinyin(comp.character) ?? undefined}
             >{comp.character}</button>
           {/each}
         </div>

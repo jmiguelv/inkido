@@ -11,7 +11,7 @@
         alignPinyin,
     } from "$lib/characters";
     import { speak } from "$lib/audio";
-    import { getCharsData, getHoverStrokeClass } from "$lib/dictionary";
+    import { getCharsData, getHoverStrokeClass, getCachedPinyin } from "$lib/dictionary";
 
     type CharEntry = {
         char: string;
