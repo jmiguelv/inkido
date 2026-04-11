@@ -86,7 +86,7 @@
 <section>
   <hgroup class="page-header">
     <div class="title-group">
-      <h1>{activeProfile?.name ?? ''}'s Spellings</h1>
+      <h1>Spellings</h1>
       <p><small>Manage your practice sets, organized by topic or difficulty.</small></p>
     </div>
   </hgroup>

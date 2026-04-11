@@ -1,9 +1,10 @@
-# Inkido TODO.md
-
 ## Todo
 
-- [ ] perf: Reduce AI daily limit from 20 to 10 — update `AI_LIMIT` in `src/lib/constants.ts`, `AI_DAILY_LIMIT` in `supabase/functions/enrich-words/index.ts`, and `supabase/functions/analyse-worksheet/index.ts`
 - [ ] refactor: Remove profile name from Spellings page heading (`src/routes/spellings/+page.svelte`) — only section in the app that includes the profile name in the h1; inconsistent with all other section headings
+...
+## Done
+
+- [x] perf: Reduce AI daily limit from 20 to 10 — update `AI_LIMIT` in `src/lib/constants.ts`, `AI_DAILY_LIMIT` in `supabase/functions/enrich-words/index.ts`, and `supabase/functions/analyse-worksheet/index.ts`
 - [ ] refactor: Footer needs more breathing space — increase padding/margin in footer styles
 - [ ] feat: Add `capture="environment"` to the spellings scan input in `spellings/[id]/+page.svelte` so tapping it on mobile opens the camera directly, matching the homework scan behaviour
 - [ ] refactor: Remove character data stats from footer and add them to the `/about` page instead
