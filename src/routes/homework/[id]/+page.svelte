@@ -64,7 +64,11 @@
   }
 
   async function handleTranslate(index: number) {
-    if (!scan || !userEmail) return
+    if (!scan) return
+    if (!userEmail) {
+      errorMsg = 'User email required for translation service.'
+      return
+    }
     isTranslating = true
     errorMsg = ''
     try {
@@ -178,7 +182,12 @@
                   Chinese
                   <span class="llm-badge" title="AI-generated — verify and write your own answers" aria-label="AI-generated">&#10022;</span>
                 </span>
-                <button class="icon-btn" onclick={() => handleAudio(q.sampleAnswer.chinese)} aria-label="Listen to answer">♪</button>
+                <div class="header-btns">
+                  {#if editingIndex !== i}
+                    <button class="icon-btn edit-btn" onclick={() => startEdit(i, q.sampleAnswer.english)} aria-label="Edit answer">✎</button>
+                  {/if}
+                  <button class="icon-btn" onclick={() => handleAudio(q.sampleAnswer.chinese)} aria-label="Listen to answer">♪</button>
+                </div>
               </div>
               <span class="answer-text answer-zh">{q.sampleAnswer.chinese}</span>
             </div>
@@ -444,10 +453,16 @@
   }
 
   .edit-btn {
-    opacity: 0.25;
+    opacity: 0.6;
   }
 
   .edit-btn:hover {
     opacity: 1;
+  }
+
+  .header-btns {
+    display: flex;
+    gap: var(--size-1);
+    align-items: center;
   }
 </style>
