@@ -2,7 +2,8 @@
   import { page } from '$app/state'
   import { supabase } from '$lib/supabase'
   import { goto } from '$app/navigation'
-  import { getActiveProfile } from '$lib/stores.svelte'
+  import { getActiveProfile, setPetMood } from '$lib/stores.svelte'
+  import { fireConfetti } from '$lib/confetti'
   import { speak } from '$lib/audio'
   import { onMount } from 'svelte'
   import { alignPinyin, getTone } from '$lib/characters'
@@ -93,7 +94,10 @@
     selectedTone = tone
     showResult = true
     answeredCount++
-    if (tone === currentItem?.tone) correctCount++
+    const correct = tone === currentItem?.tone
+    if (correct) correctCount++
+    setPetMood(correct ? 'happy' : 'sad')
+    if (currentIndex === items.length - 1) fireConfetti()
 
     if (activeProfile && currentItem) {
       supabase.from('tone_stats').insert({

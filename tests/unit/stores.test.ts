@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 
 // Mock sessionStorage at the system boundary
 const sessionStorageMock = (() => {
@@ -13,8 +13,10 @@ const sessionStorageMock = (() => {
 
 vi.stubGlobal('sessionStorage', sessionStorageMock)
 
-const { getActiveProfile, setActiveProfile, clearActiveProfile, initActiveProfile } =
-  await import('../../src/lib/stores.svelte.ts')
+const {
+  getActiveProfile, setActiveProfile, clearActiveProfile, initActiveProfile,
+  getPetMood, setPetMood,
+} = await import('../../src/lib/stores.svelte.ts')
 
 describe('activeProfile', () => {
   beforeEach(() => {
@@ -50,5 +52,48 @@ describe('activeProfile', () => {
     initActiveProfile()
 
     expect(getActiveProfile()).toEqual(profile)
+  })
+})
+
+describe('petMood', () => {
+  beforeEach(() => {
+    vi.useFakeTimers()
+    setPetMood('idle')
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  it('petMood_initialState_isIdle', () => {
+    expect(getPetMood()).toBe('idle')
+  })
+
+  it('petMood_setHappy_returnsHappy', () => {
+    setPetMood('happy')
+    expect(getPetMood()).toBe('happy')
+  })
+
+  it('petMood_setIdle_setsNoRevertTimer', () => {
+    setPetMood('idle')
+    vi.advanceTimersByTime(10_000)
+    expect(getPetMood()).toBe('idle')
+  })
+
+  it('petMood_afterDuration_revertsToIdle', () => {
+    setPetMood('happy', 700)
+    expect(getPetMood()).toBe('happy')
+    vi.advanceTimersByTime(700)
+    expect(getPetMood()).toBe('idle')
+  })
+
+  it('petMood_setWhileTimerPending_cancelsExistingTimer', () => {
+    setPetMood('happy', 700)
+    vi.advanceTimersByTime(400)           // 400ms into happy timer
+    setPetMood('sad', 700)                 // replace with sad; cancels happy timer
+    vi.advanceTimersByTime(400)           // would have triggered happy (800ms total)
+    expect(getPetMood()).toBe('sad')       // still sad — sad timer not yet elapsed
+    vi.advanceTimersByTime(300)           // sad timer now complete (700ms since set)
+    expect(getPetMood()).toBe('idle')
   })
 })

@@ -50,3 +50,24 @@ export function toggleTheme(): void {
   theme = theme === 'light' ? 'dark' : 'light'
   localStorage.setItem(THEME_KEY, theme)
 }
+
+// ── Pixel pet ────────────────────────────────────────────────────────────
+export type PetMood = 'idle' | 'happy' | 'sad'
+
+let petMood = $state<PetMood>('idle')
+let petMoodTimer: ReturnType<typeof setTimeout> | null = null
+
+export function getPetMood(): PetMood {
+  return petMood
+}
+
+export function setPetMood(newMood: PetMood, ms = 700): void {
+  if (petMoodTimer) clearTimeout(petMoodTimer)
+  petMood = newMood
+  if (newMood !== 'idle') {
+    petMoodTimer = setTimeout(() => {
+      petMood = 'idle'
+      petMoodTimer = null
+    }, ms)
+  }
+}

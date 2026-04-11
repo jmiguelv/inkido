@@ -9,6 +9,7 @@
   import { getCharsData, getStrokeClass, getHoverStrokeClass } from '$lib/dictionary'
   import CharacterModal from '$lib/components/CharacterModal.svelte'
   import CharacterWriter from '$lib/components/CharacterWriter.svelte'
+  import { fireConfetti } from '$lib/confetti'
   import type { Word, WordList } from '$lib/types'
 
   let list = $state<WordList | null>(null)
@@ -101,6 +102,7 @@
       quizMode = false
       quizCharIndex = 0
       showHint = false
+      if (currentIndex === words.length - 1) fireConfetti()
     }
   }
 
