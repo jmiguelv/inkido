@@ -52,7 +52,6 @@ Seeing these parts separately helps you break down complex characters and rememb
 
 ## Data & Attribution
 
-- **Dictionary data**: Compiled from [CC-CEDICT](https://www.mdbg.net/chinese/dictionary?page=cc-cedict) and the [Unicode Unihan Database](https://www.unicode.org/charts/unihan.html).
 - **Character metadata**: Stroke counts, components, and definitions provided by the [Chinese Character Wiki](https://www.dong-chinese.com/wiki/home).
 - **Handwriting**: Stroke order animations and SVG data by [Hanzi Writer](https://hanziwriter.org).
 
