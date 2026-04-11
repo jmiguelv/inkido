@@ -26,6 +26,29 @@
     scans = data as HomeworkScan[]
   }
 
+  async function createThumbnail(base64Str: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const img = new Image()
+      img.onload = () => {
+        const canvas = document.createElement('canvas')
+        const MAX_WIDTH = 400
+        const scale = MAX_WIDTH / img.width
+        canvas.width = MAX_WIDTH
+        canvas.height = img.height * scale
+        
+        const ctx = canvas.getContext('2d')
+        if (!ctx) {
+          reject(new Error('Could not get canvas context'))
+          return
+        }
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
+        resolve(canvas.toDataURL('image/jpeg', 0.7))
+      }
+      img.onerror = reject
+      img.src = base64Str
+    })
+  }
+
   async function handleScan(event: Event) {
     if (!activeProfile) return
     const input = event.target as HTMLInputElement
@@ -42,6 +65,10 @@
           reader.readAsDataURL(file)
         })
       }))
+
+      // Create thumbnail from first image
+      const thumbnail = await createThumbnail(base64Images[0])
+
       const res = await supabase.functions.invoke('analyse-worksheet', {
         body: { base64Images, language: 'zh', context }
       })
@@ -52,6 +79,7 @@
         profile_id: activeProfile.id,
         summary,
         context,
+        thumbnail,
         analysis
       })
       if (insertError) throw insertError
@@ -100,6 +128,11 @@
       {#each scans as scan (scan.id)}
         <li>
           <article class="list-card">
+            {#if scan.thumbnail}
+              <div class="list-thumbnail">
+                <img src={scan.thumbnail} alt="" loading="lazy" />
+              </div>
+            {/if}
             <a href="/homework/{scan.id}" class="list-name">{scan.analysis.title || `Worksheet · ${new Date(scan.created_at).toLocaleDateString()}`}</a>
             <span class="list-tag">{scan.analysis.worksheetType}</span>
             <span class="list-meta">{new Date(scan.created_at).toLocaleDateString()} · {scan.summary}</span>
@@ -207,6 +240,20 @@
     gap: var(--size-2);
     box-shadow: var(--shadow-sm);
     position: relative;
+  }
+
+  .list-thumbnail {
+    margin: calc(var(--size-4) * -1) calc(var(--size-4) * -1) var(--size-2);
+    border-bottom: var(--border);
+    background: var(--color-bg);
+    aspect-ratio: 16/9;
+    overflow: hidden;
+  }
+
+  .list-thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 
   li:nth-child(5n+1) .list-card { background: var(--color-mint); }

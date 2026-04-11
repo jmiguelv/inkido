@@ -68,6 +68,7 @@ export interface HomeworkScan {
   profile_id: string
   summary: string
   context?: string
+  thumbnail?: string
   analysis: {
     title?: string
     worksheetType: 'translation' | 'circle-words' | 'fill-in-blank' | 'mixed'
