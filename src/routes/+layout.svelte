@@ -190,6 +190,15 @@
                                                 MANAGE PROFILES
                                             </a>
                                         </li>
+                                        <li>
+                                            <a
+                                                href="/settings"
+                                                class="profile-manage"
+                                                onclick={() => (dropdownOpen = false)}
+                                            >
+                                                SETTINGS
+                                            </a>
+                                        </li>
                                     </ul>
                                 {/if}
                             </div>
