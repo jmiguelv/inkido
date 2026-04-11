@@ -11,7 +11,7 @@
         alignPinyin,
     } from "$lib/characters";
     import { speak } from "$lib/audio";
-    import { getCharsData, getHoverStrokeClass } from "$lib/dictionary";
+    import { getCharsData, getHoverStrokeClass, getCachedPinyin } from "$lib/dictionary";
 
     type CharEntry = {
         char: string;
@@ -175,7 +175,7 @@
 <section>
     <hgroup class="page-header">
         <div class="title-group">
-            <h1>Dictionary</h1>
+            <h1>DICTIONARY</h1>
             <p>
                 <small
                     >Search the dictionary by character, pinyin or meaning.</small

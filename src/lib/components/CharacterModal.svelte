@@ -1,7 +1,7 @@
 <script lang="ts">
   import { speak } from '$lib/audio'
   import CharacterWriter from '$lib/components/CharacterWriter.svelte'
-  import { getCharData, getWordData, getHoverStrokeClass } from '$lib/dictionary'
+  import { getCharData, getWordData, getWordsData, getHoverStrokeClass, getCachedPinyin } from '$lib/dictionary'
   import type { ZHChar } from '$lib/types'
 
   const {
@@ -48,6 +48,12 @@
       const wordComponents = (charCount > 1) 
         ? [...char].map(cc => ({ character: cc, type: [] }))
         : (c?.components || [])
+
+      // Pre-fetch word data for components to get their pinyin
+      if (wordComponents.length > 0) {
+        const compChars = wordComponents.map(wc => wc.character)
+        await getWordsData(compChars)
+      }
 
       charData = {
         char: c?.char || w?.word || char,
@@ -112,6 +118,9 @@
     {#if charData.translation}
       <p class="detail-translation">{charData.translation}</p>
     {/if}
+    {#if charData.gloss}
+      <p class="detail-note">{charData.gloss}</p>
+    {/if}
     {#if charData.components?.length}
       <div class="components">
         <span class="components-label">Made of</span>
@@ -123,6 +132,7 @@
               lang={language}
               onclick={() => _viewChar = comp.character}
               aria-label="Explore component {comp.character}"
+              title={getCachedPinyin(comp.character) ?? undefined}
             >{comp.character}</button>
           {/each}
         </div>
@@ -130,9 +140,6 @@
     {/if}
     {#if charData.hint}
       <p class="detail-hint">{charData.hint}</p>
-    {/if}
-    {#if charData.gloss}
-      <p class="detail-note">{charData.gloss}</p>
     {/if}
   {:else}
     <p class="detail-loading" aria-live="polite">Loading…</p>
@@ -146,7 +153,7 @@
     border-radius: 0;
     box-shadow: var(--shadow-lg);
     padding: var(--size-6);
-    width: min(320px, 90vw);
+    width: min(480px, 90vw);
     display: flex;
     flex-direction: column;
     gap: var(--size-4);

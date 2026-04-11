@@ -138,18 +138,18 @@
                 <div class="nav-right" class:open={menuOpen}>
                     {#if session}
                         <a href="/spellings" class:active={activeSection === "spellings"}
-                            >Spellings</a
-                        >
-                        <a href="/words" class:active={activeSection === "words"}
-                            >My Words</a
-                        >
-                        <a
-                            href="/dictionary"
-                            class:active={activeSection === "dictionary"}>Dictionary</a
+                            >SPELLINGS</a
                         >
                         <a
                             href="/homework"
-                            class:active={activeSection === "homework"}>Homework</a
+                            class:active={activeSection === "homework"}>HOMEWORK</a
+                        >
+                        <a href="/words" class:active={activeSection === "words"}
+                            >MY WORDS</a
+                        >
+                        <a
+                            href="/dictionary"
+                            class:active={activeSection === "dictionary"}>DICTIONARY</a
                         >
                         {#if activeProfile}
                             <div class="profile-dropdown">
@@ -187,7 +187,7 @@
                                                 class="profile-manage"
                                                 onclick={() => (dropdownOpen = false)}
                                             >
-                                                Manage profiles
+                                                MANAGE PROFILES
                                             </a>
                                         </li>
                                         <li>
@@ -196,18 +196,18 @@
                                                 class="profile-manage"
                                                 onclick={() => (dropdownOpen = false)}
                                             >
-                                                Settings
+                                                SETTINGS
                                             </a>
                                         </li>
                                     </ul>
                                 {/if}
                             </div>
                         {/if}
-                        <button onclick={handleLogout}>Log out</button>
+                        <button onclick={handleLogout}>LOG OUT</button>
                     {:else}
-                        <a href="/about" class:active={activeSection === "about"}>About</a>
-                        <a href="/auth/login">Log in</a>
-                        <a href="/auth/signup" class="nav-signup">Sign up</a>
+                        <a href="/about" class:active={activeSection === "about"}>ABOUT</a>
+                        <a href="/auth/login">LOG IN</a>
+                        <a href="/auth/signup" class="nav-signup">SIGN UP</a>
                     {/if}
                     <button
                         class="theme-toggle"
@@ -228,9 +228,9 @@
     <div class="footer-meta">
         <span>Inkido v{__APP_VERSION__}</span>
         <span class="footer-sep">·</span>
-        <a href="/about">About</a>
+        <a href="/about">ABOUT</a>
         <span class="footer-sep">·</span>
-        <span>Character data from <a href="https://www.dong-chinese.com/wiki/home" target="_blank" rel="noopener noreferrer">Chinese Character Wiki</a></span>
+        <a href="/privacy">PRIVACY</a>
     </div>
     <a href="https://ko-fi.com/Y8Y51X838W" target="_blank" rel="noopener noreferrer" class="kofi-link">
         <img height="36" style="border:0;height:36px;" src="https://storage.ko-fi.com/cdn/kofi2.png?v=6" alt="Buy Me a Coffee at ko-fi.com" />
@@ -264,6 +264,7 @@
         border-bottom: var(--border);
         box-shadow: 0 3px 0 var(--color-border);
         position: relative;
+        z-index: 10;
     }
 
     :root[data-theme='dark'] header {
@@ -507,11 +508,11 @@
 
     footer {
         border-top: var(--border);
-        padding: var(--size-5) var(--size-4);
+        padding: var(--size-10) var(--size-4);
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: var(--size-3);
+        gap: var(--size-4);
         font-size: var(--font-size-0);
         color: var(--color-text-muted);
         text-align: center;

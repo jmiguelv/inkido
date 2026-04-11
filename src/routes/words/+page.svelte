@@ -95,7 +95,7 @@
 <section>
     <hgroup class="page-header">
         <div class="title-group">
-            <h1>My Words</h1>
+            <h1>MY WORDS</h1>
             <p>
                 <small
                     >Review and search every word across all your practice
