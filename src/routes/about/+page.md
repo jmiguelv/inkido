@@ -33,7 +33,15 @@ Open a set and tap **Practice →**.
 
 Search ~94,000 characters and ~145,000 words by meaning, pinyin, or the character itself. See stroke count, components, and traditional variants.
 
-### 5. Character color-coding
+### 5. Homework (Work in Progress)
+
+Photograph a worksheet to get an instant breakdown of the tasks.
+
+- **Translation**: See the worksheet instructions in English.
+- **Sample answers**: Get AI-generated sample answers in Chinese and English.
+- **Interactive**: Tap any character in the original text to see its meaning and stroke order.
+
+### 6. Character color-coding
 
 Inkido highlights the structure of characters using specific colors for their components:
 
