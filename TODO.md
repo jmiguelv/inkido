@@ -9,16 +9,16 @@
 - [ ] refactor: Remove character data stats from footer and add them to the `/about` page instead
 - [ ] feat: Add a disclaimer to the site (footer or `/about`) — personal project, free to use, no guarantees; contact email is inkido.foyer772@passinbox.com
 - [ ] refactor: Standardise heading casing across the app — use ALL CAPS for section headings and nav items, Sentence case for subtitles and descriptions; eliminate Title Case
-- [ ] fix: Home page (`src/routes/+page.svelte`) is broken on mobile — audit layout, full-bleed section, hero sizing, and feature rows for small viewports
 - [ ] refactor: Update `/about` page to cover the Homework section and mark it as a work in progress
 - [ ] feat: Show pinyin as a tooltip when hovering over interactive characters throughout the app — consistent with existing hover behaviour but surface the phonetic annotation visually
 - [ ] feat: Add a `/privacy` page — what data is stored (email, profiles, word lists, homework scans), no third-party analytics, how to request deletion; link from footer
-- [ ] feat: Redesign the home page (`src/routes/+page.svelte`) as a scrolly narrative — walk the user through the full journey: photograph worksheet → words detected → list created → pinyin + translation enriched → audio playback → spelling practice → character meanings → component breakdown; emphasise that the app combines multiple services (OCR, dictionary lookup, TTS, AI enrichment) into one seamless experience; each step revealed as they scroll, replacing the current static feature list
-- [ ] feat: Store a thumbnail of each homework scan — add a `thumbnail_url` column to `homework_scans`, create a Supabase Storage bucket, upload a resized version of the first image during scanning, display thumbnail on the list card (lower priority)
+- [ ] feat: Store a thumbnail of each homework scan — add a `thumbnail text` column to `homework_scans`; on the client, resize the first image to ~400px wide using a canvas element before insert (images are already base64 from `readAsDataURL`); display the thumbnail on the list card; no Storage bucket needed (lower priority)
 
 ## In progress
 
 ## Done
+
+- [x] feat: Redesign the home page (`src/routes/+page.svelte`) as a scrolly narrative — walk the user through the full journey: photograph worksheet → words detected → list created → pinyin + translation enriched → audio playback → spelling practice → character meanings → component breakdown; emphasise that the app combines multiple services (OCR, dictionary lookup, TTS, AI enrichment) into one seamless experience; each step revealed as they scroll, replacing the current static feature list
 
 - [x] feat: Inline translation on homework answer blocks — each answer block in `homework/[id]/+page.svelte` gets an edit button; user types a replacement in English, clicks translate, app calls MyMemory API (`https://api.mymemory.translated.net/get?q=...&langpair=en|zh&de={userEmail}`) using the authenticated user's email for the 10k words/day free tier, result replaces the stored answer via a PATCH to `homework_scans.analysis`
 - [x] feat: Mark AI-generated answers in `homework/[id]/+page.svelte` — add a visible disclaimer on each answer block (e.g. small ✦ badge with tooltip "AI-generated — verify and write your own answers"), matching the `llm-badge` pattern used in spellings practice
