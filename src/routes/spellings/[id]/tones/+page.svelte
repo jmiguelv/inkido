@@ -70,7 +70,12 @@
         }
       }
     }
-    items = Array.from(uniqueItems.values())
+    const arr = Array.from(uniqueItems.values())
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]]
+    }
+    items = arr
 
     await supabase.from('word_lists').update({ last_practiced: new Date().toISOString() }).eq('id', listId)
 
