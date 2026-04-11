@@ -32,6 +32,7 @@
     let charDataMap = new SvelteMap<string, CharData>();
     let modalChar = $state<{ char: string } | null>(null);
     let loading = $state(true);
+    let chainIndex = $state(0);
     let saving = $state(false);
     let enriching = $state(false);
     let editing = $state(false);
@@ -167,6 +168,7 @@
 
     async function load() {
         loading = true;
+        chainIndex = 0;
         errorMsg = "";
         try {
             const { data: wordData, error: wordErr } = await supabase
@@ -321,7 +323,13 @@
                             {#if pinyin}
                                 <span class="char-unit-pinyin">{pinyin}</span>
                             {/if}
-                            <CharacterWriter {char} language={list.language} colorize={true} />
+                            <CharacterWriter
+                                {char}
+                                language={list.language}
+                                colorize={true}
+                                autoplay={i <= chainIndex}
+                                onAnimationDone={() => setTimeout(() => { chainIndex = i + 1 }, 400)}
+                            />
                         </div>
                     {/each}
                 </div>
