@@ -264,6 +264,7 @@
         border-bottom: var(--border);
         box-shadow: 0 3px 0 var(--color-border);
         position: relative;
+        z-index: 10;
     }
 
     :root[data-theme='dark'] header {
@@ -507,7 +508,7 @@
 
     footer {
         border-top: var(--border);
-        padding: var(--size-5) var(--size-4);
+        padding: var(--size-8) var(--size-4);
         display: flex;
         flex-direction: column;
         align-items: center;

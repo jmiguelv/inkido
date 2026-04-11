@@ -55,7 +55,7 @@
   <!-- ── 2. Services band ───────────────────────────────── -->
   <section class="services">
     <div class="services-inner">
-      <span class="services-label">One app that combines</span>
+      <h2 class="services-heading">One app.<br/>Everything you need.</h2>
       <div class="services-tags">
         <span class="tag">Photo scanning</span>
         <span class="tag">145k-entry dictionary</span>
@@ -278,10 +278,10 @@
 
   /* ── Services band ──────────────────────────────────── */
   .services {
-    background: var(--color-surface);
+    background: var(--color-accent);
     border-top: var(--border);
     border-bottom: var(--border);
-    padding: var(--size-6) var(--size-6);
+    padding: var(--size-10) var(--size-6);
   }
 
   .services-inner {
@@ -289,15 +289,16 @@
     margin: 0 auto;
     display: flex;
     flex-direction: column;
-    gap: var(--size-4);
+    gap: var(--size-6);
   }
 
-  .services-label {
-    font-size: var(--font-size-0);
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--color-text-muted);
+  .services-heading {
+    font-family: var(--font-display);
+    font-size: clamp(var(--font-size-6), 5vw, var(--font-size-8));
+    font-weight: 800;
+    line-height: 1.05;
+    margin: 0;
+    color: var(--color-accent-fg);
   }
 
   .services-tags {
@@ -307,9 +308,10 @@
   }
 
   .tag {
-    border: var(--border);
-    padding: var(--size-1) var(--size-3);
-    font-size: var(--font-size-0);
+    border: 2px solid var(--color-accent-fg);
+    color: var(--color-accent-fg);
+    padding: var(--size-2) var(--size-4);
+    font-size: var(--font-size-1);
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.06em;
