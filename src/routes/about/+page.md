@@ -52,8 +52,16 @@ Seeing these parts separately helps you break down complex characters and rememb
 
 ## Data & Attribution
 
+- **Dictionary data**: Compiled from [CC-CEDICT](https://www.mdbg.net/chinese/dictionary?page=cc-cedict) and the [Unicode Unihan Database](https://www.unicode.org/charts/unihan.html).
 - **Character metadata**: Stroke counts, components, and definitions provided by the [Chinese Character Wiki](https://www.dong-chinese.com/wiki/home).
 - **Handwriting**: Stroke order animations and SVG data by [Hanzi Writer](https://hanziwriter.org).
+
+## Built with
+
+- [SvelteKit](https://kit.svelte.dev) — frontend framework
+- [Supabase](https://supabase.com) — database, authentication, and edge functions
+- [OpenRouter](https://openrouter.ai) — AI model routing for worksheet analysis
+- [OpenProps](https://open-props.style) — CSS design tokens
 
 ## Disclaimer
 
@@ -61,6 +69,6 @@ Inkido is a personal project, created to help my own children learn Chinese. It 
 
 If you have feedback or need to report a bug, you can reach me at: [inkido.foyer772@passinbox.com](mailto:inkido.foyer772@passinbox.com)
 
-Your spelling sets and profiles are stored in Supabase. We don't sell or share your data.
+Your spelling sets and profiles are stored in [Supabase](https://supabase.com). We don't sell or share your data.
 
 </article>

@@ -7,7 +7,7 @@
 
 <article class="markdown-content">
 
-Inkido is designed to be a private tool for learning. We collect only what is necessary to make the app work for you.
+Inkido is designed to be a private tool for learning. We collect only what is necessary to make the app work for you. User data is stored in [Supabase](https://supabase.com) — see their [privacy policy](https://supabase.com/privacy) for details on how data is handled at the infrastructure level.
 
 ## Data we store
 
@@ -24,7 +24,7 @@ Inkido is designed to be a private tool for learning. We collect only what is ne
 
 ## AI Processing
 
-When you scan a worksheet, the image is sent to **OpenRouter** for analysis. This is required to extract the text and generate sample answers. OpenRouter's privacy policy applies to this transient data processing.
+When you scan a worksheet, the image is sent to **[OpenRouter](https://openrouter.ai)** for analysis. This is required to extract the text and generate sample answers. [OpenRouter's privacy policy](https://openrouter.ai/privacy) applies to this transient data processing.
 
 ## Your Rights
 

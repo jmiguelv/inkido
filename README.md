@@ -1,13 +1,22 @@
 # Inkido
 
-A web app that helps children practise spelling tests in Mandarin Chinese.
+A web app that helps children practise spelling tests in Mandarin Chinese. Parents photograph homework worksheets to build word lists; children practise with flashcard spelling, stroke writing, and tone listening exercises.
+
+## Features
+
+- **Homework scanning** — photograph a worksheet; OCR extracts questions and generates sample Chinese/English answers
+- **Spelling practice** — flashcard mode with stroke-by-stroke HanziWriter animation and hint toggle
+- **Tone practice** — listen to a word and identify which tone was played; stats tracked per learner
+- **Dictionary** — search ~145k words and ~94k characters; tap any character to see meaning, stroke count, and component breakdown
+- **Profiles** — separate progress tracking per child learner
 
 ## Tech Stack
 
 - **Frontend**: SvelteKit 2 + Svelte 5 (runes) + TypeScript
 - **Backend / Auth**: Supabase (Postgres + Auth + Edge Functions)
-- **AI**: OpenRouter (photo scanning only, via Supabase Edge Functions — defaults to `google/gemma-3-27b-it:free`)
-- **Dictionary**: CC-CEDICT / Unicode open-source data (~145k words, ~94k characters)
+- **AI**: OpenRouter (worksheet scanning, via Supabase Edge Functions — defaults to `google/gemma-3-27b-it:free`; 10 requests/day per user)
+- **Dictionary**: CC-CEDICT / Unicode Unihan / Chinese Character Wiki (~145k words, ~94k characters)
+- **Handwriting**: [Hanzi Writer](https://hanziwriter.org) stroke order data and animations
 - **CSS**: OpenProps design tokens
 - **Deployment**: Vercel (`@sveltejs/adapter-vercel`)
 
