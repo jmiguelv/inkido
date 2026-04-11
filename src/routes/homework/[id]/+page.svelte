@@ -82,6 +82,12 @@
         <a href="/homework" class="back-link">← Homework</a>
         <h1>{scan.analysis.title || 'Worksheet'}</h1>
         <p><small>{scan.summary} · {new Date(scan.created_at).toLocaleDateString()}</small></p>
+        {#if scan.context}
+          <div class="user-context">
+            <strong>Provided context:</strong>
+            <p>{scan.context}</p>
+          </div>
+        {/if}
       </div>
       <div class="header-actions">
         <span class="worksheet-type">{scan.analysis.worksheetType}</span>
@@ -157,6 +163,29 @@
     color: var(--color-danger);
     margin-bottom: var(--size-4);
     font-weight: 700;
+  }
+
+  .user-context {
+    margin-top: var(--size-4);
+    padding: var(--size-3);
+    background: var(--color-surface);
+    border-left: 4px solid var(--color-lemon);
+    font-size: var(--font-size-1);
+  }
+
+  .user-context strong {
+    display: block;
+    font-size: var(--font-size-0);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-text-muted);
+    margin-bottom: var(--size-1);
+  }
+
+  .user-context p {
+    margin: 0;
+    color: var(--color-text);
+    white-space: pre-wrap;
   }
 
   .question-list {

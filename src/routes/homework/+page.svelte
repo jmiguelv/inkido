@@ -51,6 +51,7 @@
       const { error: insertError } = await supabase.from('homework_scans').insert({
         profile_id: activeProfile.id,
         summary,
+        context,
         analysis
       })
       if (insertError) throw insertError
