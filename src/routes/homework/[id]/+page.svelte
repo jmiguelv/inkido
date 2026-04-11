@@ -103,7 +103,7 @@
       if (updateError) throw updateError
 
       scan.analysis = updatedAnalysis
-      editingIndex = null
+      closeEdit()
     } catch (e) {
       errorMsg = e instanceof Error ? e.message : 'Translation failed'
     } finally {
