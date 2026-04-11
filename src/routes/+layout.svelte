@@ -219,7 +219,9 @@
     <div class="footer-meta">
         <span>Inkido v{__APP_VERSION__}</span>
         <span class="footer-sep">·</span>
-        <a href="/about">About</a>
+        <a href="/about">ABOUT</a>
+        <span class="footer-sep">·</span>
+        <a href="/privacy">PRIVACY</a>
     </div>
     <a href="https://ko-fi.com/Y8Y51X838W" target="_blank" rel="noopener noreferrer" class="kofi-link">
         <img height="36" style="border:0;height:36px;" src="https://storage.ko-fi.com/cdn/kofi2.png?v=6" alt="Buy Me a Coffee at ko-fi.com" />
