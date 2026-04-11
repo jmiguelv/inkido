@@ -22,6 +22,7 @@
 		"@sveltejs/adapter-static": "^3.0.10",
 		"@sveltejs/kit": "^2.50.2",
 		"@sveltejs/vite-plugin-svelte": "^6.2.4",
+		"@types/canvas-confetti": "^1.9.0",
 		"mdsvex": "^0.12.7",
 		"supabase": "^2.84.6",
 		"svelte": "^5.54.0",
@@ -35,6 +36,7 @@
 		"@fontsource/space-grotesk": "^5.2.10",
 		"@supabase/supabase-js": "^2.101.1",
 		"@sveltejs/adapter-vercel": "^6.3.3",
+		"canvas-confetti": "^1.9.4",
 		"hanzi-writer": "^3.7.3",
 		"open-props": "^1.7.23"
 	}
