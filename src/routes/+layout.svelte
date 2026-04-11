@@ -499,7 +499,7 @@
 
     footer {
         border-top: var(--border);
-        padding: var(--size-12) var(--size-4);
+        padding: var(--size-10) var(--size-4);
         display: flex;
         flex-direction: column;
         align-items: center;
