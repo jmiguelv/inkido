@@ -2,7 +2,7 @@
   import { page } from '$app/state'
   import { supabase } from '$lib/supabase'
   import { goto } from '$app/navigation'
-  import { getActiveProfile } from '$lib/stores.svelte'
+  import { getActiveProfile, setPetMood } from '$lib/stores.svelte'
   import { speak, unlockAudio } from '$lib/audio'
   import { onMount } from 'svelte'
   import { splitCharacters, alignPinyin } from '$lib/characters'
@@ -67,10 +67,12 @@
   }
 
   function handleQuizComplete() {
+    setPetMood('happy')
     if (quizCharIndex < currentChars.length - 1) {
       quizCharIndex++
     } else {
-      // Word complete! Flip to show details
+      // Word complete!
+      fireConfetti()
       quizMode = false
       flipped = true
     }
@@ -102,7 +104,6 @@
       quizMode = false
       quizCharIndex = 0
       showHint = false
-      if (currentIndex === words.length - 1) fireConfetti()
     }
   }
 
