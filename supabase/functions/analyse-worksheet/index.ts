@@ -6,7 +6,7 @@ const corsHeaders = {
 }
 
 // Keep this in sync with AI_LIMIT in src/lib/constants.ts
-const AI_DAILY_LIMIT = 20
+const AI_DAILY_LIMIT = 10
 
 export async function handler(req: Request): Promise<Response> {
   if (req.method === 'OPTIONS') {

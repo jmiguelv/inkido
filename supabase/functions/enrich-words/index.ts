@@ -7,7 +7,7 @@ const corsHeaders = {
 
 // Keep this in sync with AI_LIMIT in src/lib/constants.ts
 // Cannot import directly due to different runtimes (Deno vs Node/Browser)
-const AI_DAILY_LIMIT = 20
+const AI_DAILY_LIMIT = 10
 
 export async function handler(req: Request): Promise<Response> {
   if (req.method === 'OPTIONS') {

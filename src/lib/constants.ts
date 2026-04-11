@@ -1,1 +1,1 @@
-export const AI_LIMIT = 20;
+export const AI_LIMIT = 10;
