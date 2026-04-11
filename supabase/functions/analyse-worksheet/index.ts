@@ -22,7 +22,7 @@ export async function handler(req: Request): Promise<Response> {
   }
 
   const body = await req.json()
-  const { language } = body
+  const { language, context } = body
   let base64Images: string[] = body.base64Images || []
   if (body.base64Image) {
     base64Images.push(body.base64Image)
@@ -69,10 +69,14 @@ export async function handler(req: Request): Promise<Response> {
   // OPENROUTER_VISION_MODEL overrides; falls back to a free vision-capable model.
   const model = Deno.env.get('OPENROUTER_VISION_MODEL') ?? 'google/gemma-4-26b-a4b-it:free'
 
-  const prompt = `You are helping a parent understand their child's homework worksheet written in "${language}". 
-You may be provided with one or more images representing different pages or sections of the same homework assignment.
+  let prompt = `You are helping a parent understand their child's homework worksheet written in "${language}". 
+You may be provided with one or more images representing different pages or sections of the same homework assignment.`
 
-1. Identify the worksheet type: "translation", "circle-words", "fill-in-blank", or "mixed".
+  if (context) {
+    prompt += `\n\nUSER PROVIDED CONTEXT: "${context}"`
+  }
+
+  prompt += `\n\n1. Identify the worksheet type: "translation", "circle-words", "fill-in-blank", or "mixed".
 2. Write a single plain-English sentence summarising the task in the imperative — as a direct instruction (e.g. "Read the passage and fill in the blanks." not "The child is asked to read...").
 3. Process ALL provided images. For each question or task across all images, extract the original text, translate the instruction into English using the imperative, and provide a sample answer in both the original language and English.
 

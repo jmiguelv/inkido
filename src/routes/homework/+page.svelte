@@ -8,6 +8,7 @@
   let scans = $state<HomeworkScan[]>([])
   let scanning = $state(false)
   let isLoading = $state(true)
+  let context = $state('')
   let errorMsg = $state('')
 
   const activeProfile = $derived(getActiveProfile())
@@ -42,7 +43,7 @@
         })
       }))
       const res = await supabase.functions.invoke('analyse-worksheet', {
-        body: { base64Images, language: 'zh' }
+        body: { base64Images, language: 'zh', context }
       })
       if (res.error) throw new Error(res.error.message)
       const { summary, analysis } = res.data as { summary: string; analysis: HomeworkScan['analysis'] }
@@ -50,10 +51,12 @@
       const { error: insertError } = await supabase.from('homework_scans').insert({
         profile_id: activeProfile.id,
         summary,
+        context,
         analysis
       })
       if (insertError) throw insertError
 
+      context = ''
       await loadScans()
     } catch (e) {
       errorMsg = e instanceof Error ? e.message : 'Failed to analyse worksheet'
@@ -114,9 +117,21 @@
 
   <hr />
 
-  <div class="scan-form">
+  <form class="scan-form">
     <h2>Scan worksheet</h2>
     <p class="scan-instructions">Take a photo of the homework worksheet. Inkido will describe the task, translate each question, and provide sample answers.</p>
+
+    <div class="field">
+      <label for="homework-context">Extra context (optional)</label>
+      <textarea 
+        id="homework-context"
+        bind:value={context}
+        placeholder="e.g. topic, grade level, or specific instructions"
+        disabled={scanning}
+        rows="3"
+      ></textarea>
+    </div>
+
     {#if errorMsg}
       <output role="alert" class="error">{errorMsg}</output>
     {/if}
@@ -133,16 +148,37 @@
         class="visually-hidden"
       />
     </label>
-  </div>
-</section>
+  </form>
+  </section>
 
-<style>
+  <style>
   .error {
     display: block;
     color: var(--color-danger);
     font-size: var(--font-size-1);
     font-weight: 700;
     margin-bottom: var(--size-3);
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--size-1);
+  }
+
+  .field label {
+    font-size: var(--font-size-0);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-text-muted);
+  }
+
+  textarea {
+    width: 100%;
+    resize: vertical;
+    padding: var(--size-2);
+    min-height: 80px;
   }
 
   /* ── Card grid — mirrors spellings/+page.svelte ─────── */

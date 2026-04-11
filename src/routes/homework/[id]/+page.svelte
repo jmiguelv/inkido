@@ -5,12 +5,20 @@
   import { getActiveProfile } from '$lib/stores.svelte'
   import { onMount } from 'svelte'
   import { speak } from '$lib/audio'
+  import { splitCharacters, isChineseCharacter } from '$lib/characters'
+  import { getCharsData, getHoverStrokeClass } from '$lib/dictionary'
+  import CharacterModal from '$lib/components/CharacterModal.svelte'
   import type { HomeworkScan, UserPreferences } from '$lib/types'
 
   let scan = $state<HomeworkScan | null>(null)
   let isLoading = $state(true)
+  let isTranslating = $state(false)
   let errorMsg = $state('')
   let speechRate = $state(0.75)
+  let modalChar = $state<string | null>(null)
+  let editingIndex = $state<number | null>(null)
+  let editValue = $state('')
+  let userEmail = $state('')
 
   const activeProfile = $derived(getActiveProfile())
   const scanId = $derived(page.params.id)
@@ -18,6 +26,7 @@
   async function loadPreferences() {
     const { data: { user } } = await supabase.auth.getUser()
     if (user) {
+      userEmail = user.email || ''
       const prefs = user.user_metadata as Partial<UserPreferences>
       if (prefs.speechRate !== undefined) speechRate = prefs.speechRate
     }
@@ -30,9 +39,73 @@
       .select('*')
       .eq('id', scanId)
       .single()
+    
+    if (error) {
+      isLoading = false
+      throw error
+    }
+
+    const scanData = data as HomeworkScan
+    
+    // Pre-fetch character data for clickable characters
+    const allChars = [...new Set(scanData.analysis.questions.flatMap(q => 
+      splitCharacters(q.original).filter(isChineseCharacter)
+    ))]
+    
+    if (allChars.length > 0) {
+      await getCharsData(allChars)
+    }
+
+    scan = scanData
     isLoading = false
-    if (error) throw error
-    scan = data as HomeworkScan
+  }
+
+  async function handleTranslate(index: number) {
+    if (!scan || !userEmail) return
+    isTranslating = true
+    errorMsg = ''
+    try {
+      const q = encodeURIComponent(editValue)
+      const res = await fetch(`https://api.mymemory.translated.net/get?q=${q}&langpair=en|zh&de=${userEmail}`)
+      const data = await res.json()
+      
+      if (data.responseStatus !== 200) {
+        throw new Error(data.responseDetails || 'Translation failed')
+      }
+
+      const translatedText = data.responseData.translatedText
+      
+      // Update local scan state
+      const updatedAnalysis = { ...scan.analysis }
+      updatedAnalysis.questions = [...updatedAnalysis.questions]
+      updatedAnalysis.questions[index] = {
+        ...updatedAnalysis.questions[index],
+        sampleAnswer: {
+          english: editValue,
+          chinese: translatedText
+        }
+      }
+
+      // Save to Supabase
+      const { error: updateError } = await supabase
+        .from('homework_scans')
+        .update({ analysis: updatedAnalysis })
+        .eq('id', scan.id)
+
+      if (updateError) throw updateError
+
+      scan.analysis = updatedAnalysis
+      editingIndex = null
+    } catch (e) {
+      errorMsg = e instanceof Error ? e.message : 'Translation failed'
+    } finally {
+      isTranslating = false
+    }
+  }
+
+  function startEdit(index: number, value: string) {
+    editingIndex = index
+    editValue = value
   }
 
   function handleAudio(text: string) {
@@ -62,6 +135,12 @@
         <a href="/homework" class="back-link">← Homework</a>
         <h1>{scan.analysis.title || 'Worksheet'}</h1>
         <p><small>{scan.summary} · {new Date(scan.created_at).toLocaleDateString()}</small></p>
+        {#if scan.context}
+          <div class="user-context">
+            <strong>Provided context:</strong>
+            <p>{scan.context}</p>
+          </div>
+        {/if}
       </div>
       <div class="header-actions">
         <span class="worksheet-type">{scan.analysis.worksheetType}</span>
@@ -75,25 +154,68 @@
     <ol class="question-list">
       {#each scan.analysis.questions as q, i (i)}
         <li class="question-card">
-          <div class="question-original">{q.original}</div>
+          <div class="question-original">
+            {#each splitCharacters(q.original) as char}
+              {#if isChineseCharacter(char)}
+                <button 
+                  class="char-btn {getHoverStrokeClass(char)}"
+                  onclick={() => modalChar = char}
+                >{char}</button>
+              {:else}
+                {char}
+              {/if}
+            {/each}
+          </div>
           <div class="question-translation">{q.translation}</div>
           <div class="answer-row">
             <div class="answer-block">
               <div class="answer-header">
-                <span class="answer-label">Chinese</span>
+                <span class="answer-label">
+                  Chinese
+                  <span class="llm-badge" title="AI-generated — verify and write your own answers" aria-label="AI-generated">&#10022;</span>
+                </span>
                 <button class="icon-btn" onclick={() => handleAudio(q.sampleAnswer.chinese)} aria-label="Listen to answer">♪</button>
               </div>
               <span class="answer-text answer-zh">{q.sampleAnswer.chinese}</span>
             </div>
             <div class="answer-block">
-              <span class="answer-label">English</span>
-              <span class="answer-text">{q.sampleAnswer.english}</span>
+              <div class="answer-header">
+                <span class="answer-label">
+                  English
+                  <span class="llm-badge" title="AI-generated — verify and write your own answers" aria-label="AI-generated">&#10022;</span>
+                </span>
+                {#if editingIndex !== i}
+                  <button class="icon-btn edit-btn" onclick={() => startEdit(i, q.sampleAnswer.english)} aria-label="Edit answer">✎</button>
+                {/if}
+              </div>
+              {#if editingIndex === i}
+                <div class="edit-area">
+                  <textarea 
+                    bind:value={editValue} 
+                    disabled={isTranslating}
+                    placeholder="Type replacement in English..."
+                    rows="2"
+                  ></textarea>
+                  <div class="edit-actions">
+                    <button class="save-btn" onclick={() => handleTranslate(i)} disabled={isTranslating || !editValue}>
+                      {isTranslating ? 'Translating...' : 'Translate & Save'}
+                    </button>
+                    <button class="cancel-btn" onclick={() => editingIndex = null} disabled={isTranslating}>Cancel</button>
+                  </div>
+                </div>
+              {:else}
+                <span class="answer-text">{q.sampleAnswer.english}</span>
+              {/if}
             </div>
           </div>
         </li>
       {/each}
     </ol>
   </section>
+
+  {#if modalChar}
+    <CharacterModal character={modalChar} onclose={() => modalChar = null} />
+  {/if}
 {:else if isLoading}
   <p>Loading…</p>
 {:else}
@@ -122,6 +244,29 @@
     color: var(--color-danger);
     margin-bottom: var(--size-4);
     font-weight: 700;
+  }
+
+  .user-context {
+    margin-top: var(--size-4);
+    padding: var(--size-3);
+    background: var(--color-surface);
+    border-left: 4px solid var(--color-lemon);
+    font-size: var(--font-size-1);
+  }
+
+  .user-context strong {
+    display: block;
+    font-size: var(--font-size-0);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-text-muted);
+    margin-bottom: var(--size-1);
+  }
+
+  .user-context p {
+    margin: 0;
+    color: var(--color-text);
+    white-space: pre-wrap;
   }
 
   .question-list {
@@ -241,5 +386,64 @@
 
   .answer-block:nth-child(2) {
     background: var(--color-sky);
+  }
+
+  .edit-area {
+    display: flex;
+    flex-direction: column;
+    gap: var(--size-2);
+    width: 100%;
+  }
+
+  .edit-area textarea {
+    width: 100%;
+    font-size: var(--font-size-1);
+    padding: var(--size-2);
+    border: var(--border);
+    resize: vertical;
+  }
+
+  .edit-actions {
+    display: flex;
+    gap: var(--size-2);
+  }
+
+  .edit-actions button {
+    padding: var(--size-1) var(--size-3);
+    font-size: var(--font-size-0);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border: var(--border);
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .save-btn {
+    background: var(--color-accent);
+    color: var(--color-accent-fg);
+  }
+
+  .cancel-btn {
+    background: var(--color-surface);
+    color: var(--color-text);
+  }
+
+  .edit-actions button:hover:not(:disabled) {
+    transform: translate(-2px, -2px);
+    box-shadow: 2px 2px 0 var(--color-border);
+  }
+
+  .edit-actions button:active:not(:disabled) {
+    transform: translate(0, 0);
+    box-shadow: none;
+  }
+
+  .edit-btn {
+    opacity: 0.25;
+  }
+
+  .edit-btn:hover {
+    opacity: 1;
   }
 </style>
