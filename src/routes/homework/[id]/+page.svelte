@@ -117,13 +117,21 @@
           <div class="answer-row">
             <div class="answer-block">
               <div class="answer-header">
-                <span class="answer-label">Chinese</span>
+                <span class="answer-label">
+                  Chinese
+                  <span class="llm-badge" title="AI-generated — verify and write your own answers" aria-label="AI-generated">&#10022;</span>
+                </span>
                 <button class="icon-btn" onclick={() => handleAudio(q.sampleAnswer.chinese)} aria-label="Listen to answer">♪</button>
               </div>
               <span class="answer-text answer-zh">{q.sampleAnswer.chinese}</span>
             </div>
             <div class="answer-block">
-              <span class="answer-label">English</span>
+              <div class="answer-header">
+                <span class="answer-label">
+                  English
+                  <span class="llm-badge" title="AI-generated — verify and write your own answers" aria-label="AI-generated">&#10022;</span>
+                </span>
+              </div>
               <span class="answer-text">{q.sampleAnswer.english}</span>
             </div>
           </div>
