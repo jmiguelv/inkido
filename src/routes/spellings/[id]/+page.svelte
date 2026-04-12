@@ -11,6 +11,22 @@
   import { getCharsData, getWordsData, getStrokeClass, getHoverStrokeClass } from '$lib/dictionary'
   import type { Word, WordList } from '$lib/types'
 
+  type LlmResult = {
+    word: string
+    character?: string
+    pinyin: string
+    translation: string
+    example?: string
+    example_phonetic?: string
+    example_translation?: string
+  }
+
+  function stripHtml(s: string | null | undefined): string | null {
+    if (!s) return null
+    const stripped = s.replace(/<[^>]*>/g, '').trim()
+    return stripped || null
+  }
+
   let list = $state<WordList | null>(null)
   let words = $state<Word[]>([])
   let newWordsText = $state('')
@@ -73,7 +89,6 @@
 
       // 4. Always query LLM for all phrases to get examples
       //    (dictionary data takes priority for pinyin/translation below)
-      type LlmResult = { word: string; character?: string; pinyin: string; translation: string; example?: string; example_phonetic?: string; example_translation?: string }
       const llmResultsMap = new SvelteMap<string, LlmResult>()
       if (characters.length > 0 && list) {
         try {
@@ -98,8 +113,8 @@
         const w = simplifiedMap.get(resolvedChar) ?? simplifiedMap.get(ch)
         const c = charMap.get(resolvedChar) ?? charMap.get(ch)
 
-        let pinyin = w?.pinyin ?? llmData?.pinyin ?? null
-        let translation = w?.translation ?? llmData?.translation ?? null
+        let pinyin = w?.pinyin ?? stripHtml(llmData?.pinyin) ?? null
+        let translation = w?.translation ?? stripHtml(llmData?.translation) ?? null
         let isLlmPinyin = !w?.pinyin && !!llmData?.pinyin
         let isLlmTranslation = !w?.translation && !!llmData?.translation
 
@@ -116,9 +131,9 @@
           character_note: c?.gloss ?? null,
           is_llm_pinyin: isLlmPinyin,
           is_llm_translation: isLlmTranslation,
-          example: llmData?.example ?? null,
-          example_phonetic: llmData?.example_phonetic ?? null,
-          example_translation: llmData?.example_translation ?? null
+          example: stripHtml(llmData?.example),
+          example_phonetic: stripHtml(llmData?.example_phonetic),
+          example_translation: stripHtml(llmData?.example_translation)
         }).eq('id', wordIds[i])
         if (error) throw error
       }

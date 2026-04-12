@@ -24,6 +24,12 @@
         translation: string | null;
     };
 
+    function stripHtml(s: string | null | undefined): string | null {
+        if (!s) return null;
+        const stripped = s.replace(/<[^>]*>/g, '').trim();
+        return stripped || null;
+    }
+
     const wordId = $derived(page.params.id);
     const activeProfile = $derived(getActiveProfile());
 
@@ -154,14 +160,14 @@
             };
             if (results?.[0]) {
                 const r = results[0];
-                editData.pinyin = r.pinyin;
-                editData.translation = r.translation;
+                editData.pinyin = stripHtml(r.pinyin) ?? r.pinyin;
+                editData.translation = stripHtml(r.translation) ?? r.translation;
                 // Persist example fields directly — no manual edit UI for these
                 if (r.example !== undefined || r.example_translation !== undefined) {
                     await supabase.from('words').update({
-                        example: r.example ?? null,
-                        example_phonetic: r.example_phonetic ?? null,
-                        example_translation: r.example_translation ?? null,
+                        example: stripHtml(r.example),
+                        example_phonetic: stripHtml(r.example_phonetic),
+                        example_translation: stripHtml(r.example_translation),
                         is_llm_translation: true,
                     }).eq('id', word.id);
                 }
@@ -457,7 +463,7 @@
                                         >{pinyin ?? data?.phonetic ?? "-"}</td
                                     >
                                     <td class="td-translation"
-                                        >{@html data?.translation ?? "-"}</td
+                                        >{data?.translation ?? "-"}</td
                                     >
                                     <td class="td-strokes"
                                         >{data?.stroke_count ?? "-"}</td

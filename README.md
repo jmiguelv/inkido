@@ -5,6 +5,7 @@ A web app that helps children practise spelling tests in Mandarin Chinese. Paren
 ## Features
 
 - **Homework scanning** — photograph a worksheet; OCR extracts questions and generates sample Chinese/English answers
+- **Flexible word entry** — add words as Chinese characters, English phrases, or numbered pinyin (e.g. `yi2 ge4`); AI resolves all forms to Chinese with diacritic pinyin
 - **Spelling practice** — flashcard mode with stroke-by-stroke HanziWriter animation, 田字格 writing grid, and hint toggle
 - **Tone practice** — listen to a word and identify which tone was played; stats tracked per learner
 - **Dictionary** — search ~145k words and ~94k characters; tap any character to see meaning, stroke count, and component breakdown
