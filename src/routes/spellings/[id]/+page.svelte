@@ -11,6 +11,22 @@
   import { getCharsData, getWordsData, getStrokeClass, getHoverStrokeClass } from '$lib/dictionary'
   import type { Word, WordList } from '$lib/types'
 
+  type LlmResult = {
+    word: string
+    character?: string
+    pinyin: string
+    translation: string
+    example?: string
+    example_phonetic?: string
+    example_translation?: string
+  }
+
+  function stripHtml(s: string | null | undefined): string | null {
+    if (!s) return null
+    const stripped = s.replace(/<[^>]*>/g, '').trim()
+    return stripped || null
+  }
+
   let list = $state<WordList | null>(null)
   let words = $state<Word[]>([])
   let newWordsText = $state('')
@@ -71,21 +87,16 @@
       const singleCharsOnly = characters.filter(c => [...c].length === 1)
       const charMap = await getCharsData(singleCharsOnly)
 
-      // 4. Identify phrases missing from the local dictionary
-      const missingPhrases = characters.filter(ch => {
-        const w = simplifiedMap.get(ch)
-        return !w || !w.translation
-      })
-
-      // 5. Query the LLM Edge Function for missing phrases
-      const llmResultsMap = new Map<string, { pinyin: string; translation: string }>()
-      if (missingPhrases.length > 0 && list) {
+      // 4. Always query LLM for all phrases to get examples
+      //    (dictionary data takes priority for pinyin/translation below)
+      const llmResultsMap = new SvelteMap<string, LlmResult>()
+      if (characters.length > 0 && list) {
         try {
           const res = await supabase.functions.invoke('enrich-words', {
-            body: { phrases: missingPhrases, language: list.language }
+            body: { phrases: characters, language: list.language }
           })
           if (res.error) throw res.error
-          const { results } = res.data as { results: { word: string; pinyin: string; translation: string }[] }
+          const { results } = res.data as { results: LlmResult[] }
           results.forEach(r => llmResultsMap.set(r.word, r))
         } catch (e) {
           console.error("LLM Enrichment failed:", e)
@@ -94,30 +105,35 @@
 
       for (let i = 0; i < wordIds.length; i++) {
         const ch = characters[i]
-        const w = simplifiedMap.get(ch)
-        const c = charMap.get(ch)
         const llmData = llmResultsMap.get(ch)
 
-        let pinyin = llmData?.pinyin ?? w?.pinyin ?? null
-        let translation = llmData?.translation ?? w?.translation ?? null
-        let isLlmPinyin = !!llmData?.pinyin
-        let isLlmTranslation = !!llmData?.translation
+        // If LLM resolved a non-Chinese input to Chinese characters, use that
+        const resolvedChar = llmData?.character ?? ch
+
+        const w = simplifiedMap.get(resolvedChar) ?? simplifiedMap.get(ch)
+        const c = charMap.get(resolvedChar) ?? charMap.get(ch)
+
+        let pinyin = w?.pinyin ?? stripHtml(llmData?.pinyin) ?? null
+        let translation = w?.translation ?? stripHtml(llmData?.translation) ?? null
+        let isLlmPinyin = !w?.pinyin && !!llmData?.pinyin
+        let isLlmTranslation = !w?.translation && !!llmData?.translation
 
         // Fallback: if whole word pinyin is missing, combine character pinyin
-        if (!pinyin && [...ch].length > 1) {
-          pinyin = splitCharacters(ch).map(char => charPinyinMap.get(char)?.pinyin ?? char).join(' ')
+        if (!pinyin && [...resolvedChar].length > 1) {
+          pinyin = splitCharacters(resolvedChar).map(char => charPinyinMap.get(char)?.pinyin ?? char).join(' ')
           isLlmPinyin = false // It's from the local character dictionary fallback
         }
 
         const { error } = await supabase.from('words').update({
+          character: resolvedChar,
           phonetic_annotation: pinyin,
           translation: translation,
           character_note: c?.gloss ?? null,
           is_llm_pinyin: isLlmPinyin,
           is_llm_translation: isLlmTranslation,
-          example: null,
-          example_phonetic: null,
-          example_translation: null
+          example: stripHtml(llmData?.example),
+          example_phonetic: stripHtml(llmData?.example_phonetic),
+          example_translation: stripHtml(llmData?.example_translation)
         }).eq('id', wordIds[i])
         if (error) throw error
       }
@@ -312,7 +328,7 @@
           id="new-words"
           bind:value={newWordsText}
           rows={4}
-          placeholder="你好&#10;学习&#10;朋友"
+          placeholder="你好&#10;good morning&#10;yi2 ge4 ren2"
         ></textarea>
       </div>
       {#if errorMsg}

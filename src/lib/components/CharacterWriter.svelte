@@ -8,7 +8,9 @@
         mode = "animate",
         colorize = false,
         showHint = true,
+        autoplay = true,
         onComplete,
+        onAnimationDone,
     }: {
         char: string;
         language?: string;
@@ -16,11 +18,21 @@
         mode?: "animate" | "quiz";
         colorize?: boolean;
         showHint?: boolean;
+        autoplay?: boolean;
         onComplete?: () => void;
+        onAnimationDone?: () => void;
     } = $props();
 
     let writerError = $state(false);
     let writerInstance = $state<HanziWriter | null>(null);
+    let playFn = $state<(() => void) | null>(null);
+
+    // Chained animation: fire when autoplay becomes true after setup completes
+    $effect(() => {
+        const shouldPlay = autoplay;
+        const fn = playFn;
+        if (shouldPlay && fn) fn();
+    });
 
     function initWriter(node: HTMLDivElement) {
         let destroyed = false;
@@ -56,11 +68,12 @@
 
             writerInstance = writer;
 
-            function play() {
+            function play(onDone?: () => void) {
                 if (destroyed || animating || mode === "quiz") return;
                 animating = true;
                 writer.animateCharacter().then(() => {
                     animating = false;
+                    onDone?.();
                 });
             }
 
@@ -72,8 +85,10 @@
                     },
                 });
             } else {
-                play();
-                node.addEventListener("click", play);
+                // Expose play via state so the $effect can trigger it.
+                // The $effect handles the initial auto-play and chained play.
+                playFn = () => play(onAnimationDone);
+                node.addEventListener("click", () => play());
             }
         }
 

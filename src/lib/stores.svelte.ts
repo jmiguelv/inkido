@@ -61,7 +61,7 @@ export function getPetMood(): PetMood {
   return petMood
 }
 
-export function setPetMood(newMood: PetMood, ms = 700): void {
+export function setPetMood(newMood: PetMood, ms = 1500): void {
   if (petMoodTimer) clearTimeout(petMoodTimer)
   petMood = newMood
   if (newMood !== 'idle') {

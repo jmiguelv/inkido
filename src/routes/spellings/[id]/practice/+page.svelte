@@ -255,16 +255,19 @@
         {#if flipped}
           <div class="card-back">
             {#if currentWord.translation}
-              <p class="translation">{currentWord.translation}</p>
+              <p class="translation">{@html currentWord.translation}</p>
             {/if}
             {#if currentWord.example}
-              <p class="example">{currentWord.example}</p>
+              <p class="example">{@html currentWord.example}</p>
+            {/if}
+            {#if currentWord.example_phonetic}
+              <p class="example-phonetic">{currentWord.example_phonetic}</p>
             {/if}
             {#if currentWord.example_translation}
-              <p class="example-translation">{currentWord.example_translation}</p>
+              <p class="example-translation">{@html currentWord.example_translation}</p>
             {/if}
             {#if currentWord.character_note}
-              <p class="note">{currentWord.character_note}</p>
+              <p class="note">{@html currentWord.character_note}</p>
             {/if}
           </div>
         {/if}
@@ -518,6 +521,7 @@
   .card-back p { margin: 0 0 var(--size-2); }
   .translation { font-weight: var(--font-weight-7); font-size: var(--font-size-4); }
   .example { color: var(--color-text-muted); font-size: var(--font-size-2); }
+  .example-phonetic { color: var(--color-text-muted); font-size: var(--font-size-1); margin: 0 0 var(--size-1); }
   .example-translation { color: var(--color-text-muted); font-size: var(--font-size-1); }
   .note { font-size: var(--font-size-0); color: var(--color-text-muted); font-style: italic; }
 

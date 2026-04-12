@@ -67,17 +67,26 @@ export async function handler(req: Request): Promise<Response> {
 
   const prompt = `You are a dictionary API for a language learning app.
 The target language is "${language}" (e.g., if "zh", assume Mandarin Chinese).
-I will provide a JSON array of words or phrases.
+I will provide a JSON array of words or phrases. Each item may be:
+- Chinese characters (e.g. "你好")
+- English words or phrases (e.g. "good morning")
+- Numbered pinyin (e.g. "yi2 ge4 ren2")
+
 You must return a JSON array of objects with the exact following structure for each item:
 {
   "word": "The original phrase provided",
-  "pinyin": "The phonetic annotation (e.g., pinyin with tone marks for Chinese) using correct spacing",
-  "translation": "A concise, natural English translation"
+  "character": "The Chinese characters — identical to word if input is Chinese; the Chinese equivalent if input is English or numbered pinyin",
+  "pinyin": "Diacritic pinyin for the character field using correct spacing",
+  "translation": "A concise, natural English translation",
+  "example": "A short, natural example sentence in the target language using this word",
+  "example_phonetic": "Phonetic annotation for the example sentence, matching character-for-character",
+  "example_translation": "English translation of the example sentence"
 }
 
 IMPORTANT:
-- The "pinyin" field MUST provide a phonetic value for EVERY character in the input "word" in the exact same order, even if the input has typos or duplicate characters (e.g., if input is "杰出的的人才", return pinyin for ALL 6 characters: "jié chū de de rén cái").
-- Do NOT auto-correct the "word" in your pinyin or translation; translate the intended meaning but ensure the pinyin matches the exact character string provided.
+- The "pinyin" field MUST provide a phonetic value for EVERY character in the "character" field in the exact same order.
+- Do NOT auto-correct the "character" field; if the input is Chinese, keep it exactly as provided.
+- Return plain text only — NO HTML tags, NO markdown, NO bold/italic markup in any field value.
 
 Return ONLY the JSON array, no markdown formatting (\`\`\`json etc.), no explanations.
 
