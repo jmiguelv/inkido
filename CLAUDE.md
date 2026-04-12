@@ -13,6 +13,7 @@ pnpm test:unit        # Vitest unit tests (must pass before committing)
 pnpm test:e2e         # Playwright E2E tests
 pnpm check            # svelte-check type checking
 pnpm supabase db push # deploy pending migrations to remote DB
+pnpm release          # bump version, update CHANGELOG, tag, push, GitHub release
 
 # One-time / re-run when dictionary files change
 SUPABASE_SERVICE_ROLE_KEY=<key> npx tsx scripts/import-data.ts

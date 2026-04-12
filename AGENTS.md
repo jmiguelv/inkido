@@ -7,7 +7,7 @@ lists; children practise spelling them. Only `zh` (Mandarin Chinese) is supporte
 add references to Japanese, Arabic, or other languages.
 
 **Live at:** inkido.vercel.app  
-**Version:** 0.1.1  
+**Version:** 0.5.4  
 **Stack:** SvelteKit 2 + Svelte 5 runes + Supabase + TypeScript + pnpm
 
 ---
@@ -141,10 +141,9 @@ Types: `feat/`, `fix/`, `chore/`, `docs/`, `refactor/`
 Commits: Conventional Commits — `<type>(<scope>): <description>`
 
 Release process:
-1. Bump `version` in `package.json`
-2. Update `CHANGELOG.md`
-3. Commit: `chore(release): bump version to X.Y.Z`
-4. Tag: `git tag vX.Y.Z && git push origin main --tags`
+Run `pnpm release` — release-it prompts for a semver bump, updates `CHANGELOG.md`,
+commits, tags, pushes, and creates a GitHub release automatically.
+Requires a `GITHUB_TOKEN` env var with repo write access.
 
 ---
 
