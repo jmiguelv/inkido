@@ -5,7 +5,10 @@ const THEME_KEY = 'inkido:theme'
 
 export type Theme = 'light' | 'dark'
 
-let activeProfile = $state<Profile | null>(null)
+// Initialise eagerly from sessionStorage so activeProfile is non-null before
+// any component's onMount runs (child onMount fires before parent onMount).
+const _storedProfile = typeof window !== 'undefined' ? sessionStorage.getItem(STORAGE_KEY) : null
+let activeProfile = $state<Profile | null>(_storedProfile ? (JSON.parse(_storedProfile) as Profile) : null)
 let theme = $state<Theme>('light')
 
 export function initActiveProfile(): void {
