@@ -7,11 +7,10 @@
   },
   "git": {
     "commitMessage": "chore(release): v${version}",
-    "tagName": "v${version}"
+    "tag": false
   },
   "github": {
-    "release": true,
-    "releaseName": "v${version}"
+    "release": false
   },
   "npm": {
     "publish": false
