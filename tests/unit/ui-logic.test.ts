@@ -1,6 +1,66 @@
 import { describe, it, expect } from 'vitest'
 
-/** 
+/**
+ * Re-implementing the enrichment precedence logic from enrichWords()
+ * in /spellings/[id]/+page.svelte to test it in isolation.
+ */
+type DictEntry = { pinyin?: string | null; translation?: string | null } | undefined
+type LlmEntry = { pinyin: string; translation: string; example?: string; example_phonetic?: string; example_translation?: string } | undefined
+
+function resolveEnrichment(w: DictEntry, llmData: LlmEntry) {
+  return {
+    pinyin: w?.pinyin ?? llmData?.pinyin ?? null,
+    translation: w?.translation ?? llmData?.translation ?? null,
+    isLlmPinyin: !w?.pinyin && !!llmData?.pinyin,
+    isLlmTranslation: !w?.translation && !!llmData?.translation,
+    example: llmData?.example ?? null,
+    example_phonetic: llmData?.example_phonetic ?? null,
+    example_translation: llmData?.example_translation ?? null,
+  }
+}
+
+describe('enrichWords: data source precedence', () => {
+  it('enrichment_dictionaryHasBoth_dictionaryWins', () => {
+    const result = resolveEnrichment(
+      { pinyin: 'hǎo', translation: 'good' },
+      { word: '好', pinyin: 'hào', translation: 'to like', example: '你好' }
+    )
+    expect(result.pinyin).toBe('hǎo')
+    expect(result.translation).toBe('good')
+    expect(result.isLlmPinyin).toBe(false)
+    expect(result.isLlmTranslation).toBe(false)
+  })
+
+  it('enrichment_dictionaryMissing_llmFills', () => {
+    const result = resolveEnrichment(
+      undefined,
+      { word: '新词', pinyin: 'xīn cí', translation: 'new word', example: '这是新词。' }
+    )
+    expect(result.pinyin).toBe('xīn cí')
+    expect(result.translation).toBe('new word')
+    expect(result.isLlmPinyin).toBe(true)
+    expect(result.isLlmTranslation).toBe(true)
+  })
+
+  it('enrichment_dictionaryHasOnly_llmExampleStillSaved', () => {
+    const result = resolveEnrichment(
+      { pinyin: 'hǎo', translation: 'good' },
+      { word: '好', pinyin: 'hào', translation: 'to like', example: '你好！', example_phonetic: 'nǐ hǎo', example_translation: 'Hello!' }
+    )
+    expect(result.example).toBe('你好！')
+    expect(result.example_phonetic).toBe('nǐ hǎo')
+    expect(result.example_translation).toBe('Hello!')
+  })
+
+  it('enrichment_noLlmData_examplesAreNull', () => {
+    const result = resolveEnrichment({ pinyin: 'hǎo', translation: 'good' }, undefined)
+    expect(result.example).toBeNull()
+    expect(result.example_phonetic).toBeNull()
+    expect(result.example_translation).toBeNull()
+  })
+})
+
+/**
  * Re-implementing the mapping logic from /spellings/[id] to test it.
  * In a real refactor, this logic would move to a shared utility file.
  */

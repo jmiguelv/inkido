@@ -72,12 +72,16 @@ You must return a JSON array of objects with the exact following structure for e
 {
   "word": "The original phrase provided",
   "pinyin": "The phonetic annotation (e.g., pinyin with tone marks for Chinese) using correct spacing",
-  "translation": "A concise, natural English translation"
+  "translation": "A concise, natural English translation",
+  "example": "A short, natural example sentence in the target language using this word",
+  "example_phonetic": "Phonetic annotation for the example sentence, matching character-for-character",
+  "example_translation": "English translation of the example sentence"
 }
 
 IMPORTANT:
 - The "pinyin" field MUST provide a phonetic value for EVERY character in the input "word" in the exact same order, even if the input has typos or duplicate characters (e.g., if input is "杰出的的人才", return pinyin for ALL 6 characters: "jié chū de de rén cái").
 - Do NOT auto-correct the "word" in your pinyin or translation; translate the intended meaning but ensure the pinyin matches the exact character string provided.
+- Return plain text only — NO HTML tags, NO markdown, NO bold/italic markup in any field value.
 
 Return ONLY the JSON array, no markdown formatting (\`\`\`json etc.), no explanations.
 

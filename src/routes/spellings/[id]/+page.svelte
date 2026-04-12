@@ -71,21 +71,17 @@
       const singleCharsOnly = characters.filter(c => [...c].length === 1)
       const charMap = await getCharsData(singleCharsOnly)
 
-      // 4. Identify phrases missing from the local dictionary
-      const missingPhrases = characters.filter(ch => {
-        const w = simplifiedMap.get(ch)
-        return !w || !w.translation
-      })
-
-      // 5. Query the LLM Edge Function for missing phrases
-      const llmResultsMap = new Map<string, { pinyin: string; translation: string }>()
-      if (missingPhrases.length > 0 && list) {
+      // 4. Always query LLM for all phrases to get examples
+      //    (dictionary data takes priority for pinyin/translation below)
+      type LlmResult = { word: string; pinyin: string; translation: string; example?: string; example_phonetic?: string; example_translation?: string }
+      const llmResultsMap = new Map<string, LlmResult>()
+      if (characters.length > 0 && list) {
         try {
           const res = await supabase.functions.invoke('enrich-words', {
-            body: { phrases: missingPhrases, language: list.language }
+            body: { phrases: characters, language: list.language }
           })
           if (res.error) throw res.error
-          const { results } = res.data as { results: { word: string; pinyin: string; translation: string }[] }
+          const { results } = res.data as { results: LlmResult[] }
           results.forEach(r => llmResultsMap.set(r.word, r))
         } catch (e) {
           console.error("LLM Enrichment failed:", e)
@@ -98,10 +94,10 @@
         const c = charMap.get(ch)
         const llmData = llmResultsMap.get(ch)
 
-        let pinyin = llmData?.pinyin ?? w?.pinyin ?? null
-        let translation = llmData?.translation ?? w?.translation ?? null
-        let isLlmPinyin = !!llmData?.pinyin
-        let isLlmTranslation = !!llmData?.translation
+        let pinyin = w?.pinyin ?? llmData?.pinyin ?? null
+        let translation = w?.translation ?? llmData?.translation ?? null
+        let isLlmPinyin = !w?.pinyin && !!llmData?.pinyin
+        let isLlmTranslation = !w?.translation && !!llmData?.translation
 
         // Fallback: if whole word pinyin is missing, combine character pinyin
         if (!pinyin && [...ch].length > 1) {
@@ -115,9 +111,9 @@
           character_note: c?.gloss ?? null,
           is_llm_pinyin: isLlmPinyin,
           is_llm_translation: isLlmTranslation,
-          example: null,
-          example_phonetic: null,
-          example_translation: null
+          example: llmData?.example ?? null,
+          example_phonetic: llmData?.example_phonetic ?? null,
+          example_translation: llmData?.example_translation ?? null
         }).eq('id', wordIds[i])
         if (error) throw error
       }

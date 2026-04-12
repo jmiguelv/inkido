@@ -93,6 +93,13 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Highlight <strong> in AI-generated content (injected via @html) */
+strong {
+  font-weight: 800;
+  background: var(--color-lemon);
+  padding: 0 0.15em;
+}
+
 table,
 thead,
 tbody,

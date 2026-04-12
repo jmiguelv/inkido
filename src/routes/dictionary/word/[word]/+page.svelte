@@ -192,7 +192,7 @@
                                         >{data?.phonetic ?? "-"}</td
                                     >
                                     <td class="td-translation"
-                                        >{data?.translation ?? "-"}</td
+                                        >{@html data?.translation ?? "-"}</td
                                     >
                                     <td class="td-strokes"
                                         >{data?.stroke_count ?? "-"}</td
