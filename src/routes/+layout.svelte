@@ -13,6 +13,7 @@
         getTheme,
         toggleTheme,
     } from "$lib/stores.svelte";
+    import { unlockAudio } from "$lib/audio";
     import { onMount } from "svelte";
     import type { Profile } from "$lib/types";
     import PixelPet from "$lib/components/PixelPet.svelte";
@@ -71,7 +72,14 @@
             }
         });
 
-        return () => subscription.unsubscribe();
+        // Unlock speechSynthesis on first user interaction (required by iOS/iPadOS)
+        const unlock = () => { unlockAudio(); window.removeEventListener('pointerdown', unlock) }
+        window.addEventListener('pointerdown', unlock)
+
+        return () => {
+            subscription.unsubscribe()
+            window.removeEventListener('pointerdown', unlock)
+        }
     });
 
     $effect(() => {
@@ -241,6 +249,7 @@
         <span class="footer-sep">·</span>
         <a href="/privacy">PRIVACY</a>
     </div>
+    <p class="footer-disclaimer">✦ AI-generated content may contain inaccuracies — always verify against your textbook.</p>
     <a href="https://ko-fi.com/Y8Y51X838W" target="_blank" rel="noopener noreferrer" class="kofi-link">
         <img height="36" style="border:0;height:36px;" src="https://storage.ko-fi.com/cdn/kofi2.png?v=6" alt="Buy Me a Coffee at ko-fi.com" />
     </a>
@@ -544,6 +553,15 @@
 
     .footer-sep {
         opacity: 0.4;
+    }
+
+    .footer-disclaimer {
+        font-size: var(--font-size-0);
+        color: var(--color-text-muted);
+        opacity: 0.7;
+        margin: 0;
+        font-style: italic;
+        text-align: center;
     }
 
     footer a {
