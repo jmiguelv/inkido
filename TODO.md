@@ -2,10 +2,17 @@
 
 ## Todo
 
+
 ## In progress
 
 ## Done
 
+- [x] fix: ensure homework edit modal closes after successful translation
+- [x] refactor: use modal for homework inline translation to prevent overflow
+- [x] fix: restore missing SETTINGS link in profiles dropdown
+- [x] docs: remove incorrect dictionary data attribution from ABOUT page
+- [x] refactor: reduce footer padding for better balance (from 12 to 10)
+- [x] feat: record and display optional context prompt (stored in DB and shown on detail page)
 - [x] feat: Store a thumbnail of each homework scan — add a `thumbnail text` column to `homework_scans`; on the client, resize the first image to ~400px wide using a canvas element before insert (images are already base64 from `readAsDataURL`); display the thumbnail on the list card; no Storage bucket needed (lower priority)
 - [x] feat: Add a `/privacy` page — what data is stored (email, profiles, word lists, homework scans), no third-party analytics, how to request deletion; link from footer
 - [x] feat: Show pinyin as a tooltip when hovering over interactive characters throughout the app — consistent with existing hover behaviour but surface the phonetic annotation visually

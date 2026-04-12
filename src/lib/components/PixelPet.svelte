@@ -134,6 +134,12 @@
     right: 16px;
   }
 
+  /* Hide panda when any modal dialog is open — native <dialog> renders in the
+     top layer above all z-index values, so we hide rather than compete. */
+  :global(body:has(dialog[open])) .pet {
+    visibility: hidden;
+  }
+
   .pixel-canvas {
     width: 6px;
     height: 6px;
