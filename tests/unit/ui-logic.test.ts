@@ -5,7 +5,7 @@ import { describe, it, expect } from 'vitest'
  * in /spellings/[id]/+page.svelte to test it in isolation.
  */
 type DictEntry = { pinyin?: string | null; translation?: string | null } | undefined
-type LlmEntry = { pinyin: string; translation: string; example?: string; example_phonetic?: string; example_translation?: string } | undefined
+type LlmEntry = { word?: string; pinyin: string; translation: string; example?: string; example_phonetic?: string; example_translation?: string } | undefined
 
 function resolveEnrichment(w: DictEntry, llmData: LlmEntry) {
   return {
