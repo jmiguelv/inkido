@@ -132,6 +132,15 @@ pnpm supabase functions serve
 | `pnpm check` | Type-check with svelte-check |
 | `pnpm supabase` | Run Supabase CLI commands |
 | `npx tsx scripts/import-data.ts` | Import/refresh dictionary data into Supabase |
+| `pnpm release` | Cut a release (bump version, generate CHANGELOG, tag, push) |
+
+### Releasing
+
+```sh
+pnpm release
+```
+
+`release-it` reads Conventional Commits since the last tag, proposes a semver bump, updates `CHANGELOG.md`, commits, tags, pushes, and creates a GitHub release. Requires a `GITHUB_TOKEN` environment variable with repo write access.
 
 ## Deployment (Vercel)
 

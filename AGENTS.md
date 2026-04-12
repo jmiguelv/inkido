@@ -7,7 +7,7 @@ lists; children practise spelling them. Only `zh` (Mandarin Chinese) is supporte
 add references to Japanese, Arabic, or other languages.
 
 **Live at:** inkido.vercel.app  
-**Version:** 0.1.1  
+**Version:** 0.5.4  
 **Stack:** SvelteKit 2 + Svelte 5 runes + Supabase + TypeScript + pnpm
 
 ---
@@ -18,8 +18,13 @@ add references to Japanese, Arabic, or other languages.
 pnpm dev              # dev server (localhost:5173)
 pnpm check            # svelte-check type checking — must pass before committing
 pnpm test:unit        # Vitest unit tests — must pass before committing
+pnpm test:e2e         # Playwright E2E tests
 pnpm build            # production build
 pnpm supabase db push # deploy pending migrations to remote DB
+pnpm release          # bump version, update CHANGELOG, tag, push, GitHub release
+
+# One-time / re-run when dictionary files change
+SUPABASE_SERVICE_ROLE_KEY=<key> npx tsx scripts/import-data.ts
 ```
 
 ---
@@ -78,8 +83,12 @@ data/
 | `zh_words` | Dictionary: 145k Chinese words — `word`, `pinyin`, `translation`, `hsk_level` |
 | `zh_chars` | Dictionary: 94k Chinese characters — `char`, `gloss`, `stroke_count`, `hint`, `components` (JSONB), `trad_variant` |
 
-All user tables have Row Level Security. Dictionary tables are authenticated read-only.  
+All user tables have Row Level Security. Dictionary tables are authenticated read-only.
+Enrichment data in `words` is a point-in-time snapshot — deliberately denormalized.
 Data sourced from [Chinese Character Wiki](https://www.dong-chinese.com/wiki/home).
+
+Migrations live in `supabase/migrations/` — named `00N_description.sql`.
+**Always run `pnpm supabase db push` after creating a migration.**
 
 ---
 
@@ -141,16 +150,35 @@ Types: `feat/`, `fix/`, `chore/`, `docs/`, `refactor/`
 Commits: Conventional Commits — `<type>(<scope>): <description>`
 
 Release process:
-1. Bump `version` in `package.json`
-2. Update `CHANGELOG.md`
-3. Commit: `chore(release): bump version to X.Y.Z`
-4. Tag: `git tag vX.Y.Z && git push origin main --tags`
+Run `pnpm release` — release-it prompts for a semver bump, updates `CHANGELOG.md`,
+commits, tags, pushes, and creates a GitHub release automatically.
+Requires a `GITHUB_TOKEN` env var with repo write access.
 
 ---
 
 ## Workflow rules
 
-1. After every Svelte component edit — run svelte-check (`pnpm check`) until 0 errors
-2. After every schema change — create a migration and run `pnpm supabase db push`
-3. Before committing — `pnpm test:unit` must pass
-4. After major changes — update `README.md` in the same commit
+1. **After every Svelte component edit** — run the Svelte MCP autofixer until no issues remain, then `pnpm check`
+2. **After every schema change** — create a migration and run `pnpm supabase db push`
+3. **Before committing** — `pnpm test:unit` must pass
+4. **After major changes** — update `README.md` in the same commit
+
+---
+
+## MCP tools
+
+### Svelte MCP
+
+Use for all Svelte/SvelteKit work:
+
+- **`list-sections`** — discover available documentation sections; use first when starting any Svelte/SvelteKit topic
+- **`get-documentation`** — fetch full docs for sections found via `list-sections`; fetch ALL relevant sections
+- **`svelte-autofixer`** — analyze a component and return issues; **call after every component edit, keep calling until no issues**
+- **`playground-link`** — generate a Svelte Playground link; only after explicit user confirmation, never when code is in project files
+
+### Supabase MCP
+
+Use `mcp__plugin_postgres-best-practices_supabase__search_docs` when:
+- Designing or reviewing schema, RLS policies, or migrations
+- Writing Supabase queries or edge functions
+- Debugging Supabase-specific behaviour

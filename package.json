@@ -15,15 +15,18 @@
 		"test": "pnpm test:unit && pnpm test:functions && pnpm test:e2e",
 		"test:e2e": "playwright test",
 		"supabase": "supabase",
-		"deploy:functions": "supabase functions deploy --no-verify-jwt"
+		"deploy:functions": "supabase functions deploy --no-verify-jwt",
+		"release": "release-it"
 	},
 	"devDependencies": {
 		"@playwright/test": "^1.58.2",
+		"@release-it/conventional-changelog": "^10.0.6",
 		"@sveltejs/adapter-static": "^3.0.10",
 		"@sveltejs/kit": "^2.50.2",
 		"@sveltejs/vite-plugin-svelte": "^6.2.4",
 		"@types/canvas-confetti": "^1.9.0",
 		"mdsvex": "^0.12.7",
+		"release-it": "^19.2.4",
 		"supabase": "^2.84.6",
 		"svelte": "^5.54.0",
 		"svelte-check": "^4.4.2",
