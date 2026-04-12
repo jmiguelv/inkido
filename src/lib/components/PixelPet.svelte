@@ -130,8 +130,8 @@
   .pet.mobile {
     top: auto;
     bottom: 60px;
-    left: 50%;
-    transform: translateX(-50%);
+    left: auto;
+    right: 16px;
   }
 
   .pixel-canvas {
