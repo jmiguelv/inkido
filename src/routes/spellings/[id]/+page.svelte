@@ -73,8 +73,8 @@
 
       // 4. Always query LLM for all phrases to get examples
       //    (dictionary data takes priority for pinyin/translation below)
-      type LlmResult = { word: string; pinyin: string; translation: string; example?: string; example_phonetic?: string; example_translation?: string }
-      const llmResultsMap = new Map<string, LlmResult>()
+      type LlmResult = { word: string; character?: string; pinyin: string; translation: string; example?: string; example_phonetic?: string; example_translation?: string }
+      const llmResultsMap = new SvelteMap<string, LlmResult>()
       if (characters.length > 0 && list) {
         try {
           const res = await supabase.functions.invoke('enrich-words', {
@@ -90,9 +90,13 @@
 
       for (let i = 0; i < wordIds.length; i++) {
         const ch = characters[i]
-        const w = simplifiedMap.get(ch)
-        const c = charMap.get(ch)
         const llmData = llmResultsMap.get(ch)
+
+        // If LLM resolved a non-Chinese input to Chinese characters, use that
+        const resolvedChar = llmData?.character ?? ch
+
+        const w = simplifiedMap.get(resolvedChar) ?? simplifiedMap.get(ch)
+        const c = charMap.get(resolvedChar) ?? charMap.get(ch)
 
         let pinyin = w?.pinyin ?? llmData?.pinyin ?? null
         let translation = w?.translation ?? llmData?.translation ?? null
@@ -100,12 +104,13 @@
         let isLlmTranslation = !w?.translation && !!llmData?.translation
 
         // Fallback: if whole word pinyin is missing, combine character pinyin
-        if (!pinyin && [...ch].length > 1) {
-          pinyin = splitCharacters(ch).map(char => charPinyinMap.get(char)?.pinyin ?? char).join(' ')
+        if (!pinyin && [...resolvedChar].length > 1) {
+          pinyin = splitCharacters(resolvedChar).map(char => charPinyinMap.get(char)?.pinyin ?? char).join(' ')
           isLlmPinyin = false // It's from the local character dictionary fallback
         }
 
         const { error } = await supabase.from('words').update({
+          character: resolvedChar,
           phonetic_annotation: pinyin,
           translation: translation,
           character_note: c?.gloss ?? null,
@@ -308,7 +313,7 @@
           id="new-words"
           bind:value={newWordsText}
           rows={4}
-          placeholder="你好&#10;学习&#10;朋友"
+          placeholder="你好&#10;good morning&#10;yi2 ge4 ren2"
         ></textarea>
       </div>
       {#if errorMsg}
