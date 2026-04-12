@@ -61,16 +61,17 @@ describe('speak', () => {
 })
 
 describe('unlockAudio', () => {
-  it('unlockAudio_withSpeechSynthesis_pausesAndResumes', () => {
-    const pause = vi.fn()
-    const resume = vi.fn()
+  it('unlockAudio_withSpeechSynthesis_speaksSilentUtterance', () => {
+    const speak_ = vi.fn()
+    const utterance = { volume: 1 }
 
-    ;(globalThis as Record<string, unknown>).speechSynthesis = { pause, resume }
+    ;(globalThis as Record<string, unknown>).SpeechSynthesisUtterance = vi.fn(function () { return utterance })
+    ;(globalThis as Record<string, unknown>).speechSynthesis = { speak: speak_ }
 
     unlockAudio()
 
-    expect(pause).toHaveBeenCalledOnce()
-    expect(resume).toHaveBeenCalledOnce()
+    expect(speak_).toHaveBeenCalledOnce()
+    expect(utterance.volume).toBe(0)
   })
 
   it('unlockAudio_noSpeechSynthesis_doesNotThrow', () => {
