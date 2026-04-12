@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest'
+import { numberedToTone, getTone } from '../../src/lib/characters'
 
 /**
  * Re-implementing the enrichment precedence logic from enrichWords()
@@ -95,5 +96,48 @@ describe('UI Logic: Stroke Complexity Mapping', () => {
 
   it('assigns lemon for unknown complexity (0)', () => {
     expect(getStrokeClass(0)).toBe('stroke-lemon')
+  })
+})
+
+describe('numberedToTone', () => {
+  it('numberedToTone_tone2_appliesRisingMark', () => {
+    expect(numberedToTone('yi2')).toBe('yí')
+  })
+
+  it('numberedToTone_aOrE_getsMarkOverOther', () => {
+    expect(numberedToTone('hao3')).toBe('hǎo')
+    expect(numberedToTone('mei2')).toBe('méi')
+  })
+
+  it('numberedToTone_multiSyllable_convertsAll', () => {
+    expect(numberedToTone('ni3 hao3')).toBe('nǐ hǎo')
+    expect(numberedToTone('zhong1 wen2')).toBe('zhōng wén')
+  })
+
+  it('numberedToTone_vAsU_convertsToUmlaut', () => {
+    expect(numberedToTone('lv4')).toBe('lǜ')
+    expect(numberedToTone('nv3')).toBe('nǚ')
+  })
+
+  it('numberedToTone_alreadyDiacritic_unchanged', () => {
+    expect(numberedToTone('nǐ hǎo')).toBe('nǐ hǎo')
+  })
+
+  it('numberedToTone_tone5_stripsNumber', () => {
+    expect(numberedToTone('ma5')).toBe('ma')
+  })
+})
+
+describe('getTone: numbered pinyin fallback', () => {
+  it('getTone_numberedPinyin_extractsTone', () => {
+    expect(getTone('yi2')).toBe(2)
+    expect(getTone('hao3')).toBe(3)
+    expect(getTone('zhong1')).toBe(1)
+    expect(getTone('qu4')).toBe(4)
+  })
+
+  it('getTone_diacriticPinyin_stillWorks', () => {
+    expect(getTone('yí')).toBe(2)
+    expect(getTone('hǎo')).toBe(3)
   })
 })

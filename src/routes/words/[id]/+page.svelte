@@ -5,7 +5,7 @@
     import { SvelteMap } from "svelte/reactivity";
     import { supabase } from "$lib/supabase";
     import { getActiveProfile } from "$lib/stores.svelte";
-    import { splitCharacters, alignPinyin } from "$lib/characters";
+    import { splitCharacters, alignPinyin, numberedToTone } from "$lib/characters";
     import { speak } from "$lib/audio";
     import {
         getCharData,
@@ -160,13 +160,13 @@
             };
             if (results?.[0]) {
                 const r = results[0];
-                editData.pinyin = stripHtml(r.pinyin) ?? r.pinyin;
+                editData.pinyin = numberedToTone(stripHtml(r.pinyin) ?? r.pinyin);
                 editData.translation = stripHtml(r.translation) ?? r.translation;
                 // Persist example fields directly — no manual edit UI for these
                 if (r.example !== undefined || r.example_translation !== undefined) {
                     await supabase.from('words').update({
                         example: stripHtml(r.example),
-                        example_phonetic: stripHtml(r.example_phonetic),
+                        example_phonetic: r.example_phonetic ? numberedToTone(stripHtml(r.example_phonetic) ?? r.example_phonetic) : null,
                         example_translation: stripHtml(r.example_translation),
                         is_llm_translation: true,
                     }).eq('id', word.id);
