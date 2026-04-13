@@ -156,6 +156,10 @@
             query = initialQuery;
             runSearch(query);
         }
+
+        return () => {
+            if (debounceTimer) clearTimeout(debounceTimer);
+        };
     });
 
     function handleInput() {
