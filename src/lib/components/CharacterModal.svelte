@@ -17,8 +17,8 @@
   type ModalCharData = ZHChar & { phonetic?: string | null; translation?: string | null }
 
   // null means "show the prop character"; non-null is a user-navigated override
-  let _viewChar = $state<string | null>(null)
-  const viewChar = $derived(_viewChar ?? character)
+  let overrideChar = $state<string | null>(null)
+  const viewChar = $derived(overrideChar ?? character)
 
   let charData = $state<ModalCharData | null>(null)
 
@@ -75,7 +75,7 @@
 </script>
 
 <dialog
-  {@attach openDialog}
+  use:openDialog
   aria-label="Character detail: {viewChar}"
   onclick={(e) => { if (e.target === e.currentTarget) onclose() }}
   oncancel={(e) => { e.preventDefault(); onclose() }}
@@ -83,7 +83,7 @@
   <header class="modal-header">
     <div class="modal-nav">
       {#if viewChar !== character}
-        <button class="back-btn" onclick={() => _viewChar = null} aria-label="Back">←</button>
+        <button class="back-btn" onclick={() => overrideChar = null} aria-label="Back">←</button>
       {/if}
       <span class="modal-char" lang={language}>{viewChar}</span>
     </div>
@@ -130,7 +130,7 @@
             <button
               class="char-btn {getHoverStrokeClass(comp.character)}"
               lang={language}
-              onclick={() => _viewChar = comp.character}
+              onclick={() => overrideChar = comp.character}
               aria-label="Explore component {comp.character}"
               title={getCachedPinyin(comp.character) ?? undefined}
             >{comp.character}</button>
