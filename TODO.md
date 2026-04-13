@@ -2,6 +2,46 @@
 
 ## Todo
 
+### High priority
+
+- [ ] fix: no confirmation on destructive actions — delete list (`spellings/+page.svelte:138`), delete profile (`profiles/+page.svelte:63`), delete word all fire immediately with no dialog; add a modal "Delete [Name]? This cannot be undone."
+- [ ] fix: quiz mode soft-lock if CharacterWriter fails to load — `onComplete` never fires so user cannot progress; add a "Skip" button in quiz mode and a 30s timeout fallback
+- [ ] fix: empty state in tone practice gives no guidance — `spellings/[id]/tones/+page.svelte`: "no characters with pinyin" message should explain what to do and link back to the list to enrich words
+- [ ] fix: mobile hamburger menu may still be visible during page transition — `+layout.svelte`; add explicit `onclick={() => menuOpen = false}` on all nav links in `.nav-right` as belt-and-braces alongside the existing `$effect`
+- [ ] fix: error messages inconsistent and easy to miss — some are inline `<output>` tags below forms, some are banners, lifetime varies; standardise to a top-of-form banner that persists until dismissed or next action
+- [ ] fix: scan error feedback unclear — after a failed worksheet scan `spellings/[id]/+page.svelte` shows the error but does not make it obvious a retry is safe; add an explicit "Try again" prompt
+- [ ] feat: add spelling progress to profile cards — `profiles/+page.svelte` shows only tone stats; add word count and list count so parents can see spelling engagement
+
+### Medium priority
+
+- [ ] refactor: rename "Re-lookup all words" button — `spellings/[id]/+page.svelte`; change label to "Refresh translations" or "Update pinyin & meanings" with a tooltip explaining what it does
+- [ ] fix: "Peek Hint" hold mechanic has no affordance — `spellings/[id]/practice/+page.svelte`; add a visible label "Hold to peek" or convert to a toggle to make the interaction discoverable
+- [ ] refactor: homework context textarea placeholder too vague — `homework/+page.svelte`; improve to "e.g. Grade 4 fill-in-the-blank exercise, translate to Chinese"
+- [ ] fix: multi-image homework upload not communicated — input label says "Scan worksheet" (singular); change to "Scan page(s)", show selected file count, and show per-image analysing progress
+- [ ] feat: skeleton loaders on card grids — most pages show plain "Loading…" text; replace with placeholder shimmer cards matching the final layout
+- [ ] fix: AI usage counter in settings lacks context — shows "5 / 10" with no explanation; add "enrichments used today — resets at midnight" and a percentage bar
+- [ ] fix: neutral tone button unclear in tone practice — `spellings/[id]/tones/+page.svelte`; plain "a" with no mark or label; add "neutral" label or distinguish visually
+- [ ] fix: dictionary no-results message unhelpful — `dictionary/+page.svelte`; add "Try searching by pinyin (e.g. 'ni hao') or English meaning"
+- [ ] fix: word card grid overflows on very small phones — `spellings/[id]/+page.svelte`; `minmax(280px, 1fr)` breaks at < 320px; add `@media (max-width: 480px) { grid-template-columns: 1fr }`
+- [ ] fix: edit mode on list rename card has no visual indication — `spellings/+page.svelte`; add a highlighted border or background change to show the card is in edit state
+- [ ] feat: tone practice progress bar — currently only a score counter; add `<progress value={answeredCount} max={items.length}>` below the score
+- [ ] fix: tone practice buttons too tall on mobile — 5 × 160px buttons + controls require scrolling on small phones; reduce height or switch to a 2-col grid at narrow viewports
+
+### Low priority
+
+- [ ] feat: breadcrumbs on deep pages — `/spellings/[id]/practice` and other 2+ level routes show only a back link; add a breadcrumb trail e.g. "Spellings / Week 1 / Practice"
+- [ ] refactor: remove redundant "Reveal" button from practice flashcard — `spellings/[id]/practice/+page.svelte`; the card itself is already clickable; remove the button and add a "(tap to reveal)" hint on the card front
+- [ ] feat: keyboard shortcuts tip in tone practice — arrow keys and 1–5 number keys are bound but never documented; show a dismissible tip on first load
+- [ ] fix: auth confirm page has no resend link — `auth/confirm/+page.svelte`; user has no recovery path if the magic link email didn't arrive; add a "Resend link" button
+- [ ] feat: word detail edit: highlight AI-filled fields — `words/[id]/+page.svelte`; after AI enrichment, mark which fields were changed so the user can verify before saving
+- [ ] fix: homework edit modal: no undo after saving a translation — `homework/[id]/+page.svelte`; once saved the change is permanent; add a confirm step inside the modal or an undo toast
+- [ ] refactor: `MY WORDS` table has no sort or filter controls — `words/+page.svelte`; add sortable column headers and a filter by list name
+- [ ] refactor: landing page copy doesn't explain why stroke order matters — `+page.svelte`; change "Stroke-by-stroke animation" to explain the classroom relevance
+- [ ] fix: character modal tab/keyboard navigation incomplete — `CharacterModal.svelte`; arrow keys don't cycle through components in the "Made of" section; fix tab order and add left/right arrow support
+- [ ] refactor: standardise button visual hierarchy across the app — primary (dark bg + yellow text), secondary (surface bg), tertiary (icon-only); currently mixed inconsistently
+- [ ] refactor: standardise terminology — "spelling", "spelling list", "word list", "set" used interchangeably across UI copy; pick one term and apply everywhere
+- [ ] feat: about/help page FAQ — `about/+page.md`; add answers to "what is pinyin?", "why is there an AI limit?", "can I export my words?" etc.
+
 ## In progress
 
 ## Done
