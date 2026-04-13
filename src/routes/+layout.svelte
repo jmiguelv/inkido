@@ -41,10 +41,14 @@
     let petVisible = $state(true);
 
     async function loadProfiles() {
-        const { data } = await supabase
+        const { data, error } = await supabase
             .from("profiles")
             .select("*")
             .order("created_at");
+        if (error) {
+            console.error("Failed to load profiles:", error);
+            return;
+        }
         profiles = (data ?? []) as Profile[];
     }
 
@@ -59,6 +63,8 @@
             } else if (session) {
                 loadProfiles();
             }
+        }).catch(err => {
+            console.error("Auth session error:", err);
         });
 
         const {

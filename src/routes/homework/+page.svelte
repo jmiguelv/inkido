@@ -106,7 +106,9 @@
 
   $effect(() => {
     if (activeProfile?.id) {
-      loadScans()
+      loadScans().catch(e => {
+        errorMsg = e instanceof Error ? e.message : 'Failed to load scans'
+      })
     }
   })
 </script>
@@ -120,7 +122,7 @@
   </hgroup>
 
   {#if isLoading}
-    <p>Loading…</p>
+    <p aria-live="polite">Loading…</p>
   {:else if scans.length === 0}
     <p>No scans yet. Upload a worksheet below.</p>
   {:else}
@@ -162,6 +164,7 @@
         placeholder="e.g. topic, grade level, or specific instructions"
         disabled={scanning}
         rows="3"
+        maxlength="500"
       ></textarea>
     </div>
 

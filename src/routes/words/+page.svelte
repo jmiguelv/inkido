@@ -15,6 +15,7 @@
     let words = $state<WordEntry[]>([]);
     let loading = $state(true);
     let query = $state("");
+    let errorMsg = $state("");
     let modalChar = $state<{ char: string; language: string } | null>(null);
 
     const filtered = $derived(
@@ -87,7 +88,9 @@
 
     $effect(() => {
         if (activeProfile?.id) {
-            loadWords();
+            loadWords().catch(e => {
+                errorMsg = e instanceof Error ? e.message : "Failed to load words";
+            });
         }
     });
 </script>
@@ -126,6 +129,10 @@
             spellcheck="false"
         />
     </div>
+
+    {#if errorMsg}
+        <output role="alert" class="error">{errorMsg}</output>
+    {/if}
 
     {#if loading}
         <p class="state-msg" aria-live="polite">Loading…</p>
@@ -227,6 +234,14 @@
     .state-msg {
         color: var(--color-text-muted);
         font-size: var(--font-size-2);
+    }
+
+    .error {
+        display: block;
+        color: var(--color-danger);
+        font-size: var(--font-size-1);
+        font-weight: 700;
+        margin-bottom: var(--size-3);
     }
 
     .table-wrapper {

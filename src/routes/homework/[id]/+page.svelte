@@ -239,7 +239,7 @@
     {/if}
   </dialog>
 {:else if isLoading}
-  <p>Loading…</p>
+  <p aria-live="polite">Loading…</p>
 {:else}
   <p>Scan not found.</p>
 {/if}

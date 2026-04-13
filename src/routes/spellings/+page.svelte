@@ -14,20 +14,26 @@
   let newListLanguage = $state('zh')
   let errorMsg = $state('')
   let loading = $state(false)
+  let initialLoading = $state(true)
   let renamingId = $state<string | null>(null)
   let renameValue = $state('')
 
   const activeProfile = $derived(getActiveProfile())
 
   async function loadLists() {
-    if (!activeProfile) return
-    const { data, error } = await supabase
-      .from('word_lists')
-      .select('*')
-      .eq('profile_id', activeProfile.id)
-      .order('created_at')
-    if (error) throw error
-    lists = data as WordList[]
+    if (!activeProfile) { initialLoading = false; return }
+    initialLoading = true
+    try {
+      const { data, error } = await supabase
+        .from('word_lists')
+        .select('*')
+        .eq('profile_id', activeProfile.id)
+        .order('created_at')
+      if (error) throw error
+      lists = data as WordList[]
+    } finally {
+      initialLoading = false
+    }
   }
 
   async function handleCreateList() {
@@ -78,7 +84,9 @@
 
   $effect(() => {
     if (activeProfile?.id) {
-      loadLists()
+      loadLists().catch(e => {
+        errorMsg = e instanceof Error ? e.message : 'Failed to load spellings'
+      })
     }
   })
 </script>
@@ -91,7 +99,9 @@
     </div>
   </hgroup>
 
-  {#if lists.length === 0}
+  {#if initialLoading}
+    <p aria-live="polite">Loading…</p>
+  {:else if lists.length === 0}
     <p>No sets yet. Create one below.</p>
   {:else}
     <ul class="list-grid">
