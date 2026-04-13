@@ -2,6 +2,21 @@
 
 ## Todo
 
+- [ ] fix: `{@attach openDialog}` in `CharacterModal.svelte:78` — AGENTS.md prohibits `{@attach}` inside child components as unreliable; replace with state-driven open/close (pass an `open` prop or use a Svelte action)
+- [ ] fix: `{@html}` on LLM/user-generated fields in `spellings/[id]/practice/+page.svelte:258,261,267,270` and `words/[id]/+page.svelte` — sanitize before rendering or strip HTML tags to prevent XSS
+- [ ] fix: unhandled promise rejections in `$effect` hooks — `loadLists()` / `loadWords()` / `loadScans()` called without `.catch()` in `spellings/+page.svelte`, `spellings/[id]/+page.svelte`, `homework/+page.svelte`, `words/+page.svelte`; wrap calls in try/catch and surface errors to user
+- [ ] fix: `supabase.auth.getSession().then(...)` in `+layout.svelte:55` has no `.catch()` — add error handling to the auth promise chain
+- [ ] fix: `loadProfiles()` in `+layout.svelte:43` silently discards the Supabase `error` field — add at minimum a `console.error`
+- [ ] fix: LLM enrichment errors invisible to user — `spellings/[id]/+page.svelte:106` catches and logs but never sets `errorMsg`; show a visible error when enrichment fails
+- [ ] fix: debounce timer leak in `dictionary/+page.svelte` — `debounceTimer` is never cleared on component destroy; add cleanup
+- [ ] fix: missing loading indicator during word reorder — `spellings/[id]/+page.svelte:189` fires multiple parallel Supabase updates with no visual feedback
+- [ ] refactor: `LlmResult` type defined locally in `spellings/[id]/+page.svelte` — move to `src/lib/types.ts`
+- [ ] refactor: `_viewChar` in `CharacterModal.svelte` — underscore prefix is misleading for a reactive state variable; rename to `overrideChar`
+- [ ] refactor: `&#10;` entity in textarea placeholder `spellings/[id]/+page.svelte:365` — replace with `\n` in a template literal
+- [ ] refactor: update stale route references in `AGENTS.md` — project structure section still lists `/lists/`, `/lists/[id]/`, `/lists/[id]/practice/`; rename to `/spellings/`
+- [ ] feat: add `maxlength` to homework context textarea in `homework/+page.svelte` to prevent edge function payload overflow
+- [ ] test: add unit tests for dictionary query functions and `enrichWords` logic — currently only utility functions are covered
+- [ ] refactor: add `aria-live` regions to async status messages (enriching, scanning, loading) so screen readers announce state changes
 
 ## In progress
 
