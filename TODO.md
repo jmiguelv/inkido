@@ -2,26 +2,25 @@
 
 ## Todo
 
-- [ ] fix: `{@attach openDialog}` in `CharacterModal.svelte:78` — AGENTS.md prohibits `{@attach}` inside child components as unreliable; replace with state-driven open/close (pass an `open` prop or use a Svelte action)
-- [ ] fix: `{@html}` on LLM/user-generated fields in `spellings/[id]/practice/+page.svelte:258,261,267,270` and `words/[id]/+page.svelte` — sanitize before rendering or strip HTML tags to prevent XSS
-- [ ] fix: unhandled promise rejections in `$effect` hooks — `loadLists()` / `loadWords()` / `loadScans()` called without `.catch()` in `spellings/+page.svelte`, `spellings/[id]/+page.svelte`, `homework/+page.svelte`, `words/+page.svelte`; wrap calls in try/catch and surface errors to user
-- [ ] fix: `supabase.auth.getSession().then(...)` in `+layout.svelte:55` has no `.catch()` — add error handling to the auth promise chain
-- [ ] fix: `loadProfiles()` in `+layout.svelte:43` silently discards the Supabase `error` field — add at minimum a `console.error`
-- [ ] fix: LLM enrichment errors invisible to user — `spellings/[id]/+page.svelte:106` catches and logs but never sets `errorMsg`; show a visible error when enrichment fails
-- [ ] fix: debounce timer leak in `dictionary/+page.svelte` — `debounceTimer` is never cleared on component destroy; add cleanup
-- [ ] fix: missing loading indicator during word reorder — `spellings/[id]/+page.svelte:189` fires multiple parallel Supabase updates with no visual feedback
-- [ ] refactor: `LlmResult` type defined locally in `spellings/[id]/+page.svelte` — move to `src/lib/types.ts`
-- [ ] refactor: `_viewChar` in `CharacterModal.svelte` — underscore prefix is misleading for a reactive state variable; rename to `overrideChar`
-- [ ] refactor: `&#10;` entity in textarea placeholder `spellings/[id]/+page.svelte:365` — replace with `\n` in a template literal
-- [ ] refactor: update stale route references in `AGENTS.md` — project structure section still lists `/lists/`, `/lists/[id]/`, `/lists/[id]/practice/`; rename to `/spellings/`
-- [ ] feat: add `maxlength` to homework context textarea in `homework/+page.svelte` to prevent edge function payload overflow
-- [ ] test: add unit tests for dictionary query functions and `enrichWords` logic — currently only utility functions are covered
-- [ ] refactor: add `aria-live` regions to async status messages (enriching, scanning, loading) so screen readers announce state changes
-
 ## In progress
 
 ## Done
 
+- [x] fix: `{@attach openDialog}` in `CharacterModal.svelte:78` — replaced with `use:openDialog` action as per AGENTS.md mandate
+- [x] fix: `{@html}` on LLM/user-generated fields — replaced with `{sanitize(...)}` using a new `$lib/sanitize.ts` utility to prevent XSS
+- [x] fix: unhandled promise rejections in `$effect` hooks — wrapped async calls in `loadLists()`, `loadWords()`, and `loadScans()` with `.catch()` and surfaced errors to `errorMsg`
+- [x] fix: `supabase.auth.getSession().then(...)` in `+layout.svelte:55` — added `.catch()` to the auth promise chain
+- [x] fix: `loadProfiles()` in `+layout.svelte:43` — added `console.error` for Supabase errors
+- [x] fix: LLM enrichment errors invisible to user — updated `enrichWords` in `spellings/[id]/+page.svelte` to set `errorMsg` on failure
+- [x] fix: debounce timer leak in `dictionary/+page.svelte` — added `clearTimeout` in `onMount` cleanup
+- [x] fix: missing loading indicator during word reorder — added `reordering` state and integrated it into the `enriching-banner`
+- [x] refactor: `LlmResult` type defined locally in `spellings/[id]/+page.svelte` — moved to `src/lib/types.ts`
+- [x] refactor: `_viewChar` in `CharacterModal.svelte` — renamed to `overrideChar` for clarity
+- [x] refactor: `&#10;` entity in textarea placeholder `spellings/[id]/+page.svelte:365` — replaced with `\n` in a template literal
+- [x] refactor: update stale route references in `AGENTS.md` — updated project structure to use `/spellings/` and `/dictionary/`
+- [x] feat: add `maxlength="500"` to homework context textarea in `homework/+page.svelte`
+- [x] test: added unit tests for `getStrokeClass`, `getCharsData`, `getWordsData` and new `calculateEnrichmentUpdates` logic
+- [x] refactor: add `aria-live="polite"` regions to async status messages across the app
 - [x] fix: ensure homework edit modal closes after successful translation
 - [x] refactor: use modal for homework inline translation to prevent overflow
 - [x] fix: restore missing SETTINGS link in profiles dropdown
@@ -71,7 +70,7 @@
       mobile.
 - [x] fix: `nextAudioTimeout` variable declared in tones practice but never assigned — `setTimeout(handleAudio, 300)` on line 113 of `tones/+page.svelte` is still a raw leak; assign to the variable and cancel it in the `onMount` cleanup alongside the `keydown` listener
 - [x] fix: `setTimeout(handleAudio, 300)` in `handleNext` in tones practice has no cleanup — inconsistent with the `$effect` fix; store the return value and cancel it if the component is destroyed
-- [x] refactor: `AI_DAILY_LIMIT = 20` in `supabase/functions/enrich-words/index.ts` cannot import from `src/lib/constants.ts` (different runtime) — add a comment cross-referencing the frontend constant so the two values don't silently drift
+- [x] refactor: `AI_DAILY_LIMIT = 20` in `supabase/functions/enrich-words/index.ts` cannot import from `src/lib/characters.ts` (different runtime) — add a comment cross-referencing the frontend constant so the two values don't silently drift
 - [x] test: New `alignPinyin` and `isChineseCharacter` tests use plain prose names instead of the project convention `<unit>_<scenario>_<expected>` — align with existing test naming style
 - [x] fix: `showHint` is not reset in `handlePrev`, `handleNext`, or `toggleQuiz` in spelling practice — peek state can linger across word navigation
 - [x] fix: `setActiveProfile` called with `null as unknown as Profile` when deleting the active profile in profiles page — update the function signature to accept `null`
