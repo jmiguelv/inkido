@@ -4,33 +4,33 @@
 
 ### High priority
 
-- [ ] fix: no confirmation on destructive actions — delete list (`spellings/+page.svelte:138`), delete profile (`profiles/+page.svelte:63`), delete word all fire immediately with no dialog; add a modal "Delete [Name]? This cannot be undone."
-- [ ] fix: quiz mode soft-lock if CharacterWriter fails to load — `onComplete` never fires so user cannot progress; add a "Skip" button in quiz mode and a 30s timeout fallback
-- [ ] fix: empty state in tone practice gives no guidance — `spellings/[id]/tones/+page.svelte`: "no characters with pinyin" message should explain what to do and link back to the list to enrich words
-- [ ] fix: mobile hamburger menu may still be visible during page transition — `+layout.svelte`; add explicit `onclick={() => menuOpen = false}` on all nav links in `.nav-right` as belt-and-braces alongside the existing `$effect`
+- [x] fix: no confirmation on destructive actions — added two-step inline confirm (Yes/No) to delete list, delete profile, and delete word
+- [x] fix: quiz mode soft-lock — added Skip button and 30s auto-advance timeout in `spellings/[id]/practice/+page.svelte`
+- [x] fix: empty state in tone practice — improved message with explanation and link back to list in `spellings/[id]/tones/+page.svelte`
+- [x] fix: mobile hamburger menu — added `onclick={() => menuOpen = false}` to all nav links in `+layout.svelte`
 - [ ] fix: error messages inconsistent and easy to miss — some are inline `<output>` tags below forms, some are banners, lifetime varies; standardise to a top-of-form banner that persists until dismissed or next action
 - [ ] fix: scan error feedback unclear — after a failed worksheet scan `spellings/[id]/+page.svelte` shows the error but does not make it obvious a retry is safe; add an explicit "Try again" prompt
-- [ ] feat: add spelling progress to profile cards — `profiles/+page.svelte` shows only tone stats; add word count and list count so parents can see spelling engagement
+- [x] feat: add spelling progress to profile cards — `profiles/+page.svelte` now shows list count and word count alongside tone stats
 
 ### Medium priority
 
-- [ ] refactor: rename "Re-lookup all words" button — `spellings/[id]/+page.svelte`; change label to "Refresh translations" or "Update pinyin & meanings" with a tooltip explaining what it does
-- [ ] fix: "Peek Hint" hold mechanic has no affordance — `spellings/[id]/practice/+page.svelte`; add a visible label "Hold to peek" or convert to a toggle to make the interaction discoverable
+- [x] refactor: rename "Re-lookup all words" → "Refresh translations" in `spellings/[id]/+page.svelte`
+- [x] fix: "Peek Hint" button now labelled "Hold to peek" in `spellings/[id]/practice/+page.svelte`
 - [ ] refactor: homework context textarea placeholder too vague — `homework/+page.svelte`; improve to "e.g. Grade 4 fill-in-the-blank exercise, translate to Chinese"
 - [ ] fix: multi-image homework upload not communicated — input label says "Scan worksheet" (singular); change to "Scan page(s)", show selected file count, and show per-image analysing progress
 - [ ] feat: skeleton loaders on card grids — most pages show plain "Loading…" text; replace with placeholder shimmer cards matching the final layout
-- [ ] fix: AI usage counter in settings lacks context — shows "5 / 10" with no explanation; add "enrichments used today — resets at midnight" and a percentage bar
+- [x] fix: AI usage counter in settings — copy updated to "Each word added uses 1 enrichment. Resets at midnight."
 - [ ] fix: neutral tone button unclear in tone practice — `spellings/[id]/tones/+page.svelte`; plain "a" with no mark or label; add "neutral" label or distinguish visually
-- [ ] fix: dictionary no-results message unhelpful — `dictionary/+page.svelte`; add "Try searching by pinyin (e.g. 'ni hao') or English meaning"
+- [x] fix: dictionary no-results message — now includes pinyin and English meaning search tips
 - [ ] fix: word card grid overflows on very small phones — `spellings/[id]/+page.svelte`; `minmax(280px, 1fr)` breaks at < 320px; add `@media (max-width: 480px) { grid-template-columns: 1fr }`
-- [ ] fix: edit mode on list rename card has no visual indication — `spellings/+page.svelte`; add a highlighted border or background change to show the card is in edit state
-- [ ] feat: tone practice progress bar — currently only a score counter; add `<progress value={answeredCount} max={items.length}>` below the score
-- [ ] fix: tone practice buttons too tall on mobile — 5 × 160px buttons + controls require scrolling on small phones; reduce height or switch to a 2-col grid at narrow viewports
+- [x] fix: edit mode on list rename card — `active-rename` outline added to show editing state
+- [x] feat: tone practice progress bar — `<progress>` element added below score in `spellings/[id]/tones/+page.svelte`
+- [x] fix: tone practice buttons — height reduced to 120px on mobile
 
 ### Low priority
 
 - [ ] feat: breadcrumbs on deep pages — `/spellings/[id]/practice` and other 2+ level routes show only a back link; add a breadcrumb trail e.g. "Spellings / Week 1 / Practice"
-- [ ] refactor: remove redundant "Reveal" button from practice flashcard — `spellings/[id]/practice/+page.svelte`; the card itself is already clickable; remove the button and add a "(tap to reveal)" hint on the card front
+- [x] refactor: removed redundant "Reveal" button from practice flashcard; replaced with "Tap card to reveal" hint text
 - [ ] feat: keyboard shortcuts tip in tone practice — arrow keys and 1–5 number keys are bound but never documented; show a dismissible tip on first load
 - [ ] fix: auth confirm page has no resend link — `auth/confirm/+page.svelte`; user has no recovery path if the magic link email didn't arrive; add a "Resend link" button
 - [ ] feat: word detail edit: highlight AI-filled fields — `words/[id]/+page.svelte`; after AI enrichment, mark which fields were changed so the user can verify before saving
