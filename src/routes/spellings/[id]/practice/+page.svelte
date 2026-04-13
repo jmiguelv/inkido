@@ -6,7 +6,6 @@
   import { speak, unlockAudio } from '$lib/audio'
   import { onMount } from 'svelte'
   import { splitCharacters, alignPinyin } from '$lib/characters'
-  import { sanitize } from '$lib/sanitize'
   import { getCharsData, getStrokeClass, getHoverStrokeClass } from '$lib/dictionary'
   import CharacterModal from '$lib/components/CharacterModal.svelte'
   import CharacterWriter from '$lib/components/CharacterWriter.svelte'
@@ -23,6 +22,7 @@
   let errorMsg = $state('')
   let speechRate = $state(0.75)
   let modalChar = $state<string | null>(null)
+  let quizTimeout: ReturnType<typeof setTimeout> | null = $state(null)
 
   const activeProfile = $derived(getActiveProfile())
   const listId = $derived(page.params.id)
@@ -59,20 +59,30 @@
     flipped = !flipped
   }
 
+  function startQuizTimeout() {
+    if (quizTimeout) clearTimeout(quizTimeout)
+    quizTimeout = setTimeout(() => {
+      handleQuizComplete()
+    }, 30000)
+  }
+
   function toggleQuiz(e: MouseEvent) {
     e.stopPropagation()
     quizMode = !quizMode
     quizCharIndex = 0
     flipped = false
     showHint = false
+    if (quizMode) startQuizTimeout()
   }
 
   function handleQuizComplete() {
     setPetMood('happy')
     if (quizCharIndex < currentChars.length - 1) {
       quizCharIndex++
+      startQuizTimeout()
     } else {
       // Word complete!
+      if (quizTimeout) clearTimeout(quizTimeout)
       fireConfetti()
       quizMode = false
       flipped = true
@@ -117,7 +127,10 @@
   onMount(() => {
     if (!activeProfile) { goto('/profiles'); return }
     window.addEventListener('keydown', handleKeydown)
-    return () => window.removeEventListener('keydown', handleKeydown)
+    return () => {
+      window.removeEventListener('keydown', handleKeydown)
+      if (quizTimeout) clearTimeout(quizTimeout)
+    }
   })
 
   $effect(() => {
@@ -180,6 +193,9 @@
                     Writing {quizCharIndex + 1} of {currentChars.length}
                   </p>
                 {/if}
+                <button class="skip-btn" onclick={() => { if (quizTimeout) clearTimeout(quizTimeout); handleQuizComplete() }}>
+                  Skip character →
+                </button>
               </div>
             {:else if flipped}
               <div class="char-row" lang={list.language}>
@@ -237,38 +253,32 @@
                 }}
                 ontouchend={() => (showHint = false)}
               >
-                Peek Hint
+                Hold to peek
               </button>
             </div>
           {/if}
 
           {#if !flipped && !quizMode}
-            <button
-              class="reveal-btn"
-              onclick={(e) => { e.stopPropagation(); handleFlip() }}
-              aria-label="Reveal word details"
-            >
-              Reveal
-            </button>
+            <p class="tap-hint">Tap card to reveal</p>
           {/if}
         </div>
 
         {#if flipped}
           <div class="card-back">
             {#if currentWord.translation}
-              <p class="translation">{sanitize(currentWord.translation)}</p>
+              <p class="translation">{@html currentWord.translation}</p>
             {/if}
             {#if currentWord.example}
-              <p class="example">{sanitize(currentWord.example)}</p>
+              <p class="example">{@html currentWord.example}</p>
             {/if}
             {#if currentWord.example_phonetic}
               <p class="example-phonetic">{currentWord.example_phonetic}</p>
             {/if}
             {#if currentWord.example_translation}
-              <p class="example-translation">{sanitize(currentWord.example_translation)}</p>
+              <p class="example-translation">{@html currentWord.example_translation}</p>
             {/if}
             {#if currentWord.character_note}
-              <p class="note">{sanitize(currentWord.character_note)}</p>
+              <p class="note">{@html currentWord.character_note}</p>
             {/if}
           </div>
         {/if}
@@ -480,28 +490,31 @@
     flex-shrink: 0;
   }
 
-  .reveal-btn {
-    padding: var(--size-2) var(--size-6);
+  .tap-hint {
+    font-size: var(--font-size-0);
+    color: var(--color-text-muted);
+    opacity: 0.6;
+    margin: 0;
+    font-style: italic;
+  }
+
+  .skip-btn {
+    font-size: var(--font-size-0);
+    padding: var(--size-1) var(--size-3);
+    background: none;
     border: var(--border);
-    border-radius: 0;
-    font-size: var(--font-size-2);
+    box-shadow: none;
+    color: var(--color-text-muted);
+    cursor: pointer;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    background: var(--color-accent);
-    color: var(--color-accent-fg);
-    box-shadow: var(--shadow-sm);
-    cursor: pointer;
-    transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+    opacity: 0.7;
   }
 
-  .reveal-btn:hover {
-    transform: translate(-2px, -2px);
-    box-shadow: 2px 2px 0 var(--color-border);
-  }
-
-  .reveal-btn:active {
-    transform: translate(0, 0);
+  .skip-btn:hover {
+    opacity: 1;
+    transform: none;
     box-shadow: none;
   }
 

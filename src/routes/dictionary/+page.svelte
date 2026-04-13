@@ -156,10 +156,6 @@
             query = initialQuery;
             runSearch(query);
         }
-
-        return () => {
-            if (debounceTimer) clearTimeout(debounceTimer);
-        };
     });
 
     function handleInput() {
@@ -216,7 +212,7 @@
     {:else if !searched}
         <p class="state-msg">Type to search the dictionary.</p>
     {:else if results.length === 0}
-        <p class="state-msg">No characters match <strong>{query}</strong>.</p>
+        <p class="state-msg">No results for <strong>{query}</strong>. Try searching by pinyin (e.g. <em>ni hao</em>) or English meaning.</p>
     {:else}
         <div class="table-wrapper">
             <table class="char-table">
@@ -243,7 +239,7 @@
                         >
                             <td class="td-char">
                                 <div class="char-row" lang="zh">
-                                    {#each alignPinyin(entry.char, entry.pinyin) as { char, pinyin }}
+                                    {#each alignPinyin(entry.char, entry.pinyin) as { char, pinyin } (char)}
                                         <button
                                             class="char-btn {getHoverStrokeClass(
                                                 char,

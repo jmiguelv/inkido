@@ -7,11 +7,14 @@
 
   let profiles = $state<Profile[]>([])
   let profileStats = $state<Record<string, { total: number, correct: number }>>({})
+  let profileListCounts = $state<Record<string, number>>({})
+  let profileWordCounts = $state<Record<string, number>>({})
   let newProfileName = $state('')
   let errorMsg = $state('')
   let loading = $state(false)
   let renamingId = $state<string | null>(null)
   let renameValue = $state('')
+  let confirmDeleteId = $state<string | null>(null)
 
   const activeProfile = $derived(getActiveProfile())
 
@@ -39,6 +42,31 @@
         }
         profileStats = stats
       }
+
+      const { data: listData } = await supabase
+        .from('word_lists')
+        .select('id, profile_id')
+        .in('profile_id', profiles.map(p => p.id))
+
+      const { data: wordData } = await supabase
+        .from('words')
+        .select('id, list_id')
+        .in('list_id', (listData ?? []).map(l => l.id))
+
+      const listCountMap: Record<string, number> = {}
+      const wordCountMap: Record<string, number> = {}
+      for (const p of profiles) { listCountMap[p.id] = 0; wordCountMap[p.id] = 0 }
+      for (const l of listData ?? []) {
+        listCountMap[l.profile_id] = (listCountMap[l.profile_id] ?? 0) + 1
+      }
+      const listProfileMap: Record<string, string> = {}
+      for (const l of listData ?? []) listProfileMap[l.id] = l.profile_id
+      for (const w of wordData ?? []) {
+        const pid = listProfileMap[w.list_id]
+        if (pid) wordCountMap[pid] = (wordCountMap[pid] ?? 0) + 1
+      }
+      profileListCounts = listCountMap
+      profileWordCounts = wordCountMap
     }
   }
 
@@ -136,7 +164,7 @@
                 {#if profileStats[profile.id] && profileStats[profile.id].total > 0}
                   <span class="stat-label">Tones:</span>
                   <span class="stat-value">
-                    {profileStats[profile.id].total} practiced 
+                    {profileStats[profile.id].total} practiced
                     <span class="stat-pct">({Math.round((profileStats[profile.id].correct / profileStats[profile.id].total) * 100)}% correct)</span>
                   </span>
                 {:else}
@@ -144,17 +172,29 @@
                   <span class="stat-value empty">Not practiced yet</span>
                 {/if}
               </div>
+              <div class="profile-stats-row">
+                <span class="stat-label">Spellings:</span>
+                <span class="stat-value">{profileListCounts[profile.id] ?? 0} lists · {profileWordCounts[profile.id] ?? 0} words</span>
+              </div>
             </button>
             <button
               class="rename-btn"
               onclick={() => startRename(profile)}
               aria-label="Rename {profile.name}"
             >✎</button>
-            <button
-              class="delete-btn"
-              onclick={() => handleDeleteProfile(profile.id)}
-              aria-label="Delete {profile.name}"
-            >×</button>
+            {#if confirmDeleteId === profile.id}
+              <div class="confirm-delete">
+                <span>Delete?</span>
+                <button onclick={() => { handleDeleteProfile(profile.id); confirmDeleteId = null }} class="confirm-yes">Yes</button>
+                <button onclick={() => confirmDeleteId = null} class="confirm-no">No</button>
+              </div>
+            {:else}
+              <button
+                class="delete-btn"
+                onclick={() => confirmDeleteId = profile.id}
+                aria-label="Delete {profile.name}"
+              >×</button>
+            {/if}
           {/if}
         </li>
       {/each}
@@ -411,5 +451,47 @@
   button[type="submit"] {
     padding: var(--size-2) var(--size-5);
     font-size: var(--font-size-2);
+  }
+
+  .profile-stats-row {
+    display: flex;
+    gap: var(--size-2);
+    font-size: var(--font-size-1);
+    color: var(--color-text-muted);
+    width: 100%;
+  }
+
+  .confirm-delete {
+    position: absolute;
+    top: var(--size-2);
+    right: var(--size-2);
+    display: flex;
+    align-items: center;
+    gap: var(--size-1);
+    font-size: var(--font-size-0);
+    font-weight: 700;
+  }
+
+  .confirm-yes {
+    background: var(--color-danger);
+    color: var(--color-danger-fg);
+    border: var(--border);
+    padding: 0 var(--size-2);
+    font-size: var(--font-size-0);
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: none;
+    line-height: 1.6;
+  }
+
+  .confirm-no {
+    background: var(--color-surface);
+    border: var(--border);
+    padding: 0 var(--size-2);
+    font-size: var(--font-size-0);
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: none;
+    line-height: 1.6;
   }
 </style>

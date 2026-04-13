@@ -232,6 +232,7 @@
           <p class="score" aria-label="Score: {correctCount} correct out of {answeredCount} answered">
             {correctCount} / {answeredCount} correct
           </p>
+          <progress class="tone-progress" value={answeredCount} max={items.length} aria-label="{answeredCount} of {items.length} answered"></progress>
         {/if}
 
         {#if showResult}
@@ -256,7 +257,10 @@
       </button>
     </nav>
   {:else if items.length === 0 && list}
-    <p>This set has no characters with pinyin yet. <a href="/spellings/{list.id}">Add some words</a>.</p>
+    <div class="empty-state">
+      <p>No characters with pinyin found in this set.</p>
+      <p class="empty-hint">To practice tones, <a href="/spellings/{list.id}">go back to the list</a> and use <strong>Refresh translations</strong> to fetch pinyin automatically.</p>
+    </div>
   {:else}
     <p>Loading…</p>
   {/if}
@@ -346,7 +350,28 @@
     .tone-grid {
       grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
     }
+    .tone-btn { height: 120px; }
   }
+
+  .empty-state {
+    max-width: 480px;
+  }
+
+  .empty-hint {
+    color: var(--color-text-muted);
+    font-size: var(--font-size-1);
+  }
+
+  .tone-progress {
+    width: 100%;
+    height: var(--size-2);
+    border: var(--border);
+    border-radius: 0;
+  }
+
+  .tone-progress::-webkit-progress-bar { background: var(--color-surface); }
+  .tone-progress::-webkit-progress-value { background: var(--color-mint); }
+  .tone-progress::-moz-progress-bar { background: var(--color-mint); }
 
   .tone-btn {
     display: flex;

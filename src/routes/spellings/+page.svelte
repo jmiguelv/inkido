@@ -14,26 +14,21 @@
   let newListLanguage = $state('zh')
   let errorMsg = $state('')
   let loading = $state(false)
-  let initialLoading = $state(true)
   let renamingId = $state<string | null>(null)
   let renameValue = $state('')
+  let confirmDeleteId = $state<string | null>(null)
 
   const activeProfile = $derived(getActiveProfile())
 
   async function loadLists() {
-    if (!activeProfile) { initialLoading = false; return }
-    initialLoading = true
-    try {
-      const { data, error } = await supabase
-        .from('word_lists')
-        .select('*')
-        .eq('profile_id', activeProfile.id)
-        .order('created_at')
-      if (error) throw error
-      lists = data as WordList[]
-    } finally {
-      initialLoading = false
-    }
+    if (!activeProfile) return
+    const { data, error } = await supabase
+      .from('word_lists')
+      .select('*')
+      .eq('profile_id', activeProfile.id)
+      .order('created_at')
+    if (error) throw error
+    lists = data as WordList[]
   }
 
   async function handleCreateList() {
@@ -84,9 +79,7 @@
 
   $effect(() => {
     if (activeProfile?.id) {
-      loadLists().catch(e => {
-        errorMsg = e instanceof Error ? e.message : 'Failed to load spellings'
-      })
+      loadLists()
     }
   })
 </script>
@@ -99,9 +92,7 @@
     </div>
   </hgroup>
 
-  {#if initialLoading}
-    <p aria-live="polite">Loading…</p>
-  {:else if lists.length === 0}
+  {#if lists.length === 0}
     <p>No sets yet. Create one below.</p>
   {:else}
     <ul class="list-grid">
@@ -109,7 +100,7 @@
         <li>
           <article class="list-card">
             {#if renamingId === list.id}
-              <form onsubmit={(e) => { e.preventDefault(); handleRename(list.id) }} class="rename-form">
+              <form onsubmit={(e) => { e.preventDefault(); handleRename(list.id) }} class="rename-form active-rename">
                 <input
                   type="text"
                   bind:value={renameValue}
@@ -135,7 +126,15 @@
               </div>
               <div class="list-actions">
                 <button onclick={() => startRename(list)} aria-label="Rename {list.name}">✎</button>
-                <button class="danger" onclick={() => handleDeleteList(list.id)} aria-label="Delete {list.name}">×</button>
+                {#if confirmDeleteId === list.id}
+                  <div class="confirm-delete">
+                    <span>Delete?</span>
+                    <button onclick={() => { handleDeleteList(list.id); confirmDeleteId = null }} class="confirm-yes">Yes</button>
+                    <button onclick={() => confirmDeleteId = null} class="confirm-no">No</button>
+                  </div>
+                {:else}
+                  <button class="danger" onclick={() => confirmDeleteId = list.id} aria-label="Delete {list.name}">×</button>
+                {/if}
               </div>
             {/if}
           </article>
@@ -368,5 +367,41 @@
   button[type="submit"] {
     padding: var(--size-2) var(--size-5);
     font-size: var(--font-size-2);
+  }
+
+  .confirm-delete {
+    display: flex;
+    align-items: center;
+    gap: var(--size-1);
+    font-size: var(--font-size-0);
+    font-weight: 700;
+  }
+
+  .confirm-yes {
+    background: var(--color-danger);
+    color: var(--color-danger-fg);
+    border: var(--border);
+    padding: 0 var(--size-2);
+    font-size: var(--font-size-0);
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: none;
+    line-height: 1.6;
+  }
+
+  .confirm-no {
+    background: var(--color-surface);
+    border: var(--border);
+    padding: 0 var(--size-2);
+    font-size: var(--font-size-0);
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: none;
+    line-height: 1.6;
+  }
+
+  .active-rename {
+    outline: 3px solid var(--color-accent);
+    outline-offset: 2px;
   }
 </style>

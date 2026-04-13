@@ -9,8 +9,17 @@
   import CharacterModal from '$lib/components/CharacterModal.svelte'
   import { splitCharacters, alignPinyin, numberedToTone } from '$lib/characters'
   import { getCharsData, getWordsData, getStrokeClass, getHoverStrokeClass } from '$lib/dictionary'
-  import { calculateEnrichmentUpdates } from '$lib/enrichment'
-  import type { Word, WordList, LlmResult } from '$lib/types'
+  import type { Word, WordList } from '$lib/types'
+
+  type LlmResult = {
+    word: string
+    character?: string
+    pinyin: string
+    translation: string
+    example?: string
+    example_phonetic?: string
+    example_translation?: string
+  }
 
   function stripHtml(s: string | null | undefined): string | null {
     if (!s) return null
@@ -30,12 +39,12 @@
   let enriching = $state(false)
   let addingWords = $state(false)
   let scanLoading = $state(false)
-  let reordering = $state(false)
   const activeProfile = $derived(getActiveProfile())
   const listId = $derived(page.params.id)
-  const busy = $derived(addingWords || enriching || scanLoading || reordering)
+  const busy = $derived(addingWords || enriching || scanLoading)
 
   let modalChar = $state<{ char: string } | null>(null)
+  let confirmDeleteWordId = $state<string | null>(null)
 
   async function loadStrokeCounts(wordList: Word[]) {
     const allChars = [...new Set(wordList.flatMap(w => splitCharacters(w.character)))]
@@ -73,28 +82,65 @@
   async function enrichWords(wordIds: string[], characters: string[]) {
     enriching = true
     try {
-      let llmResults: LlmResult[] = []
+      // 1. Try to find the whole words/phrases (uses cache)
+      const simplifiedMap = await getWordsData(characters)
+
+      // 2. For characters not found as words, we'll need their individual pinyin (uses cache)
+      const allChars = [...new Set(characters.flatMap(c => splitCharacters(c)))]
+      const charPinyinMap = await getWordsData(allChars)
+
+      // 3. Get glosses for single characters (uses cache)
+      const singleCharsOnly = characters.filter(c => [...c].length === 1)
+      const charMap = await getCharsData(singleCharsOnly)
+
+      // 4. Always query LLM for all phrases to get examples
+      //    (dictionary data takes priority for pinyin/translation below)
+      const llmResultsMap = new SvelteMap<string, LlmResult>()
       if (characters.length > 0 && list) {
         try {
           const res = await supabase.functions.invoke('enrich-words', {
             body: { phrases: characters, language: list.language }
           })
           if (res.error) throw res.error
-          llmResults = (res.data as { results: LlmResult[] }).results
+          const { results } = res.data as { results: LlmResult[] }
+          results.forEach(r => llmResultsMap.set(r.word, r))
         } catch (e) {
           console.error("LLM Enrichment failed:", e)
-          errorMsg = "AI enrichment failed. Some details might be missing, but words were added."
         }
       }
 
-      const updates = await calculateEnrichmentUpdates(characters, llmResults)
-
       for (let i = 0; i < wordIds.length; i++) {
         const ch = characters[i]
-        const update = updates.get(ch)
-        if (!update) continue
+        const llmData = llmResultsMap.get(ch)
 
-        const { error } = await supabase.from('words').update(update).eq('id', wordIds[i])
+        // If LLM resolved a non-Chinese input to Chinese characters, use that
+        const resolvedChar = llmData?.character ?? ch
+
+        const w = simplifiedMap.get(resolvedChar) ?? simplifiedMap.get(ch)
+        const c = charMap.get(resolvedChar) ?? charMap.get(ch)
+
+        let pinyin = w?.pinyin ?? normalizePinyin(llmData?.pinyin) ?? null
+        let translation = w?.translation ?? stripHtml(llmData?.translation) ?? null
+        let isLlmPinyin = !w?.pinyin && !!llmData?.pinyin
+        let isLlmTranslation = !w?.translation && !!llmData?.translation
+
+        // Fallback: if whole word pinyin is missing, combine character pinyin
+        if (!pinyin && [...resolvedChar].length > 1) {
+          pinyin = splitCharacters(resolvedChar).map(char => charPinyinMap.get(char)?.pinyin ?? char).join(' ')
+          isLlmPinyin = false // It's from the local character dictionary fallback
+        }
+
+        const { error } = await supabase.from('words').update({
+          character: resolvedChar,
+          phonetic_annotation: pinyin,
+          translation: translation,
+          character_note: c?.gloss ?? null,
+          is_llm_pinyin: isLlmPinyin,
+          is_llm_translation: isLlmTranslation,
+          example: stripHtml(llmData?.example),
+          example_phonetic: normalizePinyin(llmData?.example_phonetic),
+          example_translation: stripHtml(llmData?.example_translation)
+        }).eq('id', wordIds[i])
         if (error) throw error
       }
       await loadWords()
@@ -145,18 +191,13 @@
     const idx = words.findIndex(w => w.id === id)
     const swapIdx = direction === 'up' ? idx - 1 : idx + 1
     if (swapIdx < 0 || swapIdx >= words.length) return
-    reordering = true
-    try {
-      // Re-assign clean sequential sort_order values after the swap
-      const reordered = [...words]
-      ;[reordered[idx], reordered[swapIdx]] = [reordered[swapIdx], reordered[idx]]
-      await Promise.all(reordered.map((w, i) =>
-        supabase.from('words').update({ sort_order: i }).eq('id', w.id)
-      ))
-      await loadWords()
-    } finally {
-      reordering = false
-    }
+    // Re-assign clean sequential sort_order values after the swap
+    const reordered = [...words]
+    ;[reordered[idx], reordered[swapIdx]] = [reordered[swapIdx], reordered[idx]]
+    await Promise.all(reordered.map((w, i) =>
+      supabase.from('words').update({ sort_order: i }).eq('id', w.id)
+    ))
+    await loadWords()
   }
 
   async function handlePhotoScan(event: Event) {
@@ -205,12 +246,8 @@
 
   $effect(() => {
     if (activeProfile?.id) {
-      loadList().catch(e => {
-        errorMsg = e instanceof Error ? e.message : 'Failed to load list'
-      })
-      loadWords().catch(e => {
-        errorMsg = e instanceof Error ? e.message : 'Failed to load words'
-      })
+      loadList()
+      loadWords()
     }
   })
 </script>
@@ -234,9 +271,9 @@
     <div
       class="enriching-banner"
       aria-live="polite"
-      class:visible={enriching || reordering}
+      class:visible={enriching}
     >
-      {enriching ? 'Looking up words…' : 'Saving order…'}
+      Looking up words…
     </div>
   {/if}
 
@@ -287,12 +324,19 @@
                 >↓</button>
               </div>
             </div>
-            <button
-              class="delete-btn"
-              onclick={() => handleDeleteWord(word.id)}
-              disabled={busy}
-              aria-label="Delete {word.character}"
-            >×</button>
+            {#if confirmDeleteWordId === word.id}
+              <div class="word-confirm-delete">
+                <button onclick={() => { handleDeleteWord(word.id); confirmDeleteWordId = null }} class="confirm-yes-sm">✓</button>
+                <button onclick={() => confirmDeleteWordId = null} class="confirm-no-sm">✕</button>
+              </div>
+            {:else}
+              <button
+                class="delete-btn"
+                onclick={() => { if (!busy) confirmDeleteWordId = word.id }}
+                disabled={busy}
+                aria-label="Delete {word.character}"
+              >×</button>
+            {/if}
           </article>
         </li>
       {/each}
@@ -312,10 +356,10 @@
   <div class="add-section">
     {#if words.length > 0}
       <div class="relookup-row">
-        <button class="relookup-btn" disabled={busy} onclick={handleReEnrichAll} aria-label="Re-lookup words">
-          ↻ Re-lookup all words
+        <button class="relookup-btn" disabled={busy} onclick={handleReEnrichAll} aria-label="Refresh translations for all words">
+          ↻ Refresh translations
         </button>
-        <p class="relookup-hint">Re-fetches pinyin and translations from the dictionary.</p>
+        <p class="relookup-hint">Re-fetches pinyin and meanings from the dictionary for all words.</p>
       </div>
     {/if}
     <form onsubmit={(e) => { e.preventDefault(); handleAddWords() }} class="add-form">
@@ -326,7 +370,7 @@
           id="new-words"
           bind:value={newWordsText}
           rows={4}
-          placeholder={"你好\ngood morning\nyi2 ge4 ren2"}
+          placeholder="你好&#10;good morning&#10;yi2 ge4 ren2"
         ></textarea>
       </div>
       {#if errorMsg}
@@ -679,5 +723,30 @@
     transform: translate(0, 0);
     box-shadow: none;
   }
+
+  .word-confirm-delete {
+    position: absolute;
+    top: var(--size-2);
+    right: var(--size-2);
+    display: flex;
+    gap: var(--size-1);
+  }
+
+  .confirm-yes-sm, .confirm-no-sm {
+    background: none;
+    border: var(--border);
+    box-shadow: none;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: var(--font-size-0);
+    padding: 0;
+  }
+
+  .confirm-yes-sm { background: var(--color-danger); color: var(--color-danger-fg); }
+  .confirm-no-sm { background: var(--color-surface); color: var(--color-text); }
 
 </style>
