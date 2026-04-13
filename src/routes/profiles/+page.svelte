@@ -183,8 +183,10 @@
               aria-label="Rename {profile.name}"
             >✎</button>
             {#if confirmDeleteId === profile.id}
-              <button onclick={() => { handleDeleteProfile(profile.id); confirmDeleteId = null }} class="confirm-yes-sm" aria-label="Confirm delete {profile.name}">✓</button>
-              <button onclick={() => (confirmDeleteId = null)} class="confirm-no-sm" aria-label="Cancel delete">✕</button>
+              <div class="profile-confirm-delete">
+                <button onclick={() => { handleDeleteProfile(profile.id); confirmDeleteId = null }} class="confirm-yes-sm" aria-label="Confirm delete {profile.name}">✓</button>
+                <button onclick={() => (confirmDeleteId = null)} class="confirm-no-sm" aria-label="Cancel delete">✕</button>
+              </div>
             {:else}
               <button
                 class="delete-btn"
@@ -458,39 +460,28 @@
     width: 100%;
   }
 
-  .confirm-yes-sm {
-    background: var(--color-danger);
-    color: var(--color-danger-fg);
-    border: var(--border);
-    box-shadow: none;
-    width: 24px;
-    height: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    font-size: var(--font-size-0);
-    padding: 0;
-    position: absolute;
-    top: var(--size-2);
-    right: calc(var(--size-2) + 28px);
-  }
-
-  .confirm-no-sm {
-    background: var(--color-surface);
-    color: var(--color-text);
-    border: var(--border);
-    box-shadow: none;
-    width: 24px;
-    height: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    font-size: var(--font-size-0);
-    padding: 0;
+  .profile-confirm-delete {
     position: absolute;
     top: var(--size-2);
     right: var(--size-2);
+    display: flex;
+    gap: var(--size-1);
   }
+
+  .confirm-yes-sm, .confirm-no-sm {
+    background: none;
+    border: var(--border);
+    box-shadow: none;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: var(--font-size-0);
+    padding: 0;
+  }
+
+  .confirm-yes-sm { background: var(--color-danger); color: var(--color-danger-fg); }
+  .confirm-no-sm { background: var(--color-surface); color: var(--color-text); }
 </style>

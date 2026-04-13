@@ -143,13 +143,16 @@
               <a href="/homework/{scan.id}" class="view-btn">View →</a>
             </div>
             <div class="list-actions">
-              {#if confirmDeleteId === scan.id}
-                <button onclick={() => { handleDelete(scan.id); confirmDeleteId = null }} class="confirm-yes-sm" aria-label="Confirm delete">✓</button>
-                <button onclick={() => (confirmDeleteId = null)} class="confirm-no-sm" aria-label="Cancel delete">✕</button>
-              {:else}
+              {#if confirmDeleteId !== scan.id}
                 <button class="danger" onclick={() => (confirmDeleteId = scan.id)} aria-label="Delete scan">×</button>
               {/if}
             </div>
+            {#if confirmDeleteId === scan.id}
+              <div class="list-confirm-delete">
+                <button onclick={() => { handleDelete(scan.id); confirmDeleteId = null }} class="confirm-yes-sm" aria-label="Confirm delete">✓</button>
+                <button onclick={() => (confirmDeleteId = null)} class="confirm-no-sm" aria-label="Cancel delete">✕</button>
+              </div>
+            {/if}
           </article>
         </li>
       {/each}
@@ -371,25 +374,16 @@
     color: var(--color-danger);
   }
 
-  .confirm-yes-sm {
-    background: var(--color-danger);
-    color: var(--color-danger-fg);
-    border: var(--border);
-    box-shadow: none;
-    width: 24px;
-    height: 24px;
+  .list-confirm-delete {
+    position: absolute;
+    top: var(--size-2);
+    right: var(--size-2);
     display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    font-size: var(--font-size-0);
-    padding: 0;
-    opacity: 1;
+    gap: var(--size-1);
   }
 
-  .confirm-no-sm {
-    background: var(--color-surface);
-    color: var(--color-text);
+  .confirm-yes-sm, .confirm-no-sm {
+    background: none;
     border: var(--border);
     box-shadow: none;
     width: 24px;
@@ -400,8 +394,10 @@
     cursor: pointer;
     font-size: var(--font-size-0);
     padding: 0;
-    opacity: 1;
   }
+
+  .confirm-yes-sm { background: var(--color-danger); color: var(--color-danger-fg); }
+  .confirm-no-sm { background: var(--color-surface); color: var(--color-text); }
 
   /* ── Scan form ───────────────────────────────────────── */
   .scan-form {

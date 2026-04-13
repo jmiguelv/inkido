@@ -126,13 +126,16 @@
               </div>
               <div class="list-actions">
                 <button onclick={() => startRename(list)} aria-label="Rename {list.name}">✎</button>
-                {#if confirmDeleteId === list.id}
-                  <button onclick={() => { handleDeleteList(list.id); confirmDeleteId = null }} class="confirm-yes-sm" aria-label="Confirm delete {list.name}">✓</button>
-                  <button onclick={() => (confirmDeleteId = null)} class="confirm-no-sm" aria-label="Cancel delete">✕</button>
-                {:else}
+                {#if confirmDeleteId !== list.id}
                   <button class="danger" onclick={() => (confirmDeleteId = list.id)} aria-label="Delete {list.name}">×</button>
                 {/if}
               </div>
+              {#if confirmDeleteId === list.id}
+                <div class="list-confirm-delete">
+                  <button onclick={() => { handleDeleteList(list.id); confirmDeleteId = null }} class="confirm-yes-sm" aria-label="Confirm delete {list.name}">✓</button>
+                  <button onclick={() => (confirmDeleteId = null)} class="confirm-no-sm" aria-label="Cancel delete">✕</button>
+                </div>
+              {/if}
             {/if}
           </article>
         </li>
@@ -366,9 +369,8 @@
     font-size: var(--font-size-2);
   }
 
-  .confirm-yes-sm {
-    background: var(--color-danger);
-    color: var(--color-danger-fg);
+  .confirm-yes-sm, .confirm-no-sm {
+    background: none;
     border: var(--border);
     box-shadow: none;
     width: 24px;
@@ -381,19 +383,15 @@
     padding: 0;
   }
 
-  .confirm-no-sm {
-    background: var(--color-surface);
-    color: var(--color-text);
-    border: var(--border);
-    box-shadow: none;
-    width: 24px;
-    height: 24px;
+  .confirm-yes-sm { background: var(--color-danger); color: var(--color-danger-fg); }
+  .confirm-no-sm { background: var(--color-surface); color: var(--color-text); }
+
+  .list-confirm-delete {
+    position: absolute;
+    top: var(--size-2);
+    right: var(--size-2);
     display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    font-size: var(--font-size-0);
-    padding: 0;
+    gap: var(--size-1);
   }
 
   .active-rename {
