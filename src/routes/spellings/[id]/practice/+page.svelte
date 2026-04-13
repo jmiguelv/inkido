@@ -6,6 +6,7 @@
   import { speak, unlockAudio } from '$lib/audio'
   import { onMount } from 'svelte'
   import { splitCharacters, alignPinyin } from '$lib/characters'
+  import { sanitize } from '$lib/sanitize'
   import { getCharsData, getStrokeClass, getHoverStrokeClass } from '$lib/dictionary'
   import CharacterModal from '$lib/components/CharacterModal.svelte'
   import CharacterWriter from '$lib/components/CharacterWriter.svelte'
@@ -255,19 +256,19 @@
         {#if flipped}
           <div class="card-back">
             {#if currentWord.translation}
-              <p class="translation">{@html currentWord.translation}</p>
+              <p class="translation">{sanitize(currentWord.translation)}</p>
             {/if}
             {#if currentWord.example}
-              <p class="example">{@html currentWord.example}</p>
+              <p class="example">{sanitize(currentWord.example)}</p>
             {/if}
             {#if currentWord.example_phonetic}
               <p class="example-phonetic">{currentWord.example_phonetic}</p>
             {/if}
             {#if currentWord.example_translation}
-              <p class="example-translation">{@html currentWord.example_translation}</p>
+              <p class="example-translation">{sanitize(currentWord.example_translation)}</p>
             {/if}
             {#if currentWord.character_note}
-              <p class="note">{@html currentWord.character_note}</p>
+              <p class="note">{sanitize(currentWord.character_note)}</p>
             {/if}
           </div>
         {/if}
