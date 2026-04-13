@@ -350,17 +350,22 @@
     right: var(--size-2);
     display: flex;
     gap: var(--size-1);
+    z-index: 1;
   }
 
   .list-actions button {
-    background: none;
-    border: none;
+    background: var(--color-surface);
+    border: var(--border);
     box-shadow: none;
-    font-size: var(--font-size-3);
-    line-height: 1;
-    padding: var(--size-1);
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--font-size-0);
+    padding: 0;
     color: var(--color-text);
-    opacity: 0.25;
+    opacity: 0.6;
     cursor: pointer;
   }
 
