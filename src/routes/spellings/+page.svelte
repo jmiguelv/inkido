@@ -127,13 +127,10 @@
               <div class="list-actions">
                 <button onclick={() => startRename(list)} aria-label="Rename {list.name}">✎</button>
                 {#if confirmDeleteId === list.id}
-                  <div class="confirm-delete">
-                    <span>Delete?</span>
-                    <button onclick={() => { handleDeleteList(list.id); confirmDeleteId = null }} class="confirm-yes">Yes</button>
-                    <button onclick={() => confirmDeleteId = null} class="confirm-no">No</button>
-                  </div>
+                  <button onclick={() => { handleDeleteList(list.id); confirmDeleteId = null }} class="confirm-yes-sm" aria-label="Confirm delete {list.name}">✓</button>
+                  <button onclick={() => (confirmDeleteId = null)} class="confirm-no-sm" aria-label="Cancel delete">✕</button>
                 {:else}
-                  <button class="danger" onclick={() => confirmDeleteId = list.id} aria-label="Delete {list.name}">×</button>
+                  <button class="danger" onclick={() => (confirmDeleteId = list.id)} aria-label="Delete {list.name}">×</button>
                 {/if}
               </div>
             {/if}
@@ -369,35 +366,34 @@
     font-size: var(--font-size-2);
   }
 
-  .confirm-delete {
-    display: flex;
-    align-items: center;
-    gap: var(--size-1);
-    font-size: var(--font-size-0);
-    font-weight: 700;
-  }
-
-  .confirm-yes {
+  .confirm-yes-sm {
     background: var(--color-danger);
     color: var(--color-danger-fg);
     border: var(--border);
-    padding: 0 var(--size-2);
-    font-size: var(--font-size-0);
-    font-weight: 700;
-    cursor: pointer;
     box-shadow: none;
-    line-height: 1.6;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: var(--font-size-0);
+    padding: 0;
   }
 
-  .confirm-no {
+  .confirm-no-sm {
     background: var(--color-surface);
+    color: var(--color-text);
     border: var(--border);
-    padding: 0 var(--size-2);
-    font-size: var(--font-size-0);
-    font-weight: 700;
-    cursor: pointer;
     box-shadow: none;
-    line-height: 1.6;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: var(--font-size-0);
+    padding: 0;
   }
 
   .active-rename {

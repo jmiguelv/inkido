@@ -10,6 +10,7 @@
   let isLoading = $state(true)
   let context = $state('')
   let errorMsg = $state('')
+  let confirmDeleteId = $state<string | null>(null)
 
   const activeProfile = $derived(getActiveProfile())
 
@@ -142,7 +143,12 @@
               <a href="/homework/{scan.id}" class="view-btn">View →</a>
             </div>
             <div class="list-actions">
-              <button class="danger" onclick={() => handleDelete(scan.id)} aria-label="Delete scan">×</button>
+              {#if confirmDeleteId === scan.id}
+                <button onclick={() => { handleDelete(scan.id); confirmDeleteId = null }} class="confirm-yes-sm" aria-label="Confirm delete">✓</button>
+                <button onclick={() => (confirmDeleteId = null)} class="confirm-no-sm" aria-label="Cancel delete">✕</button>
+              {:else}
+                <button class="danger" onclick={() => (confirmDeleteId = scan.id)} aria-label="Delete scan">×</button>
+              {/if}
             </div>
           </article>
         </li>
@@ -363,6 +369,38 @@
 
   .list-actions button.danger:hover {
     color: var(--color-danger);
+  }
+
+  .confirm-yes-sm {
+    background: var(--color-danger);
+    color: var(--color-danger-fg);
+    border: var(--border);
+    box-shadow: none;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: var(--font-size-0);
+    padding: 0;
+    opacity: 1;
+  }
+
+  .confirm-no-sm {
+    background: var(--color-surface);
+    color: var(--color-text);
+    border: var(--border);
+    box-shadow: none;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: var(--font-size-0);
+    padding: 0;
+    opacity: 1;
   }
 
   /* ── Scan form ───────────────────────────────────────── */

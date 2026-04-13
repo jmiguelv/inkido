@@ -183,15 +183,12 @@
               aria-label="Rename {profile.name}"
             >✎</button>
             {#if confirmDeleteId === profile.id}
-              <div class="confirm-delete">
-                <span>Delete?</span>
-                <button onclick={() => { handleDeleteProfile(profile.id); confirmDeleteId = null }} class="confirm-yes">Yes</button>
-                <button onclick={() => confirmDeleteId = null} class="confirm-no">No</button>
-              </div>
+              <button onclick={() => { handleDeleteProfile(profile.id); confirmDeleteId = null }} class="confirm-yes-sm" aria-label="Confirm delete {profile.name}">✓</button>
+              <button onclick={() => (confirmDeleteId = null)} class="confirm-no-sm" aria-label="Cancel delete">✕</button>
             {:else}
               <button
                 class="delete-btn"
-                onclick={() => confirmDeleteId = profile.id}
+                onclick={() => (confirmDeleteId = profile.id)}
                 aria-label="Delete {profile.name}"
               >×</button>
             {/if}
@@ -461,37 +458,39 @@
     width: 100%;
   }
 
-  .confirm-delete {
-    position: absolute;
-    top: var(--size-2);
-    right: var(--size-2);
-    display: flex;
-    align-items: center;
-    gap: var(--size-1);
-    font-size: var(--font-size-0);
-    font-weight: 700;
-  }
-
-  .confirm-yes {
+  .confirm-yes-sm {
     background: var(--color-danger);
     color: var(--color-danger-fg);
     border: var(--border);
-    padding: 0 var(--size-2);
-    font-size: var(--font-size-0);
-    font-weight: 700;
-    cursor: pointer;
     box-shadow: none;
-    line-height: 1.6;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: var(--font-size-0);
+    padding: 0;
+    position: absolute;
+    top: var(--size-2);
+    right: calc(var(--size-2) + 28px);
   }
 
-  .confirm-no {
+  .confirm-no-sm {
     background: var(--color-surface);
+    color: var(--color-text);
     border: var(--border);
-    padding: 0 var(--size-2);
-    font-size: var(--font-size-0);
-    font-weight: 700;
-    cursor: pointer;
     box-shadow: none;
-    line-height: 1.6;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: var(--font-size-0);
+    padding: 0;
+    position: absolute;
+    top: var(--size-2);
+    right: var(--size-2);
   }
 </style>
