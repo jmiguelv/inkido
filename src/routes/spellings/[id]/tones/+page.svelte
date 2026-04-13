@@ -212,7 +212,7 @@
               aria-label="Tone {tone}"
             >
               <div class="tone-mark-container">
-                <span class="tone-mark">
+                <span class="tone-mark" class:tone-mark-neutral={tone === 5}>
                   {#if tone === 1}ā{:else if tone === 2}á{:else if tone === 3}ǎ{:else if tone === 4}à{:else}a{/if}
                 </span>
               </div>
@@ -431,6 +431,11 @@
     line-height: 1;
     color: var(--color-text);
     display: block;
+  }
+
+  .tone-mark-neutral {
+    opacity: 0.45;
+    font-style: italic;
   }
 
   .tone-number {

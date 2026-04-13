@@ -89,6 +89,14 @@
     }
   }
 
+  function handleQuizPrev() {
+    if (quizCharIndex > 0) {
+      if (quizTimeout) clearTimeout(quizTimeout)
+      quizCharIndex--
+      startQuizTimeout()
+    }
+  }
+
   function handleAudio() {
     if (!currentWord || !list) return
     try {
@@ -193,9 +201,10 @@
                     Writing {quizCharIndex + 1} of {currentChars.length}
                   </p>
                 {/if}
-                <button class="skip-btn" onclick={() => { if (quizTimeout) clearTimeout(quizTimeout); handleQuizComplete() }}>
-                  Skip character →
-                </button>
+                <div class="quiz-char-nav">
+                  <button class="quiz-char-nav-btn" onclick={handleQuizPrev} disabled={quizCharIndex === 0}>← Back</button>
+                  <button class="quiz-char-nav-btn" onclick={() => { if (quizTimeout) clearTimeout(quizTimeout); handleQuizComplete() }}>Next →</button>
+                </div>
               </div>
             {:else if flipped}
               <div class="char-row" lang={list.language}>
@@ -498,7 +507,13 @@
     font-style: italic;
   }
 
-  .skip-btn {
+  .quiz-char-nav {
+    display: flex;
+    gap: var(--size-2);
+    justify-content: center;
+  }
+
+  .quiz-char-nav-btn {
     font-size: var(--font-size-0);
     padding: var(--size-1) var(--size-3);
     background: none;
@@ -512,10 +527,15 @@
     opacity: 0.7;
   }
 
-  .skip-btn:hover {
+  .quiz-char-nav-btn:hover:not(:disabled) {
     opacity: 1;
     transform: none;
     box-shadow: none;
+  }
+
+  .quiz-char-nav-btn:disabled {
+    opacity: 0.25;
+    cursor: default;
   }
 
   .phonetic {

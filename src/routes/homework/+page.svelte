@@ -10,6 +10,7 @@
   let isLoading = $state(true)
   let context = $state('')
   let errorMsg = $state('')
+  let selectedFileCount = $state(0)
   let confirmDeleteId = $state<string | null>(null)
 
   const activeProfile = $derived(getActiveProfile())
@@ -54,6 +55,7 @@
     if (!activeProfile) return
     const input = event.target as HTMLInputElement
     const files = Array.from(input.files || [])
+    selectedFileCount = files.length
     if (files.length === 0) return
     scanning = true
     errorMsg = ''
@@ -92,6 +94,7 @@
     } finally {
       scanning = false
       input.value = ''
+      selectedFileCount = 0
     }
   }
 
@@ -170,7 +173,7 @@
       <textarea 
         id="homework-context"
         bind:value={context}
-        placeholder="e.g. topic, grade level, or specific instructions"
+        placeholder="e.g. Grade 4 fill-in-the-blank exercise, translate to Chinese"
         disabled={scanning}
         rows="3"
         maxlength="500"
@@ -181,7 +184,7 @@
       <output role="alert" class="error">{errorMsg}</output>
     {/if}
     <label class="scan-label" class:loading={scanning}>
-      {scanning ? 'Analysing…' : '📷 Scan worksheet'}
+      {scanning ? `Analysing ${selectedFileCount > 1 ? `${selectedFileCount} pages` : ''}…`.trim() : selectedFileCount > 1 ? `📷 ${selectedFileCount} pages selected` : '📷 Scan page(s)'}
       <input
         type="file"
         accept="image/*"

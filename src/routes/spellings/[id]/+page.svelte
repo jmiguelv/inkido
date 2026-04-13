@@ -39,6 +39,7 @@
   let enriching = $state(false)
   let addingWords = $state(false)
   let scanLoading = $state(false)
+  let scanFailed = $state(false)
   const activeProfile = $derived(getActiveProfile())
   const listId = $derived(page.params.id)
   const busy = $derived(addingWords || enriching || scanLoading)
@@ -207,6 +208,7 @@
     if (!file) return
     scanLoading = true
     errorMsg = ''
+    scanFailed = false
     try {
       const base64Image = await new Promise<string>((resolve, reject) => {
         const reader = new FileReader()
@@ -222,6 +224,7 @@
       newWordsText = characters.join('\n')
     } catch (e) {
       errorMsg = e instanceof Error ? e.message : 'Failed to scan image'
+      scanFailed = true
     } finally {
       scanLoading = false
       input.value = ''
@@ -381,7 +384,7 @@
           {addingWords ? 'Adding…' : 'Add words'}
         </button>
         <label class="scan-label" aria-busy={scanLoading}>
-          {scanLoading ? 'Scanning…' : 'Scan worksheet'}
+          {scanLoading ? 'Scanning…' : scanFailed ? 'Try again' : 'Scan worksheet'}
           <input
             type="file"
             accept="image/*"
@@ -534,6 +537,10 @@
     display: grid;
     gap: var(--size-3);
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+
+  @media (max-width: 480px) {
+    .word-list { grid-template-columns: 1fr; }
   }
 
   .word-list li {
