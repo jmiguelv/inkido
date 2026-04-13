@@ -3,14 +3,10 @@ import { calculateEnrichmentUpdates } from '../../src/lib/enrichment'
 import * as dictionary from '../../src/lib/dictionary'
 
 // Mock dictionary fetchers
-vi.mock('../../src/lib/dictionary', async () => {
-  const actual = await vi.importActual('../../src/lib/dictionary')
-  return {
-    ...actual as any,
-    getCharsData: vi.fn(),
-    getWordsData: vi.fn()
-  }
-})
+vi.mock('../../src/lib/dictionary', () => ({
+  getCharsData: vi.fn(),
+  getWordsData: vi.fn()
+}))
 
 describe('enrichment logic', () => {
   beforeEach(() => {
