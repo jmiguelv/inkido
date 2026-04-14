@@ -39,7 +39,7 @@
         <input id="email" type="email" bind:value={email} required autocomplete="email" />
       </div>
       {#if errorMsg}
-        <output role="alert" class="error">{errorMsg}</output>
+        <output role="alert" class="error-banner">{errorMsg} <button type="button" onclick={() => errorMsg = ''} aria-label="Dismiss">×</button></output>
       {/if}
       <button type="submit" disabled={loading}>
         {loading ? 'Sending link…' : 'Sign up'}
@@ -116,14 +116,6 @@
   input {
     padding: var(--size-2) var(--size-3);
     font-size: var(--font-size-2);
-  }
-
-  .error {
-    display: block;
-    color: var(--color-danger);
-    font-size: var(--font-size-1);
-    font-weight: 700;
-    margin-bottom: var(--size-3);
   }
 
   button[type="submit"] {

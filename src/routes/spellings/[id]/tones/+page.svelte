@@ -26,6 +26,7 @@
   let errorMsg = $state('')
   let speechRate = $state(0.75)
   let nextAudioTimeout: ReturnType<typeof setTimeout> | null = null
+  let showKeyTip = $state(false)
 
   const activeProfile = $derived(getActiveProfile())
   const listId = $derived(page.params.id)
@@ -144,11 +145,19 @@
   onMount(() => {
     if (!activeProfile) { goto('/profiles'); return }
     window.addEventListener('keydown', handleKeydown)
+    if (!localStorage.getItem('tones-key-tip-seen')) {
+      showKeyTip = true
+    }
     return () => {
       window.removeEventListener('keydown', handleKeydown)
       if (nextAudioTimeout) clearTimeout(nextAudioTimeout)
     }
   })
+
+  function dismissKeyTip() {
+    showKeyTip = false
+    localStorage.setItem('tones-key-tip-seen', '1')
+  }
 
   $effect(() => {
     if (activeProfile?.id) {
@@ -179,7 +188,7 @@
     </hgroup>
 
     {#if errorMsg}
-      <output role="alert" class="error">{errorMsg}</output>
+      <output role="alert" class="error-banner">{errorMsg} <button type="button" onclick={() => errorMsg = ''} aria-label="Dismiss">×</button></output>
     {/if}
 
     <div class="card-container">
@@ -247,6 +256,13 @@
         {/if}
       </div>
     </div>
+
+    {#if showKeyTip}
+      <aside class="key-tip" role="note">
+        <span><strong>Keyboard:</strong> press 1–5 to select a tone · ← → to navigate</span>
+        <button type="button" onclick={dismissKeyTip} aria-label="Dismiss tip">×</button>
+      </aside>
+    {/if}
 
     <nav class="nav-controls" aria-label="Practice navigation">
       <button onclick={handlePrev} disabled={currentIndex === 0} aria-label="Previous character">
@@ -565,9 +581,35 @@
     box-shadow: none;
   }
 
-  .error {
-    display: block;
-    color: var(--color-danger);
-    margin-bottom: var(--size-3);
+  .key-tip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--size-3);
+    background: var(--color-lemon);
+    border: var(--border);
+    padding: var(--size-2) var(--size-3);
+    margin-bottom: var(--size-4);
+    font-size: var(--font-size-1);
+    color: var(--color-text);
   }
+
+  .key-tip button {
+    background: none;
+    border: none;
+    box-shadow: none;
+    font-size: var(--font-size-3);
+    line-height: 1;
+    padding: 0 var(--size-1);
+    color: var(--color-text-muted);
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .key-tip button:hover {
+    color: var(--color-text);
+    transform: none;
+    box-shadow: none;
+  }
+
 </style>

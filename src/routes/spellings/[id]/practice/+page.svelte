@@ -162,7 +162,7 @@
     </hgroup>
 
     {#if errorMsg}
-      <output role="alert" class="error">{errorMsg}</output>
+      <output role="alert" class="error-banner">{errorMsg} <button type="button" onclick={() => errorMsg = ''} aria-label="Dismiss">×</button></output>
     {/if}
 
     <div class="card-container">
@@ -330,12 +330,6 @@
     color: var(--color-text-muted);
     align-self: flex-end;
     margin-bottom: var(--size-1);
-  }
-
-  .error {
-    display: block;
-    color: var(--color-danger);
-    margin-bottom: var(--size-3);
   }
 
   .card-container {

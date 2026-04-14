@@ -2,25 +2,13 @@
 
 ## Todo
 
-### High priority
-
-- [ ] refactor: In practice, instead of just skip character have a prev/next character to allow to go back and forth during writing
-- [ ] fix: error messages inconsistent and easy to miss — some are inline `<output>` tags below forms, some are banners, lifetime varies; standardise to a top-of-form banner that persists until dismissed or next action
-- [ ] fix: scan error feedback unclear — after a failed worksheet scan `spellings/[id]/+page.svelte` shows the error but does not make it obvious a retry is safe; add an explicit "Try again" prompt
-
 ### Medium priority
 
-- [ ] refactor: homework context textarea placeholder too vague — `homework/+page.svelte`; improve to "e.g. Grade 4 fill-in-the-blank exercise, translate to Chinese"
-- [ ] fix: multi-image homework upload not communicated — input label says "Scan worksheet" (singular); change to "Scan page(s)", show selected file count, and show per-image analysing progress
 - [ ] feat: skeleton loaders on card grids — most pages show plain "Loading…" text; replace with placeholder shimmer cards matching the final layout
-- [ ] fix: neutral tone button unclear in tone practice — `spellings/[id]/tones/+page.svelte`; plain "a" with no mark or label; add "neutral" label or distinguish visually
-- [ ] fix: word card grid overflows on very small phones — `spellings/[id]/+page.svelte`; `minmax(280px, 1fr)` breaks at < 320px; add `@media (max-width: 480px) { grid-template-columns: 1fr }`
 
 ### Low priority
 
 - [ ] feat: breadcrumbs on deep pages — `/spellings/[id]/practice` and other 2+ level routes show only a back link; add a breadcrumb trail e.g. "Spellings / Week 1 / Practice"
-- [ ] feat: keyboard shortcuts tip in tone practice — arrow keys and 1–5 number keys are bound but never documented; show a dismissible tip on first load
-- [ ] fix: auth confirm page has no resend link — `auth/confirm/+page.svelte`; user has no recovery path if the magic link email didn't arrive; add a "Resend link" button
 - [ ] feat: word detail edit: highlight AI-filled fields — `words/[id]/+page.svelte`; after AI enrichment, mark which fields were changed so the user can verify before saving
 - [ ] fix: homework edit modal: no undo after saving a translation — `homework/[id]/+page.svelte`; once saved the change is permanent; add a confirm step inside the modal or an undo toast
 - [ ] refactor: `MY WORDS` table has no sort or filter controls — `words/+page.svelte`; add sortable column headers and a filter by list name
@@ -34,6 +22,17 @@
 
 ## Done
 
+- [x] fix: error messages — global `.error-banner` style (bordered, dismissible) replaces per-component red text across all forms
+- [x] fix: auth confirm page — added "Didn't receive the email?" resend form using `supabase.auth.resend()`
+- [x] feat: keyboard shortcuts tip in tones practice — dismissible lemon banner shown on first visit, persisted via localStorage
+- [x] refactor: landing page — explains why stroke order matters rather than just listing the feature
+- [x] feat: FAQ section added to `/about` page — pinyin, tones, AI limit, export, privacy
+- [x] refactor: practice quiz — replaced skip button with ← Back / Next → pair for per-character navigation
+- [x] fix: scan error feedback — label changes to "Try again" after a failed worksheet scan
+- [x] fix: word card grid single-column on phones < 480px
+- [x] fix: neutral tone button visually distinguished — italic + dimmed mark
+- [x] refactor: homework context placeholder updated to a specific example
+- [x] fix: multi-image upload — label shows "Scan page(s)" and page count for multi-page scans
 - [x] fix: align delete confirm buttons to word-card pattern across list, profile, and homework cards
 - [x] fix: no confirmation on destructive actions — added two-step inline confirm (Yes/No) to delete list, delete profile, and delete word
 - [x] fix: quiz mode soft-lock — added Skip button and 30s auto-advance timeout in `spellings/[id]/practice/+page.svelte`

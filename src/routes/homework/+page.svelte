@@ -181,7 +181,7 @@
     </div>
 
     {#if errorMsg}
-      <output role="alert" class="error">{errorMsg}</output>
+      <output role="alert" class="error-banner">{errorMsg} <button type="button" onclick={() => errorMsg = ''} aria-label="Dismiss">×</button></output>
     {/if}
     <label class="scan-label" class:loading={scanning}>
       {scanning ? `Analysing ${selectedFileCount > 1 ? `${selectedFileCount} pages` : ''}…`.trim() : selectedFileCount > 1 ? `📷 ${selectedFileCount} pages selected` : '📷 Scan page(s)'}
@@ -200,14 +200,6 @@
   </section>
 
   <style>
-  .error {
-    display: block;
-    color: var(--color-danger);
-    font-size: var(--font-size-1);
-    font-weight: 700;
-    margin-bottom: var(--size-3);
-  }
-
   .field {
     display: flex;
     flex-direction: column;
