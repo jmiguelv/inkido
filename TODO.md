@@ -4,7 +4,6 @@
 
 ### Low priority
 
-- [ ] feat: breadcrumbs on deep pages — `/spellings/[id]/practice` and other 2+ level routes show only a back link; add a breadcrumb trail e.g. "Spellings / Week 1 / Practice"
 - [ ] fix: character modal tab/keyboard navigation incomplete — `CharacterModal.svelte`; arrow keys don't cycle through components in the "Made of" section; fix tab order and add left/right arrow support
 - [ ] refactor: standardise button visual hierarchy across the app — primary (dark bg + yellow text), secondary (surface bg), tertiary (icon-only); currently mixed inconsistently
 - [ ] refactor: standardise terminology — "spelling", "spelling list", "word list", "set" used interchangeably across UI copy; pick one term and apply everywhere
@@ -13,6 +12,11 @@
 
 ## Done
 
+- [x] feat: breadcrumbs on all nested pages — spellings/[id], practice, tones, word detail, dictionary word, homework detail
+- [x] feat: skeleton loaders on card grids — spellings and homework pages; pulsing skeleton rows on MY WORDS table
+- [x] feat: word detail edit: highlight AI-filled fields — sky-tinted input highlight cleared on manual edit
+- [x] fix: homework edit modal: undo toast — 6s undo after saving inline translation
+- [x] refactor: MY WORDS table — sortable column headers and filter by spelling set
 - [x] fix: error messages — global `.error-banner` style (bordered, dismissible) replaces per-component red text across all forms
 - [x] fix: auth confirm page — added "Didn't receive the email?" resend form using `supabase.auth.resend()`
 - [x] feat: keyboard shortcuts tip in tones practice — dismissible lemon banner shown on first visit, persisted via localStorage

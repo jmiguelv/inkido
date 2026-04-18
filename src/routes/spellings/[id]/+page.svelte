@@ -259,7 +259,11 @@
   {#if list}
     <header class="page-header">
       <div class="title-group">
-        <a href="/spellings" class="back-link" class:disabled={busy} onclick={(e) => { if (busy) e.preventDefault() }}>← Spellings</a>
+        <nav aria-label="Breadcrumb" class="breadcrumb">
+          <a href="/spellings" class:disabled={busy} onclick={(e) => { if (busy) e.preventDefault() }}>Spellings</a>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">{list.name}</span>
+        </nav>
         <h1>{list.name} <span class="list-lang">{list.language.toUpperCase()}</span></h1>
         <p><small>Update words, add new ones manually, or scan from a photo.</small></p>
       </div>

@@ -178,7 +178,13 @@
   {#if list && currentItem}
     <hgroup class="page-header">
       <div class="title-group">
-        <a href="/spellings/{list.id}" class="back-link">← {list.name}</a>
+        <nav aria-label="Breadcrumb" class="breadcrumb">
+          <a href="/spellings">Spellings</a>
+          <span aria-hidden="true">/</span>
+          <a href="/spellings/{list.id}">{list.name}</a>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">Tone Listening</span>
+        </nav>
         <h1>Tone Listening</h1>
         <p><small>Listen to the character and identify its tone.</small></p>
       </div>

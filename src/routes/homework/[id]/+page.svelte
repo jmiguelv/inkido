@@ -166,7 +166,11 @@
   <section class="scan-detail">
     <header class="page-header">
       <div class="title-group">
-        <a href="/homework" class="back-link">← Homework</a>
+        <nav aria-label="Breadcrumb" class="breadcrumb">
+          <a href="/homework">Homework</a>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">{scan.analysis.title || 'Worksheet'}</span>
+        </nav>
         <h1>{scan.analysis.title || 'Worksheet'}</h1>
         <p><small>{scan.summary} · {new Date(scan.created_at).toLocaleDateString()}</small></p>
         {#if scan.context}

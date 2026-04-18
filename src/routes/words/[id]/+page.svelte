@@ -264,7 +264,13 @@
     {:else if word && list}
         <header class="page-header">
             <div class="title-group">
-                <a href="/spellings/{list.id}" class="back-link">← {list.name}</a>
+                <nav aria-label="Breadcrumb" class="breadcrumb">
+                    <a href="/spellings">Spellings</a>
+                    <span aria-hidden="true">/</span>
+                    <a href="/spellings/{list.id}">{list.name}</a>
+                    <span aria-hidden="true">/</span>
+                    <span aria-current="page">{word.character}</span>
+                </nav>
                 <h1>{word.character}</h1>
                 <p><small>Detailed breakdown and stroke-by-stroke guide for each character.</small></p>
             </div>

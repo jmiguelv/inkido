@@ -294,6 +294,28 @@ button[type="submit"]:active:not(:disabled),
 
 .back-link:hover { color: var(--color-text); }
 
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: var(--size-2);
+  font-size: var(--font-size-1);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-text-muted);
+  margin-bottom: var(--size-1);
+  flex-wrap: wrap;
+}
+
+.breadcrumb a {
+  color: var(--color-text-muted);
+  text-decoration: none;
+}
+
+.breadcrumb a:hover { color: var(--color-text); }
+
+.breadcrumb [aria-current="page"] { color: var(--color-text); }
+
 .listen-btn {
   padding: var(--size-2) var(--size-5);
   border: var(--border);

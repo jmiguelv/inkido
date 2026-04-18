@@ -152,7 +152,13 @@
   {#if list && currentWord}
     <hgroup class="page-header">
       <div class="title-group">
-        <a href="/spellings/{list.id}" class="back-link">← {list.name}</a>
+        <nav aria-label="Breadcrumb" class="breadcrumb">
+          <a href="/spellings">Spellings</a>
+          <span aria-hidden="true">/</span>
+          <a href="/spellings/{list.id}">{list.name}</a>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">Practice</span>
+        </nav>
         <h1>Spelling Practice</h1>
         <p><small>Practise writing each character in this set stroke-by-stroke.</small></p>
       </div>
