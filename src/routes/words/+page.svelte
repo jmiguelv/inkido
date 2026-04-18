@@ -17,21 +17,38 @@
     let query = $state("");
     let errorMsg = $state("");
     let modalChar = $state<{ char: string; language: string } | null>(null);
+    let sortCol = $state<'pinyin' | 'char' | 'meaning' | 'list' | null>(null);
+    let sortDir = $state<'asc' | 'desc'>('asc');
+    let filterList = $state('');
 
-    const filtered = $derived(
-        query.trim()
-            ? words.filter((w) => {
-                  const q = stripDiacritics(query);
-                  return (
-                      w.character.includes(query) ||
-                      stripDiacritics(w.phonetic_annotation ?? "").includes(
-                          q,
-                      ) ||
-                      stripDiacritics(w.translation ?? "").includes(q)
-                  );
-              })
-            : words,
-    );
+    const listNames = $derived([...new Set(words.map(w => w.listName))].sort());
+
+    const filtered = $derived((() => {
+        let result = words;
+        if (query.trim()) {
+            const q = stripDiacritics(query);
+            result = result.filter(w =>
+                w.character.includes(query) ||
+                stripDiacritics(w.phonetic_annotation ?? '').includes(q) ||
+                stripDiacritics(w.translation ?? '').includes(q)
+            );
+        }
+        if (filterList) {
+            result = result.filter(w => w.listName === filterList);
+        }
+        if (sortCol) {
+            result = [...result].sort((a, b) => {
+                let aVal = '', bVal = '';
+                if (sortCol === 'char') { aVal = a.character; bVal = b.character; }
+                else if (sortCol === 'pinyin') { aVal = stripDiacritics(a.phonetic_annotation ?? ''); bVal = stripDiacritics(b.phonetic_annotation ?? ''); }
+                else if (sortCol === 'meaning') { aVal = a.translation ?? ''; bVal = b.translation ?? ''; }
+                else if (sortCol === 'list') { aVal = a.listName; bVal = b.listName; }
+                const cmp = aVal.localeCompare(bVal, 'en', { sensitivity: 'base' });
+                return sortDir === 'asc' ? cmp : -cmp;
+            });
+        }
+        return result;
+    })());
 
     async function loadWords() {
         if (!activeProfile) return;
@@ -76,6 +93,16 @@
                 });
         } finally {
             loading = false;
+        }
+    }
+
+    function toggleSort(col: 'pinyin' | 'char' | 'meaning' | 'list') {
+        if (sortCol === col) {
+            if (sortDir === 'asc') sortDir = 'desc';
+            else { sortCol = null; sortDir = 'asc'; }
+        } else {
+            sortCol = col;
+            sortDir = 'asc';
         }
     }
 
@@ -128,6 +155,14 @@
             autocomplete="off"
             spellcheck="false"
         />
+        {#if listNames.length > 1}
+            <select bind:value={filterList} aria-label="Filter by spelling set">
+                <option value="">All sets</option>
+                {#each listNames as name}
+                    <option value={name}>{name}</option>
+                {/each}
+            </select>
+        {/if}
     </div>
 
     {#if errorMsg}
@@ -147,13 +182,19 @@
             <table>
                 <thead>
                     <tr>
-                        <th scope="col">Word/Sentence</th>
-                        <th scope="col">Pinyin</th>
-                        <th scope="col">Meaning</th>
-                        <th scope="col">Spelling</th>
-                        <th scope="col"
-                            ><span class="visually-hidden">Detail</span></th
-                        >
+                        <th scope="col" class="sortable" onclick={() => toggleSort('char')}>
+                            Word/Sentence {sortCol === 'char' ? (sortDir === 'asc' ? '↑' : '↓') : ''}
+                        </th>
+                        <th scope="col" class="sortable" onclick={() => toggleSort('pinyin')}>
+                            Pinyin {sortCol === 'pinyin' ? (sortDir === 'asc' ? '↑' : '↓') : ''}
+                        </th>
+                        <th scope="col" class="sortable" onclick={() => toggleSort('meaning')}>
+                            Meaning {sortCol === 'meaning' ? (sortDir === 'asc' ? '↑' : '↓') : ''}
+                        </th>
+                        <th scope="col" class="sortable" onclick={() => toggleSort('list')}>
+                            Spelling {sortCol === 'list' ? (sortDir === 'asc' ? '↑' : '↓') : ''}
+                        </th>
+                        <th scope="col"><span class="visually-hidden">Detail</span></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -220,15 +261,35 @@
     }
 
     .search-bar {
+        display: flex;
+        gap: var(--size-3);
+        flex-wrap: wrap;
+        align-items: center;
         margin-bottom: var(--size-5);
     }
 
     input[type="search"] {
-        width: 100%;
+        flex: 1;
+        min-width: 200px;
         max-width: 480px;
         padding: var(--size-2) var(--size-4);
         border-radius: 0;
         font-size: var(--font-size-2);
+    }
+
+    select {
+        padding: var(--size-2) var(--size-3);
+        font-size: var(--font-size-1);
+        border-radius: 0;
+    }
+
+    .sortable {
+        cursor: pointer;
+        user-select: none;
+    }
+
+    .sortable:hover {
+        background: var(--color-lemon);
     }
 
     .state-msg {

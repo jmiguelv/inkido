@@ -12,11 +12,9 @@
 - [ ] feat: word detail edit: highlight AI-filled fields — `words/[id]/+page.svelte`; after AI enrichment, mark which fields were changed so the user can verify before saving
 - [ ] fix: homework edit modal: no undo after saving a translation — `homework/[id]/+page.svelte`; once saved the change is permanent; add a confirm step inside the modal or an undo toast
 - [ ] refactor: `MY WORDS` table has no sort or filter controls — `words/+page.svelte`; add sortable column headers and a filter by list name
-- [ ] refactor: landing page copy doesn't explain why stroke order matters — `+page.svelte`; change "Stroke-by-stroke animation" to explain the classroom relevance
 - [ ] fix: character modal tab/keyboard navigation incomplete — `CharacterModal.svelte`; arrow keys don't cycle through components in the "Made of" section; fix tab order and add left/right arrow support
 - [ ] refactor: standardise button visual hierarchy across the app — primary (dark bg + yellow text), secondary (surface bg), tertiary (icon-only); currently mixed inconsistently
 - [ ] refactor: standardise terminology — "spelling", "spelling list", "word list", "set" used interchangeably across UI copy; pick one term and apply everywhere
-- [ ] feat: about/help page FAQ — `about/+page.md`; add answers to "what is pinyin?", "why is there an AI limit?", "can I export my words?" etc.
 
 ## In progress
 

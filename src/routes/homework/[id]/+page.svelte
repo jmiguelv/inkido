@@ -20,6 +20,8 @@
   let editValue = $state('')
   let editDialog = $state<HTMLDialogElement | null>(null)
   let userEmail = $state('')
+  let undoState = $state<{ index: number; previous: { english: string; chinese: string } } | null>(null)
+  let undoTimeout: ReturnType<typeof setTimeout> | null = null
 
   const activeProfile = $derived(getActiveProfile())
   const scanId = $derived(page.params.id)
@@ -102,13 +104,31 @@
 
       if (updateError) throw updateError
 
+      const previous = scan.analysis.questions[index].sampleAnswer
       scan.analysis = updatedAnalysis
       closeEdit()
+
+      // Undo toast — 6 seconds
+      if (undoTimeout) clearTimeout(undoTimeout)
+      undoState = { index, previous }
+      undoTimeout = setTimeout(() => { undoState = null }, 6000)
     } catch (e) {
       errorMsg = e instanceof Error ? e.message : 'Translation failed'
     } finally {
       isTranslating = false
     }
+  }
+
+  async function handleUndo() {
+    if (!undoState || !scan) return
+    if (undoTimeout) clearTimeout(undoTimeout)
+    const { index, previous } = undoState
+    const updatedAnalysis = { ...scan.analysis }
+    updatedAnalysis.questions = [...updatedAnalysis.questions]
+    updatedAnalysis.questions[index] = { ...updatedAnalysis.questions[index], sampleAnswer: previous }
+    const { error } = await supabase.from('homework_scans').update({ analysis: updatedAnalysis }).eq('id', scan.id)
+    if (!error) scan.analysis = updatedAnalysis
+    undoState = null
   }
 
   function startEdit(index: number, value: string) {
@@ -162,7 +182,14 @@
     </header>
 
     {#if errorMsg}
-      <output role="alert" class="error">{errorMsg}</output>
+      <output role="alert" class="error-banner">{errorMsg} <button type="button" onclick={() => errorMsg = ''} aria-label="Dismiss">×</button></output>
+    {/if}
+
+    {#if undoState}
+      <div class="undo-toast" role="status">
+        Answer saved.
+        <button onclick={handleUndo}>Undo</button>
+      </div>
     {/if}
 
     <ol class="question-list">
@@ -495,5 +522,35 @@
     display: flex;
     gap: var(--size-1);
     align-items: center;
+  }
+
+  .undo-toast {
+    display: flex;
+    align-items: center;
+    gap: var(--size-3);
+    background: var(--color-lemon);
+    border: var(--border);
+    padding: var(--size-2) var(--size-4);
+    margin-bottom: var(--size-4);
+    font-size: var(--font-size-1);
+    font-weight: 700;
+  }
+
+  .undo-toast button {
+    background: var(--color-accent);
+    color: var(--color-accent-fg);
+    border: var(--border);
+    box-shadow: var(--shadow-sm);
+    padding: var(--size-1) var(--size-3);
+    font-size: var(--font-size-0);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+  }
+
+  .undo-toast button:hover {
+    transform: translate(-1px, -1px);
+    box-shadow: 2px 2px 0 var(--color-border);
   }
 </style>

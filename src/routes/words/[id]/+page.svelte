@@ -39,6 +39,8 @@
     let editing = $state(false);
     let autoLookupRunning = $state(false);
     let errorMsg = $state("");
+    let aiFilledPinyin = $state(false);
+    let aiFilledTranslation = $state(false);
 
     let lookupTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -61,6 +63,8 @@
             translation: word.translation ?? "",
             note: word.character_note ?? "",
         };
+        aiFilledPinyin = false;
+        aiFilledTranslation = false;
         editing = true;
     }
 
@@ -157,6 +161,8 @@
                 const r = results[0];
                 editData.pinyin = numberedToTone(sanitize(r.pinyin) || r.pinyin);
                 editData.translation = sanitize(r.translation) || r.translation;
+                aiFilledPinyin = true;
+                aiFilledTranslation = true;
                 // Persist example fields directly — no manual edit UI for these
                 if (r.example !== undefined || r.example_translation !== undefined) {
                     await supabase.from('words').update({
@@ -316,6 +322,8 @@
                             type="text"
                             bind:value={editData.pinyin}
                             disabled={isBusy}
+                            class:ai-filled={aiFilledPinyin}
+                            oninput={() => (aiFilledPinyin = false)}
                         />
                         <button
                             class="enrich-btn"
@@ -361,6 +369,8 @@
                             type="text"
                             bind:value={editData.translation}
                             disabled={isBusy}
+                            class:ai-filled={aiFilledTranslation}
+                            oninput={() => (aiFilledTranslation = false)}
                         />
                         <button
                             class="enrich-btn"
@@ -618,6 +628,11 @@
         font-weight: 700;
         padding: 0 var(--size-3);
         box-shadow: var(--shadow-sm);
+    }
+
+    .ai-filled {
+        border-color: var(--color-accent-2);
+        background: color-mix(in srgb, var(--color-sky) 25%, var(--color-surface));
     }
 
     .section-label {
