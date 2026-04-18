@@ -72,6 +72,20 @@
   $effect(() => {
     loadCharData(viewChar)
   })
+
+  function handleDialogKeydown(e: KeyboardEvent) {
+    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return
+    const row = (e.target as HTMLElement).closest<HTMLElement>('.components .char-row')
+    if (!row) return
+    const buttons = [...row.querySelectorAll<HTMLButtonElement>('button')]
+    const idx = buttons.indexOf(document.activeElement as HTMLButtonElement)
+    if (idx === -1) return
+    e.preventDefault()
+    const next = e.key === 'ArrowRight'
+      ? buttons[(idx + 1) % buttons.length]
+      : buttons[(idx - 1 + buttons.length) % buttons.length]
+    next.focus()
+  }
 </script>
 
 <dialog
@@ -79,6 +93,7 @@
   aria-label="Character detail: {viewChar}"
   onclick={(e) => { if (e.target === e.currentTarget) onclose() }}
   oncancel={(e) => { e.preventDefault(); onclose() }}
+  onkeydown={handleDialogKeydown}
 >
   <header class="modal-header">
     <div class="modal-nav">
@@ -124,7 +139,7 @@
     {#if charData.components?.length}
       <div class="components">
         <span class="components-label">Made of</span>
-        <div class="char-row">
+        <div class="char-row" role="group" aria-label="Components">
           {#each charData.components as comp, i (i)}
             {#if i > 0}<span class="comp-plus">+</span>{/if}
             <button
