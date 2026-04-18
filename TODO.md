@@ -2,16 +2,9 @@
 
 ## Todo
 
-### Medium priority
-
-- [ ] feat: skeleton loaders on card grids — most pages show plain "Loading…" text; replace with placeholder shimmer cards matching the final layout
-
 ### Low priority
 
 - [ ] feat: breadcrumbs on deep pages — `/spellings/[id]/practice` and other 2+ level routes show only a back link; add a breadcrumb trail e.g. "Spellings / Week 1 / Practice"
-- [ ] feat: word detail edit: highlight AI-filled fields — `words/[id]/+page.svelte`; after AI enrichment, mark which fields were changed so the user can verify before saving
-- [ ] fix: homework edit modal: no undo after saving a translation — `homework/[id]/+page.svelte`; once saved the change is permanent; add a confirm step inside the modal or an undo toast
-- [ ] refactor: `MY WORDS` table has no sort or filter controls — `words/+page.svelte`; add sortable column headers and a filter by list name
 - [ ] fix: character modal tab/keyboard navigation incomplete — `CharacterModal.svelte`; arrow keys don't cycle through components in the "Made of" section; fix tab order and add left/right arrow support
 - [ ] refactor: standardise button visual hierarchy across the app — primary (dark bg + yellow text), secondary (surface bg), tertiary (icon-only); currently mixed inconsistently
 - [ ] refactor: standardise terminology — "spelling", "spelling list", "word list", "set" used interchangeably across UI copy; pick one term and apply everywhere

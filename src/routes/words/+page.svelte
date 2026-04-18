@@ -170,7 +170,30 @@
     {/if}
 
     {#if loading}
-        <p class="state-msg" aria-live="polite">Loading…</p>
+        <div class="table-wrapper" aria-busy="true" aria-label="Loading words">
+            <table>
+                <thead>
+                    <tr>
+                        <th scope="col">Word/Sentence</th>
+                        <th scope="col">Pinyin</th>
+                        <th scope="col">Meaning</th>
+                        <th scope="col">Spelling</th>
+                        <th scope="col"><span class="visually-hidden">Detail</span></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {#each { length: 6 } as _, i (i)}
+                        <tr>
+                            <td><span class="skeleton-line" style="height: 1.4rem; width: 3rem; display: inline-block"></span></td>
+                            <td><span class="skeleton-line" style="height: 0.9rem; width: 5rem; display: inline-block"></span></td>
+                            <td><span class="skeleton-line" style="height: 0.9rem; width: 7rem; display: inline-block"></span></td>
+                            <td><span class="skeleton-line" style="height: 1.2rem; width: 4rem; display: inline-block"></span></td>
+                            <td></td>
+                        </tr>
+                    {/each}
+                </tbody>
+            </table>
+        </div>
     {:else if words.length === 0}
         <p class="state-msg">
             No words yet. Add some from a <a href="/spellings">set</a>.

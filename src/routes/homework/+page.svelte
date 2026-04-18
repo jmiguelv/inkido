@@ -126,7 +126,18 @@
   </hgroup>
 
   {#if isLoading}
-    <p aria-live="polite">Loading…</p>
+    <ul class="list-grid" aria-busy="true" aria-label="Loading homework scans">
+      {#each { length: 3 } as _, i (i)}
+        <li>
+          <article class="list-card skeleton-card">
+            <div class="skeleton-line" style="height: 100px; width: 100%; margin-bottom: var(--size-2)"></div>
+            <span class="skeleton-line" style="height: 1.4rem; width: 75%"></span>
+            <span class="skeleton-line" style="height: 0.9rem; width: 55%"></span>
+            <span class="skeleton-line" style="height: 0.9rem; width: 40%; margin-top: var(--size-3)"></span>
+          </article>
+        </li>
+      {/each}
+    </ul>
   {:else if scans.length === 0}
     <p>No scans yet. Upload a worksheet below.</p>
   {:else}
@@ -268,6 +279,8 @@
   li:nth-child(5n+3) .list-card { background: var(--color-sky); }
   li:nth-child(5n+4) .list-card { background: var(--color-lavender); }
   li:nth-child(5n+5) .list-card { background: var(--color-lemon); }
+
+  .skeleton-card { min-height: 160px; }
 
   li {
     display: flex;

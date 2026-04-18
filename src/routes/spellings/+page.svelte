@@ -14,6 +14,7 @@
   let newListLanguage = $state('zh')
   let errorMsg = $state('')
   let loading = $state(false)
+  let listsLoading = $state(true)
   let renamingId = $state<string | null>(null)
   let renameValue = $state('')
   let confirmDeleteId = $state<string | null>(null)
@@ -22,13 +23,18 @@
 
   async function loadLists() {
     if (!activeProfile) return
-    const { data, error } = await supabase
-      .from('word_lists')
-      .select('*')
-      .eq('profile_id', activeProfile.id)
-      .order('created_at')
-    if (error) throw error
-    lists = data as WordList[]
+    listsLoading = true
+    try {
+      const { data, error } = await supabase
+        .from('word_lists')
+        .select('*')
+        .eq('profile_id', activeProfile.id)
+        .order('created_at')
+      if (error) throw error
+      lists = data as WordList[]
+    } finally {
+      listsLoading = false
+    }
   }
 
   async function handleCreateList() {
@@ -92,7 +98,19 @@
     </div>
   </hgroup>
 
-  {#if lists.length === 0}
+  {#if listsLoading}
+    <ul class="list-grid" aria-busy="true" aria-label="Loading spelling sets">
+      {#each { length: 3 } as _, i (i)}
+        <li>
+          <article class="list-card skeleton-card">
+            <span class="skeleton-line" style="height: 1.8rem; width: 70%"></span>
+            <span class="skeleton-line" style="height: 0.9rem; width: 50%"></span>
+            <span class="skeleton-line" style="height: 0.9rem; width: 35%; margin-top: var(--size-3)"></span>
+          </article>
+        </li>
+      {/each}
+    </ul>
+  {:else if lists.length === 0}
     <p>No sets yet. Create one below.</p>
   {:else}
     <ul class="list-grid">
@@ -201,6 +219,8 @@
   li:nth-child(5n+3) .list-card { background: var(--color-sky); }
   li:nth-child(5n+4) .list-card { background: var(--color-lavender); }
   li:nth-child(5n+5) .list-card { background: var(--color-lemon); }
+
+  .skeleton-card { min-height: 120px; }
 
   .list-name {
     font-weight: 800;

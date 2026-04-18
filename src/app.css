@@ -441,6 +441,21 @@ button[type="submit"]:active:not(:disabled),
   box-shadow: none;
 }
 
+/* -------------------------------------------------------
+   SKELETON LOADERS
+------------------------------------------------------- */
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 0.45; }
+  50% { opacity: 1; }
+}
+
+.skeleton-line {
+  display: block;
+  background: var(--color-border);
+  animation: skeleton-pulse 1.4s ease-in-out infinite;
+  border-radius: 0;
+}
+
 /* Markdown Content Styling */
 .markdown-content { max-width: 800px; margin: 0 auto; padding: var(--size-8) var(--size-4); }
 .markdown-content h1 { margin-top: 0; margin-bottom: var(--size-6); font-size: var(--font-size-8); }
