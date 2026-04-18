@@ -78,9 +78,9 @@
   <div class="settings-grid">
     <article class="settings-card">
       <h2>AI Usage</h2>
-      <p>Track your daily AI enrichment allowance.</p>
+      <p>Each word added uses 1 enrichment. Resets at midnight.</p>
       <div class="field usage-field">
-        <label for="ai-usage-progress">Today's usage</label>
+        <label for="ai-usage-progress">Today's enrichments</label>
         <span class="usage-counter">
           <strong class:warning={aiUsageToday >= AI_LIMIT}>{aiUsageToday}</strong> / {AI_LIMIT} used
         </span>

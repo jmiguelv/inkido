@@ -22,6 +22,7 @@
   let errorMsg = $state('')
   let speechRate = $state(0.75)
   let modalChar = $state<string | null>(null)
+  let quizTimeout: ReturnType<typeof setTimeout> | null = $state(null)
 
   const activeProfile = $derived(getActiveProfile())
   const listId = $derived(page.params.id)
@@ -58,23 +59,41 @@
     flipped = !flipped
   }
 
+  function startQuizTimeout() {
+    if (quizTimeout) clearTimeout(quizTimeout)
+    quizTimeout = setTimeout(() => {
+      handleQuizComplete()
+    }, 30000)
+  }
+
   function toggleQuiz(e: MouseEvent) {
     e.stopPropagation()
     quizMode = !quizMode
     quizCharIndex = 0
     flipped = false
     showHint = false
+    if (quizMode) startQuizTimeout()
   }
 
   function handleQuizComplete() {
     setPetMood('happy')
     if (quizCharIndex < currentChars.length - 1) {
       quizCharIndex++
+      startQuizTimeout()
     } else {
       // Word complete!
+      if (quizTimeout) clearTimeout(quizTimeout)
       fireConfetti()
       quizMode = false
       flipped = true
+    }
+  }
+
+  function handleQuizPrev() {
+    if (quizCharIndex > 0) {
+      if (quizTimeout) clearTimeout(quizTimeout)
+      quizCharIndex--
+      startQuizTimeout()
     }
   }
 
@@ -116,7 +135,10 @@
   onMount(() => {
     if (!activeProfile) { goto('/profiles'); return }
     window.addEventListener('keydown', handleKeydown)
-    return () => window.removeEventListener('keydown', handleKeydown)
+    return () => {
+      window.removeEventListener('keydown', handleKeydown)
+      if (quizTimeout) clearTimeout(quizTimeout)
+    }
   })
 
   $effect(() => {
@@ -130,7 +152,13 @@
   {#if list && currentWord}
     <hgroup class="page-header">
       <div class="title-group">
-        <a href="/spellings/{list.id}" class="back-link">← {list.name}</a>
+        <nav aria-label="Breadcrumb" class="breadcrumb">
+          <a href="/spellings">Spellings</a>
+          <span aria-hidden="true">/</span>
+          <a href="/spellings/{list.id}">{list.name}</a>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">Practice</span>
+        </nav>
         <h1>Spelling Practice</h1>
         <p><small>Practise writing each character in this set stroke-by-stroke.</small></p>
       </div>
@@ -140,7 +168,7 @@
     </hgroup>
 
     {#if errorMsg}
-      <output role="alert" class="error">{errorMsg}</output>
+      <output role="alert" class="error-banner">{errorMsg} <button type="button" onclick={() => errorMsg = ''} aria-label="Dismiss">×</button></output>
     {/if}
 
     <div class="card-container">
@@ -179,6 +207,10 @@
                     Writing {quizCharIndex + 1} of {currentChars.length}
                   </p>
                 {/if}
+                <div class="quiz-char-nav">
+                  <button class="quiz-char-nav-btn" onclick={handleQuizPrev} disabled={quizCharIndex === 0}>← Back</button>
+                  <button class="quiz-char-nav-btn" onclick={() => { if (quizTimeout) clearTimeout(quizTimeout); handleQuizComplete() }}>Next →</button>
+                </div>
               </div>
             {:else if flipped}
               <div class="char-row" lang={list.language}>
@@ -236,19 +268,13 @@
                 }}
                 ontouchend={() => (showHint = false)}
               >
-                Peek Hint
+                Hold to peek
               </button>
             </div>
           {/if}
 
           {#if !flipped && !quizMode}
-            <button
-              class="reveal-btn"
-              onclick={(e) => { e.stopPropagation(); handleFlip() }}
-              aria-label="Reveal word details"
-            >
-              Reveal
-            </button>
+            <p class="tap-hint">Tap card to reveal</p>
           {/if}
         </div>
 
@@ -310,12 +336,6 @@
     color: var(--color-text-muted);
     align-self: flex-end;
     margin-bottom: var(--size-1);
-  }
-
-  .error {
-    display: block;
-    color: var(--color-danger);
-    margin-bottom: var(--size-3);
   }
 
   .card-container {
@@ -479,29 +499,43 @@
     flex-shrink: 0;
   }
 
-  .reveal-btn {
-    padding: var(--size-2) var(--size-6);
+  .tap-hint {
+    font-size: var(--font-size-0);
+    color: var(--color-text-muted);
+    opacity: 0.6;
+    margin: 0;
+    font-style: italic;
+  }
+
+  .quiz-char-nav {
+    display: flex;
+    gap: var(--size-2);
+    justify-content: center;
+  }
+
+  .quiz-char-nav-btn {
+    font-size: var(--font-size-0);
+    padding: var(--size-1) var(--size-3);
+    background: none;
     border: var(--border);
-    border-radius: 0;
-    font-size: var(--font-size-2);
+    box-shadow: none;
+    color: var(--color-text-muted);
+    cursor: pointer;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    background: var(--color-accent);
-    color: var(--color-accent-fg);
-    box-shadow: var(--shadow-sm);
-    cursor: pointer;
-    transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+    opacity: 0.7;
   }
 
-  .reveal-btn:hover {
-    transform: translate(-2px, -2px);
-    box-shadow: 2px 2px 0 var(--color-border);
-  }
-
-  .reveal-btn:active {
-    transform: translate(0, 0);
+  .quiz-char-nav-btn:hover:not(:disabled) {
+    opacity: 1;
+    transform: none;
     box-shadow: none;
+  }
+
+  .quiz-char-nav-btn:disabled {
+    opacity: 0.25;
+    cursor: default;
   }
 
   .phonetic {

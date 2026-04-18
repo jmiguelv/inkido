@@ -20,6 +20,8 @@
   let editValue = $state('')
   let editDialog = $state<HTMLDialogElement | null>(null)
   let userEmail = $state('')
+  let undoState = $state<{ index: number; previous: { english: string; chinese: string } } | null>(null)
+  let undoTimeout: ReturnType<typeof setTimeout> | null = null
 
   const activeProfile = $derived(getActiveProfile())
   const scanId = $derived(page.params.id)
@@ -102,13 +104,31 @@
 
       if (updateError) throw updateError
 
+      const previous = scan.analysis.questions[index].sampleAnswer
       scan.analysis = updatedAnalysis
       closeEdit()
+
+      // Undo toast — 6 seconds
+      if (undoTimeout) clearTimeout(undoTimeout)
+      undoState = { index, previous }
+      undoTimeout = setTimeout(() => { undoState = null }, 6000)
     } catch (e) {
       errorMsg = e instanceof Error ? e.message : 'Translation failed'
     } finally {
       isTranslating = false
     }
+  }
+
+  async function handleUndo() {
+    if (!undoState || !scan) return
+    if (undoTimeout) clearTimeout(undoTimeout)
+    const { index, previous } = undoState
+    const updatedAnalysis = { ...scan.analysis }
+    updatedAnalysis.questions = [...updatedAnalysis.questions]
+    updatedAnalysis.questions[index] = { ...updatedAnalysis.questions[index], sampleAnswer: previous }
+    const { error } = await supabase.from('homework_scans').update({ analysis: updatedAnalysis }).eq('id', scan.id)
+    if (!error) scan.analysis = updatedAnalysis
+    undoState = null
   }
 
   function startEdit(index: number, value: string) {
@@ -146,7 +166,11 @@
   <section class="scan-detail">
     <header class="page-header">
       <div class="title-group">
-        <a href="/homework" class="back-link">← Homework</a>
+        <nav aria-label="Breadcrumb" class="breadcrumb">
+          <a href="/homework">Homework</a>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">{scan.analysis.title || 'Worksheet'}</span>
+        </nav>
         <h1>{scan.analysis.title || 'Worksheet'}</h1>
         <p><small>{scan.summary} · {new Date(scan.created_at).toLocaleDateString()}</small></p>
         {#if scan.context}
@@ -162,7 +186,14 @@
     </header>
 
     {#if errorMsg}
-      <output role="alert" class="error">{errorMsg}</output>
+      <output role="alert" class="error-banner">{errorMsg} <button type="button" onclick={() => errorMsg = ''} aria-label="Dismiss">×</button></output>
+    {/if}
+
+    {#if undoState}
+      <div class="undo-toast" role="status">
+        Answer saved.
+        <button onclick={handleUndo}>Undo</button>
+      </div>
     {/if}
 
     <ol class="question-list">
@@ -230,16 +261,16 @@
           rows="3"
         ></textarea>
         <div class="edit-actions">
-          <button class="save-btn" onclick={() => handleTranslate(editingIndex!)} disabled={isTranslating || !editValue.trim()}>
+          <button class="save-btn btn-primary" onclick={() => handleTranslate(editingIndex!)} disabled={isTranslating || !editValue.trim()}>
             {isTranslating ? 'Translating...' : 'Translate & Save'}
           </button>
-          <button class="cancel-btn" onclick={closeEdit} disabled={isTranslating}>Cancel</button>
+          <button class="cancel-btn btn-secondary" onclick={closeEdit} disabled={isTranslating}>Cancel</button>
         </div>
       </div>
     {/if}
   </dialog>
 {:else if isLoading}
-  <p>Loading…</p>
+  <p aria-live="polite">Loading…</p>
 {:else}
   <p>Scan not found.</p>
 {/if}
@@ -455,32 +486,6 @@
   .edit-actions button {
     padding: var(--size-1) var(--size-3);
     font-size: var(--font-size-0);
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    border: var(--border);
-    cursor: pointer;
-    box-shadow: var(--shadow-sm);
-  }
-
-  .save-btn {
-    background: var(--color-accent);
-    color: var(--color-accent-fg);
-  }
-
-  .cancel-btn {
-    background: var(--color-surface);
-    color: var(--color-text);
-  }
-
-  .edit-actions button:hover:not(:disabled) {
-    transform: translate(-2px, -2px);
-    box-shadow: 2px 2px 0 var(--color-border);
-  }
-
-  .edit-actions button:active:not(:disabled) {
-    transform: translate(0, 0);
-    box-shadow: none;
   }
 
   .edit-btn {
@@ -495,5 +500,35 @@
     display: flex;
     gap: var(--size-1);
     align-items: center;
+  }
+
+  .undo-toast {
+    display: flex;
+    align-items: center;
+    gap: var(--size-3);
+    background: var(--color-lemon);
+    border: var(--border);
+    padding: var(--size-2) var(--size-4);
+    margin-bottom: var(--size-4);
+    font-size: var(--font-size-1);
+    font-weight: 700;
+  }
+
+  .undo-toast button {
+    background: var(--color-accent);
+    color: var(--color-accent-fg);
+    border: var(--border);
+    box-shadow: var(--shadow-sm);
+    padding: var(--size-1) var(--size-3);
+    font-size: var(--font-size-0);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+  }
+
+  .undo-toast button:hover {
+    transform: translate(-1px, -1px);
+    box-shadow: 2px 2px 0 var(--color-border);
   }
 </style>

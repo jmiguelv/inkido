@@ -7,11 +7,14 @@
 
   let profiles = $state<Profile[]>([])
   let profileStats = $state<Record<string, { total: number, correct: number }>>({})
+  let profileListCounts = $state<Record<string, number>>({})
+  let profileWordCounts = $state<Record<string, number>>({})
   let newProfileName = $state('')
   let errorMsg = $state('')
   let loading = $state(false)
   let renamingId = $state<string | null>(null)
   let renameValue = $state('')
+  let confirmDeleteId = $state<string | null>(null)
 
   const activeProfile = $derived(getActiveProfile())
 
@@ -39,6 +42,31 @@
         }
         profileStats = stats
       }
+
+      const { data: listData } = await supabase
+        .from('word_lists')
+        .select('id, profile_id')
+        .in('profile_id', profiles.map(p => p.id))
+
+      const { data: wordData } = await supabase
+        .from('words')
+        .select('id, list_id')
+        .in('list_id', (listData ?? []).map(l => l.id))
+
+      const listCountMap: Record<string, number> = {}
+      const wordCountMap: Record<string, number> = {}
+      for (const p of profiles) { listCountMap[p.id] = 0; wordCountMap[p.id] = 0 }
+      for (const l of listData ?? []) {
+        listCountMap[l.profile_id] = (listCountMap[l.profile_id] ?? 0) + 1
+      }
+      const listProfileMap: Record<string, string> = {}
+      for (const l of listData ?? []) listProfileMap[l.id] = l.profile_id
+      for (const w of wordData ?? []) {
+        const pid = listProfileMap[w.list_id]
+        if (pid) wordCountMap[pid] = (wordCountMap[pid] ?? 0) + 1
+      }
+      profileListCounts = listCountMap
+      profileWordCounts = wordCountMap
     }
   }
 
@@ -136,7 +164,7 @@
                 {#if profileStats[profile.id] && profileStats[profile.id].total > 0}
                   <span class="stat-label">Tones:</span>
                   <span class="stat-value">
-                    {profileStats[profile.id].total} practiced 
+                    {profileStats[profile.id].total} practiced
                     <span class="stat-pct">({Math.round((profileStats[profile.id].correct / profileStats[profile.id].total) * 100)}% correct)</span>
                   </span>
                 {:else}
@@ -144,17 +172,28 @@
                   <span class="stat-value empty">Not practiced yet</span>
                 {/if}
               </div>
+              <div class="profile-stats-row">
+                <span class="stat-label">Spellings:</span>
+                <span class="stat-value">{profileListCounts[profile.id] ?? 0} lists · {profileWordCounts[profile.id] ?? 0} words</span>
+              </div>
             </button>
             <button
               class="rename-btn"
               onclick={() => startRename(profile)}
               aria-label="Rename {profile.name}"
             >✎</button>
-            <button
-              class="delete-btn"
-              onclick={() => handleDeleteProfile(profile.id)}
-              aria-label="Delete {profile.name}"
-            >×</button>
+            {#if confirmDeleteId === profile.id}
+              <div class="profile-confirm-delete">
+                <button onclick={() => { handleDeleteProfile(profile.id); confirmDeleteId = null }} class="confirm-yes-sm" aria-label="Confirm delete {profile.name}">✓</button>
+                <button onclick={() => (confirmDeleteId = null)} class="confirm-no-sm" aria-label="Cancel delete">✕</button>
+              </div>
+            {:else}
+              <button
+                class="delete-btn"
+                onclick={() => (confirmDeleteId = profile.id)}
+                aria-label="Delete {profile.name}"
+              >×</button>
+            {/if}
           {/if}
         </li>
       {/each}
@@ -170,7 +209,7 @@
       <input id="profile-name" type="text" bind:value={newProfileName} required placeholder="e.g. Alice" />
     </div>
     {#if errorMsg}
-      <output role="alert" class="error">{errorMsg}</output>
+      <output role="alert" class="error-banner">{errorMsg} <button type="button" onclick={() => errorMsg = ''} aria-label="Dismiss">×</button></output>
     {/if}
     <button type="submit" disabled={loading}>
       {loading ? 'Adding…' : 'Add profile'}
@@ -400,16 +439,41 @@
     font-size: var(--font-size-2);
   }
 
-  .error {
-    display: block;
-    color: var(--color-danger);
-    font-size: var(--font-size-1);
-    font-weight: 700;
-    margin-bottom: var(--size-3);
-  }
-
   button[type="submit"] {
     padding: var(--size-2) var(--size-5);
     font-size: var(--font-size-2);
   }
+
+  .profile-stats-row {
+    display: flex;
+    gap: var(--size-2);
+    font-size: var(--font-size-1);
+    color: var(--color-text-muted);
+    width: 100%;
+  }
+
+  .profile-confirm-delete {
+    position: absolute;
+    top: var(--size-2);
+    right: var(--size-2);
+    display: flex;
+    gap: var(--size-1);
+  }
+
+  .confirm-yes-sm, .confirm-no-sm {
+    background: none;
+    border: var(--border);
+    box-shadow: none;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: var(--font-size-0);
+    padding: 0;
+  }
+
+  .confirm-yes-sm { background: var(--color-danger); color: var(--color-danger-fg); }
+  .confirm-no-sm { background: var(--color-surface); color: var(--color-text); }
 </style>

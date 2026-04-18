@@ -53,12 +53,12 @@ src/
     +error.svelte       # custom error page
     profiles/           # profile picker (auth-protected)
     auth/login|signup|callback/
-    lists/              # word lists index
-    lists/[id]/         # list detail + word management + photo scan
-    lists/[id]/practice/ # practice mode
+    spellings/          # word lists index
+    spellings/[id]/     # list detail + word management + photo scan
+    spellings/[id]/practice/ # practice mode
     words/              # all words across all lists (searchable)
     words/[id]/         # word detail with character breakdown
-    characters/         # character explorer (search 94k chars)
+    dictionary/         # character/word search (145k words + 94k chars)
     settings/           # account settings
 supabase/
   migrations/           # SQL migrations — always run `pnpm supabase db push` after changes

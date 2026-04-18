@@ -104,7 +104,7 @@
         </div>
         <div class="step-body">
           <h2 class="step-heading">PRACTICE UNTIL IT STICKS</h2>
-          <p class="step-text">Flashcard spelling with stroke-by-stroke character animation. Tone listening with instant feedback. Progress tracked separately per learner.</p>
+          <p class="step-text">Stroke order matters in school tests — practise writing every character correctly, stroke by stroke. Tone listening with instant feedback. Progress tracked separately per learner.</p>
         </div>
       </div>
     </div>

@@ -14,20 +14,27 @@
   let newListLanguage = $state('zh')
   let errorMsg = $state('')
   let loading = $state(false)
+  let listsLoading = $state(true)
   let renamingId = $state<string | null>(null)
   let renameValue = $state('')
+  let confirmDeleteId = $state<string | null>(null)
 
   const activeProfile = $derived(getActiveProfile())
 
   async function loadLists() {
     if (!activeProfile) return
-    const { data, error } = await supabase
-      .from('word_lists')
-      .select('*')
-      .eq('profile_id', activeProfile.id)
-      .order('created_at')
-    if (error) throw error
-    lists = data as WordList[]
+    listsLoading = true
+    try {
+      const { data, error } = await supabase
+        .from('word_lists')
+        .select('*')
+        .eq('profile_id', activeProfile.id)
+        .order('created_at')
+      if (error) throw error
+      lists = data as WordList[]
+    } finally {
+      listsLoading = false
+    }
   }
 
   async function handleCreateList() {
@@ -87,19 +94,31 @@
   <hgroup class="page-header">
     <div class="title-group">
       <h1>SPELLINGS</h1>
-      <p><small>Manage your practice sets, organized by topic or difficulty.</small></p>
+      <p><small>Manage your spellings, organised by topic or difficulty.</small></p>
     </div>
   </hgroup>
 
-  {#if lists.length === 0}
-    <p>No sets yet. Create one below.</p>
+  {#if listsLoading}
+    <ul class="list-grid" aria-busy="true" aria-label="Loading spelling sets">
+      {#each { length: 3 } as _, i (i)}
+        <li>
+          <article class="list-card skeleton-card">
+            <span class="skeleton-line" style="height: 1.8rem; width: 70%"></span>
+            <span class="skeleton-line" style="height: 0.9rem; width: 50%"></span>
+            <span class="skeleton-line" style="height: 0.9rem; width: 35%; margin-top: var(--size-3)"></span>
+          </article>
+        </li>
+      {/each}
+    </ul>
+  {:else if lists.length === 0}
+    <p>No spellings yet. Create one below.</p>
   {:else}
     <ul class="list-grid">
       {#each lists as list (list.id)}
         <li>
           <article class="list-card">
             {#if renamingId === list.id}
-              <form onsubmit={(e) => { e.preventDefault(); handleRename(list.id) }} class="rename-form">
+              <form onsubmit={(e) => { e.preventDefault(); handleRename(list.id) }} class="rename-form active-rename">
                 <input
                   type="text"
                   bind:value={renameValue}
@@ -118,15 +137,23 @@
                 {/if}
               </span>
               <div class="list-footer">
-                <a href="/spellings/{list.id}/practice" class="practice-link">Practice →</a>
+                <a href="/spellings/{list.id}/practice" class="practice-link btn-primary">Practice →</a>
                 {#if list.language === 'zh'}
-                  <a href="/spellings/{list.id}/tones" class="tones-link">Tones →</a>
+                  <a href="/spellings/{list.id}/tones" class="tones-link btn-secondary">Tones →</a>
                 {/if}
               </div>
               <div class="list-actions">
                 <button onclick={() => startRename(list)} aria-label="Rename {list.name}">✎</button>
-                <button class="danger" onclick={() => handleDeleteList(list.id)} aria-label="Delete {list.name}">×</button>
+                {#if confirmDeleteId !== list.id}
+                  <button class="danger" onclick={() => (confirmDeleteId = list.id)} aria-label="Delete {list.name}">×</button>
+                {/if}
               </div>
+              {#if confirmDeleteId === list.id}
+                <div class="list-confirm-delete">
+                  <button onclick={() => { handleDeleteList(list.id); confirmDeleteId = null }} class="confirm-yes-sm" aria-label="Confirm delete {list.name}">✓</button>
+                  <button onclick={() => (confirmDeleteId = null)} class="confirm-no-sm" aria-label="Cancel delete">✕</button>
+                </div>
+              {/if}
             {/if}
           </article>
         </li>
@@ -151,7 +178,7 @@
       </select>
     </div>
     {#if errorMsg}
-      <output role="alert" class="error">{errorMsg}</output>
+      <output role="alert" class="error-banner">{errorMsg} <button type="button" onclick={() => errorMsg = ''} aria-label="Dismiss">×</button></output>
     {/if}
     <button type="submit" disabled={loading}>
       {loading ? 'Creating…' : 'Create spelling'}
@@ -193,6 +220,8 @@
   li:nth-child(5n+4) .list-card { background: var(--color-lavender); }
   li:nth-child(5n+5) .list-card { background: var(--color-lemon); }
 
+  .skeleton-card { min-height: 120px; }
+
   .list-name {
     font-weight: 800;
     font-family: var(--font-display);
@@ -222,34 +251,8 @@
 
   .practice-link,
   .tones-link {
-    font-size: var(--font-size-1);
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    text-decoration: none;
-    background: var(--color-accent);
-    color: var(--color-accent-fg);
     padding: var(--size-1) var(--size-3);
-    border: var(--border);
-    box-shadow: var(--shadow-sm);
-    transition: transform var(--transition-speed), box-shadow var(--transition-speed);
-  }
-
-  .practice-link:hover,
-  .tones-link:hover {
-    transform: translate(-2px, -2px);
-    box-shadow: 2px 2px 0 var(--color-border);
-  }
-
-  .practice-link:active,
-  .tones-link:active {
-    transform: translate(0, 0);
-    box-shadow: none;
-  }
-
-  .tones-link {
-    background: var(--color-surface);
-    color: var(--color-text);
+    font-size: var(--font-size-1);
   }
 
   .list-actions {
@@ -347,16 +350,38 @@
     font-size: var(--font-size-2);
   }
 
-  .error {
-    display: block;
-    color: var(--color-danger);
-    font-size: var(--font-size-1);
-    font-weight: 700;
-    margin-bottom: var(--size-3);
-  }
-
   button[type="submit"] {
     padding: var(--size-2) var(--size-5);
     font-size: var(--font-size-2);
+  }
+
+  .confirm-yes-sm, .confirm-no-sm {
+    background: none;
+    border: var(--border);
+    box-shadow: none;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: var(--font-size-0);
+    padding: 0;
+  }
+
+  .confirm-yes-sm { background: var(--color-danger); color: var(--color-danger-fg); }
+  .confirm-no-sm { background: var(--color-surface); color: var(--color-text); }
+
+  .list-confirm-delete {
+    position: absolute;
+    top: var(--size-2);
+    right: var(--size-2);
+    display: flex;
+    gap: var(--size-1);
+  }
+
+  .active-rename {
+    outline: 3px solid var(--color-accent);
+    outline-offset: 2px;
   }
 </style>

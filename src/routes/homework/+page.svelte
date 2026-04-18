@@ -10,6 +10,8 @@
   let isLoading = $state(true)
   let context = $state('')
   let errorMsg = $state('')
+  let selectedFileCount = $state(0)
+  let confirmDeleteId = $state<string | null>(null)
 
   const activeProfile = $derived(getActiveProfile())
 
@@ -53,6 +55,7 @@
     if (!activeProfile) return
     const input = event.target as HTMLInputElement
     const files = Array.from(input.files || [])
+    selectedFileCount = files.length
     if (files.length === 0) return
     scanning = true
     errorMsg = ''
@@ -91,6 +94,7 @@
     } finally {
       scanning = false
       input.value = ''
+      selectedFileCount = 0
     }
   }
 
@@ -106,7 +110,9 @@
 
   $effect(() => {
     if (activeProfile?.id) {
-      loadScans()
+      loadScans().catch(e => {
+        errorMsg = e instanceof Error ? e.message : 'Failed to load scans'
+      })
     }
   })
 </script>
@@ -120,7 +126,18 @@
   </hgroup>
 
   {#if isLoading}
-    <p>Loading…</p>
+    <ul class="list-grid" aria-busy="true" aria-label="Loading homework scans">
+      {#each { length: 3 } as _, i (i)}
+        <li>
+          <article class="list-card skeleton-card">
+            <div class="skeleton-line" style="height: 100px; width: 100%; margin-bottom: var(--size-2)"></div>
+            <span class="skeleton-line" style="height: 1.4rem; width: 75%"></span>
+            <span class="skeleton-line" style="height: 0.9rem; width: 55%"></span>
+            <span class="skeleton-line" style="height: 0.9rem; width: 40%; margin-top: var(--size-3)"></span>
+          </article>
+        </li>
+      {/each}
+    </ul>
   {:else if scans.length === 0}
     <p>No scans yet. Upload a worksheet below.</p>
   {:else}
@@ -137,11 +154,19 @@
             <span class="list-tag">{scan.analysis.worksheetType}</span>
             <span class="list-meta">{new Date(scan.created_at).toLocaleDateString()} · {scan.summary}</span>
             <div class="list-footer">
-              <a href="/homework/{scan.id}" class="view-btn">View →</a>
+              <a href="/homework/{scan.id}" class="view-btn btn-primary">View →</a>
             </div>
             <div class="list-actions">
-              <button class="danger" onclick={() => handleDelete(scan.id)} aria-label="Delete scan">×</button>
+              {#if confirmDeleteId !== scan.id}
+                <button class="danger" onclick={() => (confirmDeleteId = scan.id)} aria-label="Delete scan">×</button>
+              {/if}
             </div>
+            {#if confirmDeleteId === scan.id}
+              <div class="list-confirm-delete">
+                <button onclick={() => { handleDelete(scan.id); confirmDeleteId = null }} class="confirm-yes-sm" aria-label="Confirm delete">✓</button>
+                <button onclick={() => (confirmDeleteId = null)} class="confirm-no-sm" aria-label="Cancel delete">✕</button>
+              </div>
+            {/if}
           </article>
         </li>
       {/each}
@@ -159,17 +184,18 @@
       <textarea 
         id="homework-context"
         bind:value={context}
-        placeholder="e.g. topic, grade level, or specific instructions"
+        placeholder="e.g. Grade 4 fill-in-the-blank exercise, translate to Chinese"
         disabled={scanning}
         rows="3"
+        maxlength="500"
       ></textarea>
     </div>
 
     {#if errorMsg}
-      <output role="alert" class="error">{errorMsg}</output>
+      <output role="alert" class="error-banner">{errorMsg} <button type="button" onclick={() => errorMsg = ''} aria-label="Dismiss">×</button></output>
     {/if}
     <label class="scan-label" class:loading={scanning}>
-      {scanning ? 'Analysing…' : '📷 Scan worksheet'}
+      {scanning ? `Analysing ${selectedFileCount > 1 ? `${selectedFileCount} pages` : ''}…`.trim() : selectedFileCount > 1 ? `📷 ${selectedFileCount} pages selected` : '📷 Scan page(s)'}
       <input
         type="file"
         accept="image/*"
@@ -185,14 +211,6 @@
   </section>
 
   <style>
-  .error {
-    display: block;
-    color: var(--color-danger);
-    font-size: var(--font-size-1);
-    font-weight: 700;
-    margin-bottom: var(--size-3);
-  }
-
   .field {
     display: flex;
     flex-direction: column;
@@ -262,6 +280,8 @@
   li:nth-child(5n+4) .list-card { background: var(--color-lavender); }
   li:nth-child(5n+5) .list-card { background: var(--color-lemon); }
 
+  .skeleton-card { min-height: 160px; }
+
   li {
     display: flex;
   }
@@ -307,29 +327,8 @@
   }
 
   .view-btn {
-    display: inline-block;
-    text-decoration: none;
-    font-size: var(--font-size-1);
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    background: var(--color-accent);
-    color: var(--color-accent-fg);
     padding: var(--size-1) var(--size-3);
-    border: var(--border);
-    box-shadow: var(--shadow-sm);
-    cursor: pointer;
-    transition: transform var(--transition-speed), box-shadow var(--transition-speed);
-  }
-
-  .view-btn:hover {
-    transform: translate(-2px, -2px);
-    box-shadow: 2px 2px 0 var(--color-border);
-  }
-
-  .view-btn:active {
-    transform: translate(0, 0);
-    box-shadow: none;
+    font-size: var(--font-size-1);
   }
 
   .list-actions {
@@ -338,17 +337,22 @@
     right: var(--size-2);
     display: flex;
     gap: var(--size-1);
+    z-index: 1;
   }
 
   .list-actions button {
-    background: none;
-    border: none;
+    background: var(--color-surface);
+    border: var(--border);
     box-shadow: none;
-    font-size: var(--font-size-3);
-    line-height: 1;
-    padding: var(--size-1);
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--font-size-0);
+    padding: 0;
     color: var(--color-text);
-    opacity: 0.25;
+    opacity: 0.6;
     cursor: pointer;
   }
 
@@ -361,6 +365,31 @@
   .list-actions button.danger:hover {
     color: var(--color-danger);
   }
+
+  .list-confirm-delete {
+    position: absolute;
+    top: var(--size-2);
+    right: var(--size-2);
+    display: flex;
+    gap: var(--size-1);
+  }
+
+  .confirm-yes-sm, .confirm-no-sm {
+    background: none;
+    border: var(--border);
+    box-shadow: none;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: var(--font-size-0);
+    padding: 0;
+  }
+
+  .confirm-yes-sm { background: var(--color-danger); color: var(--color-danger-fg); }
+  .confirm-no-sm { background: var(--color-surface); color: var(--color-text); }
 
   /* ── Scan form ───────────────────────────────────────── */
   .scan-form {

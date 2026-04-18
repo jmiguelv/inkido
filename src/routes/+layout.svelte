@@ -147,19 +147,19 @@
                 >
                 <div class="nav-right" class:open={menuOpen}>
                     {#if session}
-                        <a href="/spellings" class:active={activeSection === "spellings"}
+                        <a href="/spellings" class:active={activeSection === "spellings"} onclick={() => (menuOpen = false)}
                             >SPELLINGS</a
                         >
                         <a
                             href="/homework"
-                            class:active={activeSection === "homework"}>HOMEWORK</a
+                            class:active={activeSection === "homework"} onclick={() => (menuOpen = false)}>HOMEWORK</a
                         >
-                        <a href="/words" class:active={activeSection === "words"}
+                        <a href="/words" class:active={activeSection === "words"} onclick={() => (menuOpen = false)}
                             >MY WORDS</a
                         >
                         <a
                             href="/dictionary"
-                            class:active={activeSection === "dictionary"}>DICTIONARY</a
+                            class:active={activeSection === "dictionary"} onclick={() => (menuOpen = false)}>DICTIONARY</a
                         >
                         {#if activeProfile}
                             <div class="profile-dropdown">
@@ -195,7 +195,7 @@
                                             <a
                                                 href="/profiles"
                                                 class="profile-manage"
-                                                onclick={() => (dropdownOpen = false)}
+                                                onclick={() => { dropdownOpen = false; menuOpen = false }}
                                             >
                                                 MANAGE PROFILES
                                             </a>
@@ -204,7 +204,7 @@
                                             <a
                                                 href="/settings"
                                                 class="profile-manage"
-                                                onclick={() => (dropdownOpen = false)}
+                                                onclick={() => { dropdownOpen = false; menuOpen = false }}
                                             >
                                                 SETTINGS
                                             </a>
@@ -215,9 +215,9 @@
                         {/if}
                         <button onclick={handleLogout}>LOG OUT</button>
                     {:else}
-                        <a href="/about" class:active={activeSection === "about"}>ABOUT</a>
-                        <a href="/auth/login">LOG IN</a>
-                        <a href="/auth/signup" class="nav-signup">SIGN UP</a>
+                        <a href="/about" class:active={activeSection === "about"} onclick={() => (menuOpen = false)}>ABOUT</a>
+                        <a href="/auth/login" onclick={() => (menuOpen = false)}>LOG IN</a>
+                        <a href="/auth/signup" class="nav-signup" onclick={() => (menuOpen = false)}>SIGN UP</a>
                     {/if}
                     <button
                         class="pet-toggle"

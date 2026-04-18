@@ -39,11 +39,13 @@
   let enriching = $state(false)
   let addingWords = $state(false)
   let scanLoading = $state(false)
+  let scanFailed = $state(false)
   const activeProfile = $derived(getActiveProfile())
   const listId = $derived(page.params.id)
   const busy = $derived(addingWords || enriching || scanLoading)
 
   let modalChar = $state<{ char: string } | null>(null)
+  let confirmDeleteWordId = $state<string | null>(null)
 
   async function loadStrokeCounts(wordList: Word[]) {
     const allChars = [...new Set(wordList.flatMap(w => splitCharacters(w.character)))]
@@ -206,6 +208,7 @@
     if (!file) return
     scanLoading = true
     errorMsg = ''
+    scanFailed = false
     try {
       const base64Image = await new Promise<string>((resolve, reject) => {
         const reader = new FileReader()
@@ -221,6 +224,7 @@
       newWordsText = characters.join('\n')
     } catch (e) {
       errorMsg = e instanceof Error ? e.message : 'Failed to scan image'
+      scanFailed = true
     } finally {
       scanLoading = false
       input.value = ''
@@ -255,15 +259,19 @@
   {#if list}
     <header class="page-header">
       <div class="title-group">
-        <a href="/spellings" class="back-link" class:disabled={busy} onclick={(e) => { if (busy) e.preventDefault() }}>← Spellings</a>
+        <nav aria-label="Breadcrumb" class="breadcrumb">
+          <a href="/spellings" class:disabled={busy} onclick={(e) => { if (busy) e.preventDefault() }}>Spellings</a>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">{list.name}</span>
+        </nav>
         <h1>{list.name} <span class="list-lang">{list.language.toUpperCase()}</span></h1>
         <p><small>Update words, add new ones manually, or scan from a photo.</small></p>
       </div>
       <div class="header-actions">
         {#if list.language === 'zh'}
-          <a href="/spellings/{list.id}/tones" class="tones-link" class:disabled={busy || words.length === 0} onclick={(e) => { if (busy || words.length === 0) e.preventDefault() }}>Tones →</a>
+          <a href="/spellings/{list.id}/tones" class="tones-link btn-secondary" class:disabled={busy || words.length === 0} onclick={(e) => { if (busy || words.length === 0) e.preventDefault() }}>Tones →</a>
         {/if}
-        <a href="/spellings/{list.id}/practice" class="practice-link" class:disabled={busy || words.length === 0} onclick={(e) => { if (busy || words.length === 0) e.preventDefault() }}>Practice →</a>
+        <a href="/spellings/{list.id}/practice" class="practice-link btn-primary" class:disabled={busy || words.length === 0} onclick={(e) => { if (busy || words.length === 0) e.preventDefault() }}>Practice →</a>
       </div>
     </header>
 
@@ -323,12 +331,19 @@
                 >↓</button>
               </div>
             </div>
-            <button
-              class="delete-btn"
-              onclick={() => handleDeleteWord(word.id)}
-              disabled={busy}
-              aria-label="Delete {word.character}"
-            >×</button>
+            {#if confirmDeleteWordId === word.id}
+              <div class="word-confirm-delete">
+                <button onclick={() => { handleDeleteWord(word.id); confirmDeleteWordId = null }} class="confirm-yes-sm">✓</button>
+                <button onclick={() => confirmDeleteWordId = null} class="confirm-no-sm">✕</button>
+              </div>
+            {:else}
+              <button
+                class="delete-btn"
+                onclick={() => { if (!busy) confirmDeleteWordId = word.id }}
+                disabled={busy}
+                aria-label="Delete {word.character}"
+              >×</button>
+            {/if}
           </article>
         </li>
       {/each}
@@ -348,10 +363,10 @@
   <div class="add-section">
     {#if words.length > 0}
       <div class="relookup-row">
-        <button class="relookup-btn" disabled={busy} onclick={handleReEnrichAll} aria-label="Re-lookup words">
-          ↻ Re-lookup all words
+        <button class="relookup-btn" disabled={busy} onclick={handleReEnrichAll} aria-label="Refresh translations for all words">
+          ↻ Refresh translations
         </button>
-        <p class="relookup-hint">Re-fetches pinyin and translations from the dictionary.</p>
+        <p class="relookup-hint">Re-fetches pinyin and meanings from the dictionary for all words.</p>
       </div>
     {/if}
     <form onsubmit={(e) => { e.preventDefault(); handleAddWords() }} class="add-form">
@@ -366,14 +381,14 @@
         ></textarea>
       </div>
       {#if errorMsg}
-        <output role="alert" class="error">{errorMsg}</output>
+        <output role="alert" class="error-banner">{errorMsg} <button type="button" onclick={() => errorMsg = ''} aria-label="Dismiss">×</button></output>
       {/if}
       <div class="form-actions">
         <button type="submit" disabled={addingWords || enriching}>
           {addingWords ? 'Adding…' : 'Add words'}
         </button>
         <label class="scan-label" aria-busy={scanLoading}>
-          {scanLoading ? 'Scanning…' : 'Scan worksheet'}
+          {scanLoading ? 'Scanning…' : scanFailed ? 'Try again' : 'Scan worksheet'}
           <input
             type="file"
             accept="image/*"
@@ -448,56 +463,11 @@
     cursor: not-allowed;
   }
 
-  .tones-link {
-    background: var(--color-surface);
-    color: var(--color-text);
-    padding: var(--size-2) var(--size-4);
-    border: var(--border);
-    text-decoration: none;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    box-shadow: var(--shadow-sm);
-    transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
-    white-space: nowrap;
-    align-self: flex-start;
-  }
-
-  .tones-link:hover {
-    transform: translate(-2px, -2px);
-    box-shadow: 5px 5px 0 var(--color-border);
-    text-decoration: none;
-  }
-
-  .tones-link:active {
-    transform: translate(0, 0);
-    box-shadow: none;
-  }
-
+  .tones-link,
   .practice-link {
-    background: var(--color-accent);
-    color: var(--color-accent-fg);
     padding: var(--size-2) var(--size-4);
-    border: var(--border);
-    text-decoration: none;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    box-shadow: var(--shadow-sm);
-    transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
     white-space: nowrap;
     align-self: flex-start;
-  }
-
-  .practice-link:hover {
-    transform: translate(-2px, -2px);
-    box-shadow: 5px 5px 0 var(--color-border);
-    text-decoration: none;
-  }
-
-  .practice-link:active {
-    transform: translate(0, 0);
-    box-shadow: none;
   }
 
   a.disabled {
@@ -526,6 +496,10 @@
     display: grid;
     gap: var(--size-3);
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+
+  @media (max-width: 480px) {
+    .word-list { grid-template-columns: 1fr; }
   }
 
   .word-list li {
@@ -673,14 +647,6 @@
     resize: vertical;
   }
 
-  .error {
-    display: block;
-    color: var(--color-danger);
-    font-size: var(--font-size-1);
-    font-weight: 700;
-    margin-bottom: var(--size-3);
-  }
-
   .form-actions {
     display: flex;
     gap: var(--size-3);
@@ -715,5 +681,30 @@
     transform: translate(0, 0);
     box-shadow: none;
   }
+
+  .word-confirm-delete {
+    position: absolute;
+    top: var(--size-2);
+    right: var(--size-2);
+    display: flex;
+    gap: var(--size-1);
+  }
+
+  .confirm-yes-sm, .confirm-no-sm {
+    background: none;
+    border: var(--border);
+    box-shadow: none;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: var(--font-size-0);
+    padding: 0;
+  }
+
+  .confirm-yes-sm { background: var(--color-danger); color: var(--color-danger-fg); }
+  .confirm-no-sm { background: var(--color-surface); color: var(--color-text); }
 
 </style>

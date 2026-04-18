@@ -17,17 +17,18 @@ Each learner has their own profile. Switch between them from the top-right menu.
 
 ### 2. Spellings
 
-Create a set for whatever you're studying — a week's vocabulary, a topic, a chapter.
+Create a spelling for whatever you're studying — a week's vocabulary, a topic, a chapter.
 
 Add words by typing them in, or use **Photo Scan** to photograph a worksheet and let Inkido extract the characters automatically.
 
 ### 3. Practice
 
-Open a set and tap **Practice →**.
+Open a spelling and tap **Practice →**.
 
-- Tap a character to watch the stroke order animation
+- Tap a character to watch the stroke order animation — stroke order is tested in school, so practising it correctly matters
 - Use **♪ Listen** to hear the pronunciation
-- Navigate with the arrow keys or on-screen buttons
+- In tone practice, press **1–5** to select a tone and **← →** to navigate
+- Navigate flashcards with the arrow keys or on-screen buttons
 
 ### 4. Dictionary
 
@@ -69,12 +70,29 @@ AI results may contain mistakes — always compare with the original textbook or
 - [OpenRouter](https://openrouter.ai) — AI model routing for worksheet analysis
 - [OpenProps](https://open-props.style) — CSS design tokens
 
+## FAQ
+
+**What is pinyin?**
+Pinyin is the official romanisation system for Mandarin Chinese. It uses Latin letters and tone marks (ā á ǎ à) to show how a character is pronounced. Inkido uses pinyin throughout to help you learn pronunciation alongside writing.
+
+**What are the four tones?**
+Every syllable in Mandarin has a tone that changes its meaning. Tone 1 is high and flat (ā), Tone 2 rises (á), Tone 3 dips and rises (ǎ), Tone 4 falls sharply (à). There is also a Tone 5 (neutral, unstressed). Inkido's tone practice helps you recognise each one by ear.
+
+**Why is there an AI limit?**
+Each word you add uses one AI enrichment to look up pinyin, translation, and an example sentence. The daily limit (10 per account) keeps running costs manageable for a free personal project. Dictionary words cost nothing — AI is only used for words not found in CC-CEDICT.
+
+**Can I export my words?**
+Not yet — this is on the backlog. For now you can view all your words on the **My Words** page.
+
+**Is my data private?**
+Your spellings, profiles, and homework scans are stored in [Supabase](https://supabase.com). No data is sold or shared. See the [Privacy](/privacy) page for details.
+
 ## Disclaimer
 
 Inkido is a personal project, created to help my own children learn Chinese. It is free to use "as is", with no guarantees of accuracy or uptime.
 
 If you have feedback or need to report a bug, you can reach me at: [inkido.foyer772@passinbox.com](mailto:inkido.foyer772@passinbox.com)
 
-Your spelling sets and profiles are stored in [Supabase](https://supabase.com). We don't sell or share your data.
+Your spellings and profiles are stored in [Supabase](https://supabase.com). We don't sell or share your data.
 
 </article>

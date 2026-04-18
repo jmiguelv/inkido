@@ -15,6 +15,8 @@ export function speak(text: string, language: string, rate = 0.75): void {
 
 export function unlockAudio(): void {
   if (!('speechSynthesis' in globalThis)) return
-  ;(globalThis as G).speechSynthesis.pause()
-  ;(globalThis as G).speechSynthesis.resume()
+  const Ctor = (globalThis as G).SpeechSynthesisUtterance as new (t: string) => SpeechSynthesisUtterance
+  const u = new Ctor('')
+  u.volume = 0
+  ;(globalThis as G).speechSynthesis.speak(u)
 }

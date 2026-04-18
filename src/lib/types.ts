@@ -1,3 +1,13 @@
+export interface LlmResult {
+  word: string
+  character?: string
+  pinyin: string
+  translation: string
+  example?: string
+  example_phonetic?: string
+  example_translation?: string
+}
+
 export interface Profile {
   id: string
   parent_id: string

@@ -6,6 +6,7 @@
     import { supabase } from "$lib/supabase";
     import { getActiveProfile } from "$lib/stores.svelte";
     import { splitCharacters, alignPinyin, numberedToTone } from "$lib/characters";
+    import { sanitize } from "$lib/sanitize";
     import { speak } from "$lib/audio";
     import {
         getCharData,
@@ -24,12 +25,6 @@
         translation: string | null;
     };
 
-    function stripHtml(s: string | null | undefined): string | null {
-        if (!s) return null;
-        const stripped = s.replace(/<[^>]*>/g, '').trim();
-        return stripped || null;
-    }
-
     const wordId = $derived(page.params.id);
     const activeProfile = $derived(getActiveProfile());
 
@@ -44,6 +39,8 @@
     let editing = $state(false);
     let autoLookupRunning = $state(false);
     let errorMsg = $state("");
+    let aiFilledPinyin = $state(false);
+    let aiFilledTranslation = $state(false);
 
     let lookupTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -66,6 +63,8 @@
             translation: word.translation ?? "",
             note: word.character_note ?? "",
         };
+        aiFilledPinyin = false;
+        aiFilledTranslation = false;
         editing = true;
     }
 
@@ -160,14 +159,16 @@
             };
             if (results?.[0]) {
                 const r = results[0];
-                editData.pinyin = numberedToTone(stripHtml(r.pinyin) ?? r.pinyin);
-                editData.translation = stripHtml(r.translation) ?? r.translation;
+                editData.pinyin = numberedToTone(sanitize(r.pinyin) || r.pinyin);
+                editData.translation = sanitize(r.translation) || r.translation;
+                aiFilledPinyin = true;
+                aiFilledTranslation = true;
                 // Persist example fields directly — no manual edit UI for these
                 if (r.example !== undefined || r.example_translation !== undefined) {
                     await supabase.from('words').update({
-                        example: stripHtml(r.example),
-                        example_phonetic: r.example_phonetic ? numberedToTone(stripHtml(r.example_phonetic) ?? r.example_phonetic) : null,
-                        example_translation: stripHtml(r.example_translation),
+                        example: sanitize(r.example),
+                        example_phonetic: r.example_phonetic ? numberedToTone(sanitize(r.example_phonetic) || r.example_phonetic) : null,
+                        example_translation: sanitize(r.example_translation),
                         is_llm_translation: true,
                     }).eq('id', word.id);
                 }
@@ -263,21 +264,27 @@
     {:else if word && list}
         <header class="page-header">
             <div class="title-group">
-                <a href="/spellings/{list.id}" class="back-link">← {list.name}</a>
+                <nav aria-label="Breadcrumb" class="breadcrumb">
+                    <a href="/spellings">Spellings</a>
+                    <span aria-hidden="true">/</span>
+                    <a href="/spellings/{list.id}">{list.name}</a>
+                    <span aria-hidden="true">/</span>
+                    <span aria-current="page">{word.character}</span>
+                </nav>
                 <h1>{word.character}</h1>
                 <p><small>Detailed breakdown and stroke-by-stroke guide for each character.</small></p>
             </div>
             <div class="header-actions">
                 {#if editing}
                     <button
-                        class="cancel-btn"
+                        class="cancel-btn btn-secondary"
                         onclick={() => (editing = false)}
                         disabled={isBusy}
                     >
                         Cancel
                     </button>
                     <button
-                        class="save-btn"
+                        class="save-btn btn-primary"
                         onclick={handleSave}
                         disabled={isBusy}
                     >
@@ -292,7 +299,7 @@
                         ♪ Listen
                     </button>
                     <button
-                        class="edit-btn"
+                        class="edit-btn btn-secondary"
                         onclick={startEditing}
                         disabled={isBusy}
                     >
@@ -321,9 +328,11 @@
                             type="text"
                             bind:value={editData.pinyin}
                             disabled={isBusy}
+                            class:ai-filled={aiFilledPinyin}
+                            oninput={() => (aiFilledPinyin = false)}
                         />
                         <button
-                            class="enrich-btn"
+                            class="enrich-btn btn-secondary"
                             onclick={handleEnrich}
                             disabled={isBusy}
                             title="Ask AI to enrich">✨ AI</button
@@ -366,9 +375,11 @@
                             type="text"
                             bind:value={editData.translation}
                             disabled={isBusy}
+                            class:ai-filled={aiFilledTranslation}
+                            oninput={() => (aiFilledTranslation = false)}
                         />
                         <button
-                            class="enrich-btn"
+                            class="enrich-btn btn-secondary"
                             onclick={handleEnrich}
                             disabled={isBusy}
                             title="Ask AI to enrich">✨ AI</button
@@ -387,7 +398,7 @@
             {:else}
                 {#if word.translation}
                     <p class="word-translation">
-                        {@html word.translation}
+                        {sanitize(word.translation)}
                         {#if word.is_llm_translation}<span
                                 class="llm-badge"
                                 title="Generated by AI"
@@ -396,7 +407,7 @@
                     </p>
                 {/if}
                 {#if word.character_note}
-                    <p class="word-note">{@html word.character_note}</p>
+                    <p class="word-note">{sanitize(word.character_note)}</p>
                 {/if}
             {/if}
         </hgroup>
@@ -404,13 +415,13 @@
         {#if word.example}
             <section class="section-card example-section">
                 <h2 class="section-label">Example</h2>
-                <p class="example-text" lang={list.language}>{@html word.example}</p>
+                <p class="example-text" lang={list.language}>{sanitize(word.example)}</p>
                 {#if word.example_phonetic}
                     <p class="example-phonetic">{word.example_phonetic}</p>
                 {/if}
                 {#if word.example_translation}
                     <p class="example-translation">
-                        {@html word.example_translation}
+                        {sanitize(word.example_translation)}
                     </p>
                 {/if}
             </section>
@@ -530,17 +541,7 @@
     .cancel-btn,
     .save-btn {
         padding: var(--size-2) var(--size-4);
-        border: var(--border);
         font-size: var(--font-size-1);
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
-        background: var(--color-surface);
-        box-shadow: var(--shadow-sm);
-    }
-
-    .save-btn {
-        background: var(--color-mint);
     }
 
     .cancel-btn {
@@ -618,11 +619,12 @@
     }
 
     .enrich-btn {
-        background: var(--color-surface);
-        border: var(--border);
-        font-weight: 700;
         padding: 0 var(--size-3);
-        box-shadow: var(--shadow-sm);
+    }
+
+    .ai-filled {
+        border-color: var(--color-accent-2);
+        background: color-mix(in srgb, var(--color-sky) 25%, var(--color-surface));
     }
 
     .section-label {

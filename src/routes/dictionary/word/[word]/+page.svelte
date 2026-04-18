@@ -103,7 +103,11 @@
     {:else if word}
         <header class="page-header">
             <div class="title-group">
-                <a href="/dictionary" class="back-link">← Dictionary</a>
+                <nav aria-label="Breadcrumb" class="breadcrumb">
+                    <a href="/dictionary">Dictionary</a>
+                    <span aria-hidden="true">/</span>
+                    <span aria-current="page">{word.word}</span>
+                </nav>
                 <h1>{word.word}</h1>
                 <p><small>Detailed breakdown and stroke-by-stroke guide for each character.</small></p>
             </div>

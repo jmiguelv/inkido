@@ -26,6 +26,7 @@
   let errorMsg = $state('')
   let speechRate = $state(0.75)
   let nextAudioTimeout: ReturnType<typeof setTimeout> | null = null
+  let showKeyTip = $state(false)
 
   const activeProfile = $derived(getActiveProfile())
   const listId = $derived(page.params.id)
@@ -144,11 +145,19 @@
   onMount(() => {
     if (!activeProfile) { goto('/profiles'); return }
     window.addEventListener('keydown', handleKeydown)
+    if (!localStorage.getItem('tones-key-tip-seen')) {
+      showKeyTip = true
+    }
     return () => {
       window.removeEventListener('keydown', handleKeydown)
       if (nextAudioTimeout) clearTimeout(nextAudioTimeout)
     }
   })
+
+  function dismissKeyTip() {
+    showKeyTip = false
+    localStorage.setItem('tones-key-tip-seen', '1')
+  }
 
   $effect(() => {
     if (activeProfile?.id) {
@@ -169,7 +178,13 @@
   {#if list && currentItem}
     <hgroup class="page-header">
       <div class="title-group">
-        <a href="/spellings/{list.id}" class="back-link">← {list.name}</a>
+        <nav aria-label="Breadcrumb" class="breadcrumb">
+          <a href="/spellings">Spellings</a>
+          <span aria-hidden="true">/</span>
+          <a href="/spellings/{list.id}">{list.name}</a>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">Tone Listening</span>
+        </nav>
         <h1>Tone Listening</h1>
         <p><small>Listen to the character and identify its tone.</small></p>
       </div>
@@ -179,7 +194,7 @@
     </hgroup>
 
     {#if errorMsg}
-      <output role="alert" class="error">{errorMsg}</output>
+      <output role="alert" class="error-banner">{errorMsg} <button type="button" onclick={() => errorMsg = ''} aria-label="Dismiss">×</button></output>
     {/if}
 
     <div class="card-container">
@@ -212,7 +227,7 @@
               aria-label="Tone {tone}"
             >
               <div class="tone-mark-container">
-                <span class="tone-mark">
+                <span class="tone-mark" class:tone-mark-neutral={tone === 5}>
                   {#if tone === 1}ā{:else if tone === 2}á{:else if tone === 3}ǎ{:else if tone === 4}à{:else}a{/if}
                 </span>
               </div>
@@ -232,6 +247,7 @@
           <p class="score" aria-label="Score: {correctCount} correct out of {answeredCount} answered">
             {correctCount} / {answeredCount} correct
           </p>
+          <progress class="tone-progress" value={answeredCount} max={items.length} aria-label="{answeredCount} of {items.length} answered"></progress>
         {/if}
 
         {#if showResult}
@@ -247,6 +263,13 @@
       </div>
     </div>
 
+    {#if showKeyTip}
+      <aside class="key-tip" role="note">
+        <span><strong>Keyboard:</strong> press 1–5 to select a tone · ← → to navigate</span>
+        <button type="button" onclick={dismissKeyTip} aria-label="Dismiss tip">×</button>
+      </aside>
+    {/if}
+
     <nav class="nav-controls" aria-label="Practice navigation">
       <button onclick={handlePrev} disabled={currentIndex === 0} aria-label="Previous character">
         ← Prev
@@ -256,7 +279,10 @@
       </button>
     </nav>
   {:else if items.length === 0 && list}
-    <p>This set has no characters with pinyin yet. <a href="/spellings/{list.id}">Add some words</a>.</p>
+    <div class="empty-state">
+      <p>No characters with pinyin found in this set.</p>
+      <p class="empty-hint">To practice tones, <a href="/spellings/{list.id}">go back to the list</a> and use <strong>Refresh translations</strong> to fetch pinyin automatically.</p>
+    </div>
   {:else}
     <p>Loading…</p>
   {/if}
@@ -346,7 +372,28 @@
     .tone-grid {
       grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
     }
+    .tone-btn { height: 120px; }
   }
+
+  .empty-state {
+    max-width: 480px;
+  }
+
+  .empty-hint {
+    color: var(--color-text-muted);
+    font-size: var(--font-size-1);
+  }
+
+  .tone-progress {
+    width: 100%;
+    height: var(--size-2);
+    border: var(--border);
+    border-radius: 0;
+  }
+
+  .tone-progress::-webkit-progress-bar { background: var(--color-surface); }
+  .tone-progress::-webkit-progress-value { background: var(--color-mint); }
+  .tone-progress::-moz-progress-bar { background: var(--color-mint); }
 
   .tone-btn {
     display: flex;
@@ -406,6 +453,11 @@
     line-height: 1;
     color: var(--color-text);
     display: block;
+  }
+
+  .tone-mark-neutral {
+    opacity: 0.45;
+    font-style: italic;
   }
 
   .tone-number {
@@ -535,9 +587,35 @@
     box-shadow: none;
   }
 
-  .error {
-    display: block;
-    color: var(--color-danger);
-    margin-bottom: var(--size-3);
+  .key-tip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--size-3);
+    background: var(--color-lemon);
+    border: var(--border);
+    padding: var(--size-2) var(--size-3);
+    margin-bottom: var(--size-4);
+    font-size: var(--font-size-1);
+    color: var(--color-text);
   }
+
+  .key-tip button {
+    background: none;
+    border: none;
+    box-shadow: none;
+    font-size: var(--font-size-3);
+    line-height: 1;
+    padding: 0 var(--size-1);
+    color: var(--color-text-muted);
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .key-tip button:hover {
+    color: var(--color-text);
+    transform: none;
+    box-shadow: none;
+  }
+
 </style>
