@@ -277,14 +277,14 @@
             <div class="header-actions">
                 {#if editing}
                     <button
-                        class="cancel-btn"
+                        class="cancel-btn btn-secondary"
                         onclick={() => (editing = false)}
                         disabled={isBusy}
                     >
                         Cancel
                     </button>
                     <button
-                        class="save-btn"
+                        class="save-btn btn-primary"
                         onclick={handleSave}
                         disabled={isBusy}
                     >
@@ -299,7 +299,7 @@
                         ♪ Listen
                     </button>
                     <button
-                        class="edit-btn"
+                        class="edit-btn btn-secondary"
                         onclick={startEditing}
                         disabled={isBusy}
                     >
@@ -332,7 +332,7 @@
                             oninput={() => (aiFilledPinyin = false)}
                         />
                         <button
-                            class="enrich-btn"
+                            class="enrich-btn btn-secondary"
                             onclick={handleEnrich}
                             disabled={isBusy}
                             title="Ask AI to enrich">✨ AI</button
@@ -379,7 +379,7 @@
                             oninput={() => (aiFilledTranslation = false)}
                         />
                         <button
-                            class="enrich-btn"
+                            class="enrich-btn btn-secondary"
                             onclick={handleEnrich}
                             disabled={isBusy}
                             title="Ask AI to enrich">✨ AI</button
@@ -541,17 +541,7 @@
     .cancel-btn,
     .save-btn {
         padding: var(--size-2) var(--size-4);
-        border: var(--border);
         font-size: var(--font-size-1);
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
-        background: var(--color-surface);
-        box-shadow: var(--shadow-sm);
-    }
-
-    .save-btn {
-        background: var(--color-mint);
     }
 
     .cancel-btn {
@@ -629,11 +619,7 @@
     }
 
     .enrich-btn {
-        background: var(--color-surface);
-        border: var(--border);
-        font-weight: 700;
         padding: 0 var(--size-3);
-        box-shadow: var(--shadow-sm);
     }
 
     .ai-filled {

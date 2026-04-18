@@ -221,6 +221,34 @@ button[type="submit"]:active:not(:disabled),
   box-shadow: none;
 }
 
+/* SECONDARY BUTTON — .btn-secondary */
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: var(--border);
+  border-radius: var(--radius);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  transform: translate(-2px, -2px);
+  box-shadow: 2px 2px 0 var(--color-border);
+  text-decoration: none;
+}
+
+.btn-secondary:active:not(:disabled) {
+  transform: translate(0, 0);
+  box-shadow: none;
+}
+
 /* Utilities */
 .visually-hidden {
   position: absolute;

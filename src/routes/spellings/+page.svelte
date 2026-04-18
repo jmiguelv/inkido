@@ -137,9 +137,9 @@
                 {/if}
               </span>
               <div class="list-footer">
-                <a href="/spellings/{list.id}/practice" class="practice-link">Practice →</a>
+                <a href="/spellings/{list.id}/practice" class="practice-link btn-primary">Practice →</a>
                 {#if list.language === 'zh'}
-                  <a href="/spellings/{list.id}/tones" class="tones-link">Tones →</a>
+                  <a href="/spellings/{list.id}/tones" class="tones-link btn-secondary">Tones →</a>
                 {/if}
               </div>
               <div class="list-actions">
@@ -251,34 +251,8 @@
 
   .practice-link,
   .tones-link {
-    font-size: var(--font-size-1);
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    text-decoration: none;
-    background: var(--color-accent);
-    color: var(--color-accent-fg);
     padding: var(--size-1) var(--size-3);
-    border: var(--border);
-    box-shadow: var(--shadow-sm);
-    transition: transform var(--transition-speed), box-shadow var(--transition-speed);
-  }
-
-  .practice-link:hover,
-  .tones-link:hover {
-    transform: translate(-2px, -2px);
-    box-shadow: 2px 2px 0 var(--color-border);
-  }
-
-  .practice-link:active,
-  .tones-link:active {
-    transform: translate(0, 0);
-    box-shadow: none;
-  }
-
-  .tones-link {
-    background: var(--color-surface);
-    color: var(--color-text);
+    font-size: var(--font-size-1);
   }
 
   .list-actions {

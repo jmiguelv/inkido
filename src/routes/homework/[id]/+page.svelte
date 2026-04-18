@@ -261,10 +261,10 @@
           rows="3"
         ></textarea>
         <div class="edit-actions">
-          <button class="save-btn" onclick={() => handleTranslate(editingIndex!)} disabled={isTranslating || !editValue.trim()}>
+          <button class="save-btn btn-primary" onclick={() => handleTranslate(editingIndex!)} disabled={isTranslating || !editValue.trim()}>
             {isTranslating ? 'Translating...' : 'Translate & Save'}
           </button>
-          <button class="cancel-btn" onclick={closeEdit} disabled={isTranslating}>Cancel</button>
+          <button class="cancel-btn btn-secondary" onclick={closeEdit} disabled={isTranslating}>Cancel</button>
         </div>
       </div>
     {/if}
@@ -486,32 +486,6 @@
   .edit-actions button {
     padding: var(--size-1) var(--size-3);
     font-size: var(--font-size-0);
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    border: var(--border);
-    cursor: pointer;
-    box-shadow: var(--shadow-sm);
-  }
-
-  .save-btn {
-    background: var(--color-accent);
-    color: var(--color-accent-fg);
-  }
-
-  .cancel-btn {
-    background: var(--color-surface);
-    color: var(--color-text);
-  }
-
-  .edit-actions button:hover:not(:disabled) {
-    transform: translate(-2px, -2px);
-    box-shadow: 2px 2px 0 var(--color-border);
-  }
-
-  .edit-actions button:active:not(:disabled) {
-    transform: translate(0, 0);
-    box-shadow: none;
   }
 
   .edit-btn {

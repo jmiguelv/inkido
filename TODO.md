@@ -4,7 +4,6 @@
 
 ### Low priority
 
-- [ ] refactor: standardise button visual hierarchy across the app — primary (dark bg + yellow text), secondary (surface bg), tertiary (icon-only); currently mixed inconsistently
 - [ ] refactor: standardise terminology — "spelling", "spelling list", "word list", "set" used interchangeably across UI copy; pick one term and apply everywhere
 
 ## In progress

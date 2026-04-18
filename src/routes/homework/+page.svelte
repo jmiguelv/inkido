@@ -154,7 +154,7 @@
             <span class="list-tag">{scan.analysis.worksheetType}</span>
             <span class="list-meta">{new Date(scan.created_at).toLocaleDateString()} · {scan.summary}</span>
             <div class="list-footer">
-              <a href="/homework/{scan.id}" class="view-btn">View →</a>
+              <a href="/homework/{scan.id}" class="view-btn btn-primary">View →</a>
             </div>
             <div class="list-actions">
               {#if confirmDeleteId !== scan.id}
@@ -327,29 +327,8 @@
   }
 
   .view-btn {
-    display: inline-block;
-    text-decoration: none;
-    font-size: var(--font-size-1);
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    background: var(--color-accent);
-    color: var(--color-accent-fg);
     padding: var(--size-1) var(--size-3);
-    border: var(--border);
-    box-shadow: var(--shadow-sm);
-    cursor: pointer;
-    transition: transform var(--transition-speed), box-shadow var(--transition-speed);
-  }
-
-  .view-btn:hover {
-    transform: translate(-2px, -2px);
-    box-shadow: 2px 2px 0 var(--color-border);
-  }
-
-  .view-btn:active {
-    transform: translate(0, 0);
-    box-shadow: none;
+    font-size: var(--font-size-1);
   }
 
   .list-actions {

@@ -269,9 +269,9 @@
       </div>
       <div class="header-actions">
         {#if list.language === 'zh'}
-          <a href="/spellings/{list.id}/tones" class="tones-link" class:disabled={busy || words.length === 0} onclick={(e) => { if (busy || words.length === 0) e.preventDefault() }}>Tones →</a>
+          <a href="/spellings/{list.id}/tones" class="tones-link btn-secondary" class:disabled={busy || words.length === 0} onclick={(e) => { if (busy || words.length === 0) e.preventDefault() }}>Tones →</a>
         {/if}
-        <a href="/spellings/{list.id}/practice" class="practice-link" class:disabled={busy || words.length === 0} onclick={(e) => { if (busy || words.length === 0) e.preventDefault() }}>Practice →</a>
+        <a href="/spellings/{list.id}/practice" class="practice-link btn-primary" class:disabled={busy || words.length === 0} onclick={(e) => { if (busy || words.length === 0) e.preventDefault() }}>Practice →</a>
       </div>
     </header>
 
@@ -463,56 +463,11 @@
     cursor: not-allowed;
   }
 
-  .tones-link {
-    background: var(--color-surface);
-    color: var(--color-text);
-    padding: var(--size-2) var(--size-4);
-    border: var(--border);
-    text-decoration: none;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    box-shadow: var(--shadow-sm);
-    transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
-    white-space: nowrap;
-    align-self: flex-start;
-  }
-
-  .tones-link:hover {
-    transform: translate(-2px, -2px);
-    box-shadow: 5px 5px 0 var(--color-border);
-    text-decoration: none;
-  }
-
-  .tones-link:active {
-    transform: translate(0, 0);
-    box-shadow: none;
-  }
-
+  .tones-link,
   .practice-link {
-    background: var(--color-accent);
-    color: var(--color-accent-fg);
     padding: var(--size-2) var(--size-4);
-    border: var(--border);
-    text-decoration: none;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    box-shadow: var(--shadow-sm);
-    transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
     white-space: nowrap;
     align-self: flex-start;
-  }
-
-  .practice-link:hover {
-    transform: translate(-2px, -2px);
-    box-shadow: 5px 5px 0 var(--color-border);
-    text-decoration: none;
-  }
-
-  .practice-link:active {
-    transform: translate(0, 0);
-    box-shadow: none;
   }
 
   a.disabled {
