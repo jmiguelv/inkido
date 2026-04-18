@@ -17,13 +17,13 @@ Each learner has their own profile. Switch between them from the top-right menu.
 
 ### 2. Spellings
 
-Create a set for whatever you're studying — a week's vocabulary, a topic, a chapter.
+Create a spelling for whatever you're studying — a week's vocabulary, a topic, a chapter.
 
 Add words by typing them in, or use **Photo Scan** to photograph a worksheet and let Inkido extract the characters automatically.
 
 ### 3. Practice
 
-Open a set and tap **Practice →**.
+Open a spelling and tap **Practice →**.
 
 - Tap a character to watch the stroke order animation — stroke order is tested in school, so practising it correctly matters
 - Use **♪ Listen** to hear the pronunciation
@@ -85,7 +85,7 @@ Each word you add uses one AI enrichment to look up pinyin, translation, and an 
 Not yet — this is on the backlog. For now you can view all your words on the **My Words** page.
 
 **Is my data private?**
-Your spelling sets, profiles, and homework scans are stored in [Supabase](https://supabase.com). No data is sold or shared. See the [Privacy](/privacy) page for details.
+Your spellings, profiles, and homework scans are stored in [Supabase](https://supabase.com). No data is sold or shared. See the [Privacy](/privacy) page for details.
 
 ## Disclaimer
 
@@ -93,6 +93,6 @@ Inkido is a personal project, created to help my own children learn Chinese. It 
 
 If you have feedback or need to report a bug, you can reach me at: [inkido.foyer772@passinbox.com](mailto:inkido.foyer772@passinbox.com)
 
-Your spelling sets and profiles are stored in [Supabase](https://supabase.com). We don't sell or share your data.
+Your spellings and profiles are stored in [Supabase](https://supabase.com). We don't sell or share your data.
 
 </article>

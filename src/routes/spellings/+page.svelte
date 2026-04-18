@@ -94,7 +94,7 @@
   <hgroup class="page-header">
     <div class="title-group">
       <h1>SPELLINGS</h1>
-      <p><small>Manage your practice sets, organized by topic or difficulty.</small></p>
+      <p><small>Manage your spellings, organised by topic or difficulty.</small></p>
     </div>
   </hgroup>
 
@@ -111,7 +111,7 @@
       {/each}
     </ul>
   {:else if lists.length === 0}
-    <p>No sets yet. Create one below.</p>
+    <p>No spellings yet. Create one below.</p>
   {:else}
     <ul class="list-grid">
       {#each lists as list (list.id)}

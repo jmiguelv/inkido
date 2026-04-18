@@ -127,10 +127,7 @@
         <div class="title-group">
             <h1>MY WORDS</h1>
             <p>
-                <small
-                    >Review and search every word across all your practice
-                    sets.</small
-                >
+                <small>Review and search every word across all your spellings.</small>
             </p>
         </div>
         <div class="header-actions">
@@ -156,8 +153,8 @@
             spellcheck="false"
         />
         {#if listNames.length > 1}
-            <select bind:value={filterList} aria-label="Filter by spelling set">
-                <option value="">All sets</option>
+            <select bind:value={filterList} aria-label="Filter by spelling">
+                <option value="">All spellings</option>
                 {#each listNames as name}
                     <option value={name}>{name}</option>
                 {/each}
@@ -196,7 +193,7 @@
         </div>
     {:else if words.length === 0}
         <p class="state-msg">
-            No words yet. Add some from a <a href="/spellings">set</a>.
+            No words yet. Add some from a <a href="/spellings">spelling</a>.
         </p>
     {:else if filtered.length === 0}
         <p class="state-msg">No words match <strong>{query}</strong>.</p>

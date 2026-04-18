@@ -2,14 +2,13 @@
 
 ## Todo
 
-### Low priority
-
-- [ ] refactor: standardise terminology — "spelling", "spelling list", "word list", "set" used interchangeably across UI copy; pick one term and apply everywhere
-
 ## In progress
 
 ## Done
 
+- [x] refactor: standardise terminology — "spelling" used consistently throughout UI copy; removed "set/sets"
+- [x] refactor: standardise button visual hierarchy — .btn-primary / .btn-secondary global classes; per-component duplicates removed
+- [x] fix: character modal keyboard nav — left/right arrow keys cycle through "Made of" components
 - [x] feat: breadcrumbs on all nested pages — spellings/[id], practice, tones, word detail, dictionary word, homework detail
 - [x] feat: skeleton loaders on card grids — spellings and homework pages; pulsing skeleton rows on MY WORDS table
 - [x] feat: word detail edit: highlight AI-filled fields — sky-tinted input highlight cleared on manual edit
