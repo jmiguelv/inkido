@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.6.1](https://github.com/jmiguelv/inkido/compare/v0.6.0...v0.6.1) (2026-04-20)
+
+### Bug Fixes
+
+* **dictionary:** resolve duplicate key error in character display ([7535e97](https://github.com/jmiguelv/inkido/commit/7535e975939b5d5c9b2973b4e3914e981cfbc9e0))
+
 ## [0.5.5](https://github.com/jmiguelv/inkido/compare/v0.5.4...v0.5.5) (2026-04-12)
 
 ## [0.2.0] — 2026-04-08
