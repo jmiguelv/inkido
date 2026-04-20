@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.6.2](https://github.com/jmiguelv/inkido/compare/v0.6.0...v0.6.2) (2026-04-20)
+
+### Features
+
+* **homework:** add detail view for individual homework questions ([3bb9b13](https://github.com/jmiguelv/inkido/commit/3bb9b136c3e75bb3e032344cd6e13a4d341e62af))
+
+### Bug Fixes
+
+* **dictionary:** resolve duplicate key error in character display ([7535e97](https://github.com/jmiguelv/inkido/commit/7535e975939b5d5c9b2973b4e3914e981cfbc9e0))
+
 ## [0.6.1](https://github.com/jmiguelv/inkido/compare/v0.6.0...v0.6.1) (2026-04-20)
 
 ### Bug Fixes
