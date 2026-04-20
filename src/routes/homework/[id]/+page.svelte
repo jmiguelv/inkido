@@ -240,6 +240,9 @@
               <span class="answer-text">{q.sampleAnswer.english}</span>
             </div>
           </div>
+          <div class="card-footer">
+            <a href="/homework/{scan.id}/question/{i}" class="detail-link">Detail →</a>
+          </div>
         </li>
       {/each}
     </ol>
@@ -439,6 +442,27 @@
 
   .answer-block:nth-child(2) {
     background: var(--color-sky);
+  }
+
+  .card-footer {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: var(--size-3);
+  }
+
+  .detail-link {
+    font-size: var(--font-size-0);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    text-decoration: none;
+    color: var(--color-text-muted);
+  }
+
+  .detail-link:hover {
+    color: var(--color-text);
+    text-decoration: underline;
+    text-underline-offset: 2px;
   }
 
   .edit-modal {
