@@ -239,7 +239,7 @@
                         >
                             <td class="td-char">
                                 <div class="char-row" lang="zh">
-                                    {#each alignPinyin(entry.char, entry.pinyin) as { char, pinyin } (char)}
+                                    {#each alignPinyin(entry.char, entry.pinyin) as { char, pinyin }, i (i)}
                                         <button
                                             class="char-btn {getHoverStrokeClass(
                                                 char,
