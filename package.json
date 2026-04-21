@@ -39,6 +39,7 @@
 		"@fontsource/space-grotesk": "^5.2.10",
 		"@supabase/supabase-js": "^2.101.1",
 		"@sveltejs/adapter-vercel": "^6.3.3",
+		"@vercel/speed-insights": "^2.0.0",
 		"canvas-confetti": "^1.9.4",
 		"hanzi-writer": "^3.7.3",
 		"open-props": "^1.7.23"
