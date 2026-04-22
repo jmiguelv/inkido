@@ -61,6 +61,7 @@ export interface ZHChar {
 
 export interface UserPreferences {
   speechRate: number    // 0.25 – 1.0
+  writingSpeed: number  // 0.5 – 2.0
 }
 
 export interface ToneStat {

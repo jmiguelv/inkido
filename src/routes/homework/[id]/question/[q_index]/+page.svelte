@@ -62,7 +62,10 @@
                 return;
             }
 
-            const chars = splitCharacters(question.original).filter(isChineseCharacter);
+            const questionChars = splitCharacters(question.original).filter(isChineseCharacter);
+            const answerChars = question.sampleAnswer ? splitCharacters(question.sampleAnswer.chinese).filter(isChineseCharacter) : [];
+            const chars = [...new Set([...questionChars, ...answerChars])];
+
             if (chars.length > 0) {
                 const [charRows, wordRows] = await Promise.all([
                     getCharsData(chars),
@@ -176,7 +179,25 @@
                 <div class="answer-pair">
                     <div class="answer-box answer-zh">
                         <span class="answer-lang-label">Chinese</span>
-                        <p class="answer-text" lang="zh">{question.sampleAnswer.chinese}</p>
+                        <div class="answer-breakdown" lang="zh">
+                            {#each splitCharacters(question.sampleAnswer.chinese) as char, i (i)}
+                                <div class="answer-char-unit">
+                                    {#if isChineseCharacter(char)}
+                                        {@const pinyin = getCachedPinyin(char)}
+                                        {#if pinyin}
+                                            <span class="answer-char-pinyin">{pinyin}</span>
+                                        {/if}
+                                        <button 
+                                            class="char-btn {getHoverStrokeClass(char)}"
+                                            onclick={() => modalChar = { char }}
+                                            title={pinyin ?? undefined}
+                                        >{char}</button>
+                                    {:else}
+                                        <span class="non-han-sm">{char}</span>
+                                    {/if}
+                                </div>
+                            {/each}
+                        </div>
                         <button class="listen-answer-btn" onclick={() => speak(question.sampleAnswer.chinese, 'zh')}>♪ Listen</button>
                     </div>
                     <div class="answer-box answer-en">
@@ -187,7 +208,7 @@
             </section>
         {/if}
 
-        {#if splitCharacters(question.original).filter(isChineseCharacter).length > 0}
+        {#if [...charDataMap.keys()].length > 0}
             <section class="chars-section">
                 <h2 class="section-label">Characters</h2>
                 <div class="table-wrapper">
@@ -203,7 +224,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {#each splitCharacters(question.original).filter(isChineseCharacter) as char, i (i)}
+                            {#each [...charDataMap.keys()].sort() as char, i (char)}
                                 {@const data = charDataMap.get(char)}
                                 <tr
                                     onclick={() => (modalChar = { char })}
@@ -379,6 +400,36 @@
 
     .answer-zh { background: var(--color-mint); }
     .answer-en { background: var(--color-sky); }
+
+    .answer-breakdown {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--size-1) var(--size-2);
+        align-items: flex-end;
+        padding: var(--size-2) 0;
+    }
+
+    .answer-char-unit {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0;
+    }
+
+    .answer-char-pinyin {
+        font-size: var(--font-size-0);
+        color: var(--color-text-muted);
+        line-height: 1;
+        margin-bottom: 2px;
+    }
+
+    .non-han-sm {
+        font-family: var(--font-display);
+        font-size: var(--font-size-3);
+        font-weight: 800;
+        line-height: 1;
+        padding-bottom: 4px;
+    }
 
     .answer-lang-label {
         font-size: var(--font-size-0);

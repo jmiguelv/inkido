@@ -1,5 +1,6 @@
 <script lang="ts">
     import type HanziWriter from "hanzi-writer";
+    import { getPreferences } from "$lib/stores.svelte";
 
     let {
         char,
@@ -59,8 +60,8 @@
                 strokeColor: colorize ? skyColor : defaultStrokeColor,
                 radicalColor: colorize ? mintColor : undefined,
                 outlineColor: defaultOutlineColor,
-                strokeAnimationSpeed: 1,
-                delayBetweenStrokes: 300,
+                strokeAnimationSpeed: getPreferences().writingSpeed,
+                delayBetweenStrokes: 300 / getPreferences().writingSpeed,
                 onLoadCharDataError: () => {
                     if (!destroyed) writerError = true;
                 },

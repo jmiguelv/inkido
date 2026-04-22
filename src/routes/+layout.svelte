@@ -12,10 +12,11 @@
         initTheme,
         getTheme,
         toggleTheme,
+        updatePreferences,
     } from "$lib/stores.svelte";
     import { unlockAudio } from "$lib/audio";
     import { onMount } from "svelte";
-    import type { Profile } from "$lib/types";
+    import type { Profile, UserPreferences } from "$lib/types";
     import PixelPet from "$lib/components/PixelPet.svelte";
 
     const AUTH_ROUTES = [
@@ -48,6 +49,19 @@
         profiles = (data ?? []) as Profile[];
     }
 
+    async function syncPreferences() {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user?.user_metadata) {
+            const { speechRate, writingSpeed } = user.user_metadata as Partial<UserPreferences>;
+            const updates: Partial<UserPreferences> = {};
+            if (speechRate !== undefined) updates.speechRate = speechRate;
+            if (writingSpeed !== undefined) updates.writingSpeed = writingSpeed;
+            if (Object.keys(updates).length > 0) {
+                updatePreferences(updates);
+            }
+        }
+    }
+
     onMount(() => {
         initActiveProfile();
         initTheme();
@@ -58,6 +72,7 @@
                 goto("/auth/login");
             } else if (session) {
                 loadProfiles();
+                syncPreferences();
             }
         });
 
@@ -69,6 +84,7 @@
                 goto("/auth/login");
             } else if (newSession) {
                 loadProfiles();
+                syncPreferences();
             }
         });
 

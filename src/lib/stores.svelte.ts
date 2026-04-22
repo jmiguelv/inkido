@@ -1,7 +1,8 @@
-import type { Profile } from './types.ts'
+import type { Profile, UserPreferences } from './types.ts'
 
 const STORAGE_KEY = 'inkido:activeProfile'
 const THEME_KEY = 'inkido:theme'
+const PREFS_KEY = 'inkido:prefs'
 
 export type Theme = 'light' | 'dark'
 
@@ -10,6 +11,19 @@ export type Theme = 'light' | 'dark'
 const _storedProfile = typeof window !== 'undefined' ? sessionStorage.getItem(STORAGE_KEY) : null
 let activeProfile = $state<Profile | null>(_storedProfile ? (JSON.parse(_storedProfile) as Profile) : null)
 let theme = $state<Theme>('light')
+
+const DEFAULT_PREFS: UserPreferences = { speechRate: 0.75, writingSpeed: 1 }
+const _storedPrefs = typeof window !== 'undefined' ? localStorage.getItem(PREFS_KEY) : null
+let preferences = $state<UserPreferences>(_storedPrefs ? { ...DEFAULT_PREFS, ...JSON.parse(_storedPrefs) } : DEFAULT_PREFS)
+
+export function getPreferences(): UserPreferences {
+  return preferences
+}
+
+export function updatePreferences(newPrefs: Partial<UserPreferences>): void {
+  preferences = { ...preferences, ...newPrefs }
+  localStorage.setItem(PREFS_KEY, JSON.stringify(preferences))
+}
 
 export function initActiveProfile(): void {
   const stored = sessionStorage.getItem(STORAGE_KEY)

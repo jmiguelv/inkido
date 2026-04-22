@@ -2,10 +2,12 @@
   import { supabase } from '$lib/supabase'
   import { goto } from '$app/navigation'
   import { onMount } from 'svelte'
+  import { getPreferences, updatePreferences } from '$lib/stores.svelte'
   import type { UserPreferences } from '$lib/types'
   import { AI_LIMIT } from '$lib/constants'
 
   let speechRate = $state(0.75)
+  let writingSpeed = $state(1)
   let newEmail = $state('')
   let emailMsg = $state('')
   let emailError = $state(false)
@@ -18,6 +20,10 @@
     if (!user) return
     const prefs = user.user_metadata as Partial<UserPreferences>
     if (prefs.speechRate !== undefined) speechRate = prefs.speechRate
+    if (prefs.writingSpeed !== undefined) writingSpeed = prefs.writingSpeed
+    
+    // Sync local store
+    updatePreferences({ speechRate, writingSpeed })
     
     // Fetch AI usage for today
     const today = new Date().toISOString().split('T')[0]
@@ -35,7 +41,14 @@
   }
 
   async function handleSpeechRate() {
+    updatePreferences({ speechRate })
     const { error } = await supabase.auth.updateUser({ data: { speechRate } })
+    if (error) throw error
+  }
+
+  async function handleWritingSpeed() {
+    updatePreferences({ writingSpeed })
+    const { error } = await supabase.auth.updateUser({ data: { writingSpeed } })
     if (error) throw error
   }
 
@@ -107,6 +120,29 @@
         <div class="range-labels">
           <span>0.25× (slow)</span>
           <span>1× (normal)</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="settings-card">
+      <h2>Writing speed</h2>
+      <p>Controls how fast the character stroke animations play.</p>
+      <div class="field">
+        <label for="writing-speed">
+          Speed: {writingSpeed.toFixed(2)}×
+        </label>
+        <input
+          id="writing-speed"
+          type="range"
+          min="0.5"
+          max="2"
+          step="0.1"
+          bind:value={writingSpeed}
+          oninput={handleWritingSpeed}
+        />
+        <div class="range-labels">
+          <span>0.5× (slow)</span>
+          <span>2× (fast)</span>
         </div>
       </div>
     </article>
