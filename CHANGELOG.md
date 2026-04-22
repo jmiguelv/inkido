@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.6.4](https://github.com/jmiguelv/inkido/compare/v0.6.0...v0.6.4) (2026-04-22)
+
+### Features
+
+* **homework:** add detail view for individual homework questions ([3bb9b13](https://github.com/jmiguelv/inkido/commit/3bb9b136c3e75bb3e032344cd6e13a4d341e62af))
+* **settings:** add writing speed preference for HanziWriter ([eadb3a0](https://github.com/jmiguelv/inkido/commit/eadb3a02d67370bee1070814eba51e0467198d1f))
+
+### Bug Fixes
+
+* **dictionary:** resolve duplicate key error in character display ([7535e97](https://github.com/jmiguelv/inkido/commit/7535e975939b5d5c9b2973b4e3914e981cfbc9e0))
+
 ## [0.6.3](https://github.com/jmiguelv/inkido/compare/v0.6.0...v0.6.3) (2026-04-22)
 
 ### Features
