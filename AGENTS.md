@@ -7,7 +7,7 @@ lists; children practise spelling them. Only `zh` (Mandarin Chinese) is supporte
 add references to Japanese, Arabic, or other languages.
 
 **Live at:** inkido.vercel.app  
-**Version:** 0.6.3  
+**Version:** 0.6.4  
 **Stack:** SvelteKit 2 + Svelte 5 runes + Supabase + TypeScript + pnpm
 
 ---
