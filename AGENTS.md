@@ -7,7 +7,7 @@ lists; children practise spelling them. Only `zh` (Mandarin Chinese) is supporte
 add references to Japanese, Arabic, or other languages.
 
 **Live at:** inkido.vercel.app  
-**Version:** 0.5.4  
+**Version:** 0.6.3  
 **Stack:** SvelteKit 2 + Svelte 5 runes + Supabase + TypeScript + pnpm
 
 ---
@@ -56,6 +56,9 @@ src/
     spellings/          # word lists index
     spellings/[id]/     # list detail + word management + photo scan
     spellings/[id]/practice/ # practice mode
+    homework/           # OCR homework scans list
+    homework/[id]/      # homework scan detail (question list)
+    homework/[id]/question/[q_index]/ # individual question detail view
     words/              # all words across all lists (searchable)
     words/[id]/         # word detail with character breakdown
     dictionary/         # character/word search (145k words + 94k chars)
@@ -80,6 +83,7 @@ data/
 | `profiles` | Child learner profiles, owned by a parent (`auth.users`) |
 | `word_lists` | Word lists, scoped to profile + language (`zh`) |
 | `words` | Words in a list; denormalised enrichment (phonetic, translation) |
+| `homework_scans` | OCR results and analysis for homework worksheets |
 | `zh_words` | Dictionary: 145k Chinese words — `word`, `pinyin`, `translation`, `hsk_level` |
 | `zh_chars` | Dictionary: 94k Chinese characters — `char`, `gloss`, `stroke_count`, `hint`, `components` (JSONB), `trad_variant` |
 
