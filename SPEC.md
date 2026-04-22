@@ -1,5 +1,7 @@
 # Inkido — Product Specification
 
+> **NOTE:** This is the *initial* product specification used to bootstrap the project. It is preserved for historical context but may no longer reflect the current state of the codebase. For up-to-date documentation on the project's architecture, patterns, and current status, refer to `AGENTS.md` and `README.md`.
+
 ## Overview
 
 **Inkido** (ink + dojo) is a web app that helps children practice spelling tests for character-based scripts — initially Mandarin Chinese, designed to expand to Japanese, Arabic, and others without schema changes.
