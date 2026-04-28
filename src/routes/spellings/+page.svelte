@@ -29,7 +29,7 @@
         .from('word_lists')
         .select('*')
         .eq('profile_id', activeProfile.id)
-        .order('created_at')
+        .order('created_at', { ascending: false })
       if (error) throw error
       lists = data as WordList[]
     } finally {
