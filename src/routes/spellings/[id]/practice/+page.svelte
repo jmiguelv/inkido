@@ -22,7 +22,6 @@
   let errorMsg = $state('')
   let speechRate = $state(0.75)
   let modalChar = $state<string | null>(null)
-  let quizTimeout: ReturnType<typeof setTimeout> | null = $state(null)
 
   const activeProfile = $derived(getActiveProfile())
   const listId = $derived(page.params.id)
@@ -59,30 +58,20 @@
     flipped = !flipped
   }
 
-  function startQuizTimeout() {
-    if (quizTimeout) clearTimeout(quizTimeout)
-    quizTimeout = setTimeout(() => {
-      handleQuizComplete()
-    }, 30000)
-  }
-
   function toggleQuiz(e: MouseEvent) {
     e.stopPropagation()
     quizMode = !quizMode
     quizCharIndex = 0
     flipped = false
     showHint = false
-    if (quizMode) startQuizTimeout()
   }
 
   function handleQuizComplete() {
     setPetMood('happy')
     if (quizCharIndex < currentChars.length - 1) {
       quizCharIndex++
-      startQuizTimeout()
     } else {
       // Word complete!
-      if (quizTimeout) clearTimeout(quizTimeout)
       fireConfetti()
       quizMode = false
       flipped = true
@@ -91,9 +80,7 @@
 
   function handleQuizPrev() {
     if (quizCharIndex > 0) {
-      if (quizTimeout) clearTimeout(quizTimeout)
       quizCharIndex--
-      startQuizTimeout()
     }
   }
 
@@ -137,7 +124,6 @@
     window.addEventListener('keydown', handleKeydown)
     return () => {
       window.removeEventListener('keydown', handleKeydown)
-      if (quizTimeout) clearTimeout(quizTimeout)
     }
   })
 
@@ -209,7 +195,7 @@
                 {/if}
                 <div class="quiz-char-nav">
                   <button class="quiz-char-nav-btn" onclick={handleQuizPrev} disabled={quizCharIndex === 0}>← Back</button>
-                  <button class="quiz-char-nav-btn" onclick={() => { if (quizTimeout) clearTimeout(quizTimeout); handleQuizComplete() }}>Next →</button>
+                  <button class="quiz-char-nav-btn" onclick={handleQuizComplete}>Next →</button>
                 </div>
               </div>
             {:else if flipped}
