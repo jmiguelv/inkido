@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.6.5](https://github.com/jmiguelv/inkido/compare/v0.6.0...v0.6.5) (2026-04-29)
+
+### Features
+
+* **homework:** add detail view for individual homework questions ([3bb9b13](https://github.com/jmiguelv/inkido/commit/3bb9b136c3e75bb3e032344cd6e13a4d341e62af))
+* **settings:** add writing speed preference for HanziWriter ([eadb3a0](https://github.com/jmiguelv/inkido/commit/eadb3a02d67370bee1070814eba51e0467198d1f))
+* **spellings:** sort lists by most recent first ([ccb0eec](https://github.com/jmiguelv/inkido/commit/ccb0eecfaa8c58955ed4786b15a2a353f70303a3))
+
+### Bug Fixes
+
+* **dictionary:** resolve duplicate key error in character display ([7535e97](https://github.com/jmiguelv/inkido/commit/7535e975939b5d5c9b2973b4e3914e981cfbc9e0))
+* **practice:** remove 30s quiz timeout causing auto-completion ([8d3328c](https://github.com/jmiguelv/inkido/commit/8d3328c9e065002c673223f4a1323840c9b68b45))
+* **practice:** resolve auto-completion and lifecycle issues in writing practice ([2275bb2](https://github.com/jmiguelv/inkido/commit/2275bb2f72e9a1f3ec9f6fdab0ed7a6888510230))
+
 ## [0.6.4](https://github.com/jmiguelv/inkido/compare/v0.6.0...v0.6.4) (2026-04-22)
 
 ### Features
