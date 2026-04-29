@@ -68,14 +68,18 @@
 
   function handleQuizComplete() {
     setPetMood('happy')
-    if (quizCharIndex < currentChars.length - 1) {
-      quizCharIndex++
-    } else {
-      // Word complete!
-      fireConfetti()
-      quizMode = false
-      flipped = true
-    }
+    // Small delay to prevent 'stroke leakage' to the next character 
+    // if the user is still touching the screen
+    setTimeout(() => {
+      if (quizCharIndex < currentChars.length - 1) {
+        quizCharIndex++
+      } else {
+        // Word complete!
+        fireConfetti()
+        quizMode = false
+        flipped = true
+      }
+    }, 300)
   }
 
   function handleQuizPrev() {
@@ -194,8 +198,8 @@
                   </p>
                 {/if}
                 <div class="quiz-char-nav">
-                  <button class="quiz-char-nav-btn" onclick={handleQuizPrev} disabled={quizCharIndex === 0}>← Back</button>
-                  <button class="quiz-char-nav-btn" onclick={handleQuizComplete}>Next →</button>
+                  <button class="quiz-char-nav-btn" onclick={(e) => { e.stopPropagation(); handleQuizPrev(); }} disabled={quizCharIndex === 0}>← Back</button>
+                  <button class="quiz-char-nav-btn" onclick={(e) => { e.stopPropagation(); handleQuizComplete(); }}>Skip →</button>
                 </div>
               </div>
             {:else if flipped}

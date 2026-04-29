@@ -80,7 +80,9 @@
 
             if (mode === "quiz") {
                 writer.quiz({
-                    showHintAfterMisses: 3, // Keep the automatic hint on misses
+                    showHintAfterMisses: 3,
+                    leniency: 1.0,
+                    highlightOnComplete: true,
                     onComplete: () => {
                         if (!destroyed && onComplete) onComplete();
                     },
@@ -91,9 +93,12 @@
                 playFn = () => play(onAnimationDone);
                 node.addEventListener("click", () => play());
             }
+
+            return writer;
         }
 
-        setup().catch(() => {
+        let writer: any = null;
+        setup().then(w => { writer = w ?? null; }).catch(() => {
             if (!destroyed) writerError = true;
         });
 
@@ -101,6 +106,9 @@
             destroy() {
                 destroyed = true;
                 writerInstance = null;
+                if (writer && typeof writer.destroy === 'function') {
+                    writer.destroy();
+                }
             },
         };
     }
@@ -126,7 +134,7 @@
         {char}
     </div>
 {:else}
-    {#key char + colorize}
+    {#key char + colorize + size}
         <div class="writer-container" style="width: {size}px; height: {size}px;">
             {#if mode === 'quiz'}
                 <svg class="writer-grid" width={size} height={size} aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
