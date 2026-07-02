@@ -264,6 +264,8 @@
         <a href="/about">ABOUT</a>
         <span class="footer-sep">·</span>
         <a href="/privacy">PRIVACY</a>
+        <span class="footer-sep">·</span>
+        <a href="https://jmiguelv.github.io" target="_blank" rel="noopener noreferrer">Made by Miguel Vieira</a>
     </div>
     <p class="footer-disclaimer">✦ AI-generated content may contain inaccuracies — always verify against your textbook.</p>
     <a href="https://ko-fi.com/Y8Y51X838W" target="_blank" rel="noopener noreferrer" class="kofi-link">

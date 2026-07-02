@@ -89,7 +89,7 @@ Your spellings, profiles, and homework scans are stored in [Supabase](https://su
 
 ## Disclaimer
 
-Inkido is a personal project, created to help my own children learn Chinese. It is free to use "as is", with no guarantees of accuracy or uptime.
+Inkido is a personal project, created by [Miguel Vieira](https://jmiguelv.github.io) to help his own children learn Chinese. It is free to use "as is", with no guarantees of accuracy or uptime.
 
 If you have feedback or need to report a bug, you can reach me at: [inkido.foyer772@passinbox.com](mailto:inkido.foyer772@passinbox.com)
 
