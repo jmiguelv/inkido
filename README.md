@@ -162,3 +162,14 @@ This app uses **passwordless magic link** authentication via Supabase. In your S
 
 1. **Authentication → Providers → Email**: enable "Email OTP / Magic Link"
 2. **Authentication → URL Configuration**: set your site URL and add `/auth/callback` to the redirect allow list
+
+## Documentation
+
+### Architecture & Implementation
+
+- **[ARCHITECTURE.md](docs/ARCHITECTURE.md)** — System overview, feature implementation, database schema, edge functions, security model
+- **[IMAGE_COMPRESSION.md](docs/IMAGE_COMPRESSION.md)** — Detailed guide to worksheet image compression, payload optimization, quality tradeoffs, troubleshooting
+
+### For Contributors
+
+See [AGENTS.md](AGENTS.md) for development patterns and coding conventions.
