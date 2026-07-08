@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.6.8](https://github.com/jmiguelv/inkido/compare/v0.6.7...v0.6.8) (2026-07-08)
+
+### Bug Fixes
+
+* **homework:** compress worksheet images before sending to edge function ([8cc375f](https://github.com/jmiguelv/inkido/commit/8cc375f3a69f243f058b39a7c4a742c7c2d523d7))
+  - Fixes WORKER_RESOURCE_LIMIT error by implementing client-side image compression
+  - Reduces typical 3-image payload from ~35MB to ~8-10MB
+  - Add compressImage() function with 1024px max width and JPEG 0.7 quality
+  - Improve markdown fence regex in all vision edge functions
+
+### Documentation
+
+* **docs:** add comprehensive architecture and image compression documentation ([bac40c9](https://github.com/jmiguelv/inkido/commit/bac40c902c836705d616617c6a85b32fabb0c014))
+  - docs/ARCHITECTURE.md: System overview, feature implementations, database schema
+  - docs/IMAGE_COMPRESSION.md: Image compression strategy, troubleshooting, performance metrics
+  - Update README.md with documentation links
+
+# Changelog
+
 ## [0.6.7](https://github.com/jmiguelv/inkido/compare/v0.6.0...v0.6.7) (2026-07-02)
 
 ### Features
