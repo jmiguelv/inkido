@@ -67,7 +67,7 @@ export async function handler(req: Request): Promise<Response> {
 
   // Vision tasks need a model that reliably supports image inputs.
   // OPENROUTER_VISION_MODEL overrides; falls back to a free vision-capable model.
-  const model = Deno.env.get('OPENROUTER_VISION_MODEL') ?? 'google/gemma-4-26b-a4b-it:free'
+  const model = Deno.env.get('OPENROUTER_VISION_MODEL') ?? 'openrouter/free'
 
   let prompt = `You are helping a parent understand their child's homework worksheet written in "${language}". 
 You may be provided with one or more images representing different pages or sections of the same homework assignment.`
@@ -80,6 +80,7 @@ You may be provided with one or more images representing different pages or sect
 2. Write a single plain-English sentence summarising the task in the imperative — as a direct instruction (e.g. "Read the passage and fill in the blanks." not "The child is asked to read...").
 3. Process ALL provided images. For each question or task across all images, extract the original text, translate the instruction into English using the imperative, and provide a sample answer in both the original language and English.
 
+Do NOT wrap output in markdown code blocks. Return raw JSON only — no \`\`\`json, no \`\`\`.
 Return ONLY valid JSON matching this exact schema — no markdown, no explanation:
 {
   "summary": "One sentence in the imperative describing what to do (e.g. 'Read the passage and answer the questions.').",
@@ -137,7 +138,7 @@ Return ONLY valid JSON matching this exact schema — no markdown, no explanatio
   }
 
   try {
-    const cleaned = raw.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '').trim()
+    const cleaned = raw.replace(/^```(?:json)?\s*/, '').replace(/\s*```$/, '').trim()
     const { summary, title, worksheetType, questions } = JSON.parse(cleaned)
     return new Response(JSON.stringify({ summary, analysis: { title, worksheetType, questions } }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }

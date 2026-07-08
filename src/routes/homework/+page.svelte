@@ -51,6 +51,27 @@
     })
   }
 
+  function compressImage(file: File, maxWidth: number, quality: number): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onload = e => {
+        const img = new Image()
+        img.onload = () => {
+          const scale = Math.min(1, maxWidth / img.width)
+          const canvas = document.createElement('canvas')
+          canvas.width = img.width * scale
+          canvas.height = img.height * scale
+          canvas.getContext('2d')!.drawImage(img, 0, 0, canvas.width, canvas.height)
+          resolve(canvas.toDataURL('image/jpeg', quality))
+        }
+        img.onerror = reject
+        img.src = e.target!.result as string
+      }
+      reader.onerror = reject
+      reader.readAsDataURL(file)
+    })
+  }
+
   async function handleScan(event: Event) {
     if (!activeProfile) return
     const input = event.target as HTMLInputElement
@@ -60,14 +81,7 @@
     scanning = true
     errorMsg = ''
     try {
-      const base64Images = await Promise.all(files.map(file => {
-        return new Promise<string>((resolve, reject) => {
-          const reader = new FileReader()
-          reader.onload = () => resolve(reader.result as string)
-          reader.onerror = reject
-          reader.readAsDataURL(file)
-        })
-      }))
+      const base64Images = await Promise.all(files.map(file => compressImage(file, 1024, 0.7)))
 
       // Create thumbnail from first image
       const thumbnail = await createThumbnail(base64Images[0])

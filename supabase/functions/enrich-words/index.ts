@@ -63,7 +63,7 @@ export async function handler(req: Request): Promise<Response> {
   }
 
   // Use a faster, cheaper model for simple translation tasks
-  const model = Deno.env.get('OPENROUTER_MODEL') ?? 'google/gemma-3-27b-it:free'
+  const model = Deno.env.get('OPENROUTER_MODEL') ?? 'openrouter/free'
 
   const prompt = `You are a dictionary API for a language learning app.
 The target language is "${language}" (e.g., if "zh", assume Mandarin Chinese).
@@ -88,7 +88,8 @@ IMPORTANT:
 - Do NOT auto-correct the "character" field; if the input is Chinese, keep it exactly as provided.
 - Return plain text only — NO HTML tags, NO markdown, NO bold/italic markup in any field value.
 
-Return ONLY the JSON array, no markdown formatting (\`\`\`json etc.), no explanations.
+Do NOT wrap output in markdown code blocks. Return raw JSON only — no \`\`\`json, no \`\`\`.
+Return ONLY the JSON array, no markdown formatting, no explanations.
 
 Input phrases:
 ${JSON.stringify(phrases)}`
@@ -128,7 +129,7 @@ ${JSON.stringify(phrases)}`
   }
 
   try {
-    const cleaned = raw.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '').trim()
+    const cleaned = raw.replace(/^```(?:json)?\s*/, '').replace(/\s*```$/, '').trim()
     const results = JSON.parse(cleaned)
     return new Response(JSON.stringify({ results }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }

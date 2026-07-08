@@ -18,7 +18,7 @@ export async function handler(req: Request): Promise<Response> {
     })
   }
 
-  const model = Deno.env.get('OPENROUTER_MODEL') ?? 'google/gemma-3-27b-it:free'
+  const model = Deno.env.get('OPENROUTER_MODEL') ?? 'openrouter/free'
 
   const prompt = `This is a children's spelling practice worksheet written in language "${language}".
 
@@ -32,6 +32,7 @@ Do NOT include:
 
 Return a JSON array of strings, one item per word/character. Example: ["你好", "学习", "朋友"]
 
+Do NOT wrap output in markdown code blocks. Return raw JSON only — no \`\`\`json, no \`\`\`.
 Return only the JSON array, no markdown, no explanation.`
 
   const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
@@ -71,7 +72,7 @@ Return only the JSON array, no markdown, no explanation.`
     })
   }
 
-  const cleaned = raw.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '').trim()
+  const cleaned = raw.replace(/^```(?:json)?\s*/, '').replace(/\s*```$/, '').trim()
   const characters = JSON.parse(cleaned)
 
   return new Response(JSON.stringify({ characters }), {
