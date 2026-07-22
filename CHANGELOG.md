@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.9](https://github.com/jmiguelv/inkido/compare/v0.6.8...v0.6.9) (2026-07-22)
+
+### Bug Fixes
+
+* **audio:** resolve iPadOS Safari speechSynthesis failures ([ebfe32c](https://github.com/jmiguelv/inkido/commit/ebfe32cb22ac049b75a05c9c9cfccb350543b833))
+* **build:** approve esbuild and supabase postinstall scripts ([e08cd50](https://github.com/jmiguelv/inkido/commit/e08cd5079f52bf1166a1c4c3f7af4d4bd7024654))
+
 ## [0.6.8](https://github.com/jmiguelv/inkido/compare/v0.6.7...v0.6.8) (2026-07-08)
 
 ### Bug Fixes
